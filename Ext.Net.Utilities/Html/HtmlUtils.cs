@@ -1,0 +1,18 @@
+﻿using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Ext.Net.Utilities
+{
+    public static class HtmlUtils
+    {
+        public static string StripWhitespaceChars(this string html)
+        {
+            return Regex.Replace(html, "[\n\r\t]", "");
+        }
+        
+        public static string StripExtraSpaces(this string html)
+        {
+            return Regex.Replace(html, @"\s+", " ");
+        }
+    }
+}
