@@ -268,7 +268,7 @@ Ext.extend(Ext.calendar.BoxLayoutTemplate, Ext.XTemplate, {
             weeks[w] = [];
             
             for(var d = 0; d < this.dayCount; d++){
-                isToday = dt.getTime() === today.getTime();
+                isToday = Ext.calendar.Date.equalDates(dt, today);
                 showMonth = first || (dt.getDate() == 1);
                 prevMonth = (dt.getMonth() < thisMonth) && this.weekCount == -1;
                 nextMonth = (dt.getMonth() > thisMonth) && this.weekCount == -1;
@@ -1616,6 +1616,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         weeks = this.weekCount < 1 ? 6: this.weekCount;
 		
 		dt.setHours(1);
+		lastInMonth.setHours(1);
 
         this.eventGrid = [[]];
         this.allDayGrid = [[]];
@@ -2135,7 +2136,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
 
     
     moveNext: function(noRefresh, reload) {
-        return this.moveTo(this.viewEnd.add(Date.HOUR, 25),noRefresh, reload);
+        //return this.moveTo(this.viewEnd.add(Date.HOUR, 25),noRefresh, reload);
+		return this.moveTo(this.viewEnd.add(Date.DAY, 1),noRefresh, reload);
     },
 
     
@@ -3241,7 +3243,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
         cfg.showTodatText = this.showTodayText;
         cfg.todayText = this.todayText;
         cfg.dayCount = this.dayCount;
-        cfg.wekkCount = 1; 
+        cfg.weekCount = 1; 
         
         var header = Ext.applyIf({
             xtype: 'dayheaderview',

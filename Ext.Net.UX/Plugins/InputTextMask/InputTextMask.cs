@@ -16,10 +16,10 @@
  */
 
 /*
-* @version:		1.0.0
+* @version:		1.2.0
 * @author:		Ext.NET, Inc. http://www.ext.net/
-* @date:		2009-11-15
-* @copyright:	Copyright (c) 2010, Ext.NET, LLC or as noted within each 
+* @date:		2011-09-12
+* @copyright:	Copyright (c) 2006-2011, Ext.NET, Inc. or as noted within each 
 * 				applicable file LICENSE.txt file
 * @license:		LGPL 3.0 License
 * @website:		http://www.ext.net/

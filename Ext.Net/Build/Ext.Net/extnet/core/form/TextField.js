@@ -3,6 +3,7 @@
 
 Ext.form.TextField.prototype.initComponent = Ext.form.TextField.prototype.initComponent.createSequence(function () {
     this.addEvents("iconclick");
+    this.setIconClass = this.setIconCls;
 });
 
 Ext.override(Ext.form.TextField, {

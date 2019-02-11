@@ -13,6 +13,8 @@
     <AssemblyName>Ext.Net.Examples</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,29 +40,22 @@
       <HintPath>..\Ext.Net\Build\ReferenceAssemblies\Json.NET\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Web.Extensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Mobile" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="Wilco.SyntaxHighlighter, Version=0.5.0.0, Culture=neutral, PublicKeyToken=fb87150479c2990b, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +221,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Code\SerializableEntity\ReadMe.txt" />
+    <Content Include="Examples\Getting_Started\Introduction\CHANGELOG\Default.aspx" />
+    <Content Include="Examples\Getting_Started\Introduction\README\Default.aspx" />
     <Content Include="Examples\GridPanel\Shared\SuppliersService.asmx" />
     <Content Include="HighLighter\HighLighterButton.ascx" />
     <Content Include="HighLighter\Wilco.SyntaxHighlighter.dll" />
@@ -235,7 +232,9 @@
     <Content Include="resources\images\logo.png" />
     <Content Include="resources\images\noimage.png" />
     <Content Include="resources\images\sample-over.gif" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ext.Net.Utilities\Ext.Net.Utilities.csproj">
@@ -871,7 +870,7 @@
     <Content Include="resources\examples.js" />
     <Content Include="resources\images\new.gif" />
     <Content Include="resources\images\newgray.gif" />
-    <Content Include="Sample.Web.config" />
+    <None Include="Sample.Web.config" />
     <Content Include="Examples\GridPanel\Miscellaneous\Submit_to_Handler\SubmitHandler.ashx" />
     <Content Include="Examples\GridPanel\Shared\PlantHandler.ashx" />
     <Content Include="Examples\Events\DirectMethods\ID_Mode\NoneID.Master" />
@@ -1104,11 +1103,6 @@
     <Content Include="Examples\Window\Basic\Hello_World\config.xml" />
     <Content Include="Examples\Window\Basic\Hello_World\Default.aspx" />
     <Content Include="Examples\Window\Basic\Hello_World\thumbnail.gif" />
-    <Content Include="Examples\Window\Basic\_Nested_Panel\beachday.jpg" />
-    <Content Include="Examples\Window\Basic\_Nested_Panel\config.xml" />
-    <Content Include="Examples\Window\Basic\_Nested_Panel\Default.aspx" />
-    <Content Include="Examples\Window\Basic\_Nested_Panel\thumbnail.gif" />
-    <Content Include="Examples\Window\Basic\_Nested_Panel\vacationdetails.aspx" />
     <Content Include="Examples\Window\Basic\Show\config.xml" />
     <Content Include="Examples\Window\Basic\Show\Default.aspx" />
     <Content Include="Examples\Window\config.xml" />

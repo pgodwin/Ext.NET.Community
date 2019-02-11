@@ -17,17 +17,17 @@ In the root of each UX folder must be both a LICENSE.txt and README.txt
 file. The LICENSE.txt file must contain either a copy of the license
 or a url pointing to the location where ther license can be found. 
 
-For example, the SlidingPager plugin was created by ExtJS LLC and the
+For example, the SlidingPager plugin was created by Senca, Inc. and the
 plugin is provided under the same dual license (GPL or Commercial) terms 
-as the main ExtJS JavaScript license. If you have an Ext.NET Pro License,
-you may use the ExtJS authored extension under the terms of the Ext.NET 
+as the main Sencha JavaScript license. If you have an Ext.NET Pro License,
+you may use the Sencha authored extension under the terms of the Ext.NET 
 Pro License. 
 
-If you do not have an Ext.NET Pro License, then the ExtJS authored
+If you do not have an Ext.NET Pro License, then the Sencha authored
 extension is available to use under the terms of the Ext.NET Community 
 License (AGPLv3). 
  
-Techincal and licensing support is provided in the Ext.NET Community 
+Technical and licensing support is provided in the Ext.NET Community 
 Forums or provided as noted in the README.txt by the original UX author.
 
 Forums:			http://www.ext.net/forums/

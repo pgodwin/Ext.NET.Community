@@ -1,11 +1,10 @@
-﻿/**
- * @version: 1.0.0
- * @author: Ext.NET, Inc. http://www.ext.net/
- * @date: 2008-05-26
- * @copyright: Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
- * @license: See license.txt and http://www.ext.net/license/. 
- * @website: http://www.ext.net/
- */
+﻿/********
+ * @version   : 1.0.0
+ * @author    : Ext.NET, Inc. http://www.ext.net/
+ * @date      : 2011-06-15
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @license   : See license.txt and http://www.ext.net/license/. 
+ ********/
 
 using System;
 using System.Collections;
@@ -20,29 +19,64 @@ using System.Web.UI;
 
 namespace Ext.Net.Utilities
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    [Description("")]
     public static class StringUtils
     {
         /// <summary>
-        /// 
+        /// Replaces all occurrences of System.String in the oldValues String Array, with
+        /// another specified System.String of newValue.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static string MakeEventName(string name)
+        /// <param name="instance">this string</param>
+        /// <param name="oldValues">An Array of String objects to be replaced.</param>
+        /// <param name="newValue">The new value to replace old values.</param>
+        /// <returns>
+        /// The modified original string.
+        /// </returns>
+        [Description("Replaces all occurrences of System.String in the oldValues String Array, with another specified System.String of newValue.")]
+        public static string Replace(this string instance, string[] oldValues, string newValue)
         {
-            string[] keys = "drop,drag,children,collapse,expand,load,before,insert,property,check,node,append,cell,down,up,size,hide,show,out,trigger,over,render,destroy,state,restore,save,layout,add,remove,click,select,context,menu,enter,leave,change,complete,state,edit,key,press".Split(',');
-
-            for (int i = 0; i < keys.Length; i++)
+            if (oldValues == null || oldValues.Length < 1)
             {
-                name = name.Replace(keys[i], keys[i].ToTitleCase());
+                return instance;
             }
 
-            return name.ToTitleCase();
+            oldValues.Each<string>(value => instance.Replace(value, newValue));
+
+            return instance;
         }
 
-        // http://james.newtonking.com/archive/2008/03/29/formatwith-2-0-string-formatting-with-named-variables.aspx
         /// <summary>
-        /// Format the string with the args.
+        /// Replaces all occurrences of System.String in the oldValue String Array, with the
+        /// return String value of the specified Function convert.
         /// </summary>
+        /// <param name="instance">this string</param>
+        /// <param name="oldValues">An Array of String objects to be replaced.</param>
+        /// <param name="convert">The Function to convert the found old value.</param>
+        /// <returns>
+        /// The modified original string.
+        /// </returns>
+        [Description("Replaces all occurrences of System.String in the oldValue String Array, with the return String value of the specified Function convert.")]
+        public static string Replace(this string instance, string[] oldValues, Func<string, string> convert)
+        {
+            if (oldValues == null || oldValues.Length < 1)
+            {
+                return instance;
+            }
+
+            oldValues.Each<string>(value => instance = instance.Replace(value, convert(value)));
+
+            return instance;
+        }
+
+        /// <summary>
+        /// Format the string with the arguments (args parameter).
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="args"></param>
+        [Description("Format the string with the arguments (args parameter).")]
         public static string FormatWith(this string format, params object[] args)
         {
             if (args == null)
@@ -59,7 +93,6 @@ namespace Ext.Net.Utilities
         /// <param name="format"></param>
         /// <param name="provider"></param>
         /// <param name="args"></param>
-        /// <returns></returns>
         public static string FormatWith(this string format, IFormatProvider provider, params object[] args)
         {
             Verify.IsNotNull(format, "format");
@@ -140,7 +173,7 @@ namespace Ext.Net.Utilities
         }
 
         /// <summary>
-        /// Add the text string to the source string.
+        /// Add the args strings the source text string.
         /// </summary>
         public static string ConcatWith(this string instance, string text)
         {

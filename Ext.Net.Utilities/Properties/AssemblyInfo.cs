@@ -11,7 +11,7 @@ using System.Security;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ext.NET, Inc.")]
 [assembly: AssemblyProduct("Ext.Net.Utilities")]
-[assembly: AssemblyCopyright("Copyright © 2006-2008")]
+[assembly: AssemblyCopyright("Copyright © 2011 Ext.NET, Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -23,6 +23,6 @@ using System.Security;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("a7ac1696-f38d-49a7-822f-1872c4832c83")]
 
-[assembly: AssemblyVersion("1.0.0.*")]
+[assembly: AssemblyVersion("1.1.0.*")]
 
 [assembly: AllowPartiallyTrustedCallers]

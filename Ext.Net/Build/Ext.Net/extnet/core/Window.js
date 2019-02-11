@@ -8,7 +8,7 @@ Ext.Window.override({
     
     defaultRenderTo : "body",
     
-    showModal   : function () {
+    showModal : function () {
         this.initMask();
         this.modal = true;
         Ext.getBody().addClass("x-body-masked");

@@ -2,7 +2,8 @@
 // @source core/Component.js
 
 Ext.Component.prototype.destroy = Ext.Component.prototype.destroy.createInterceptor(function () {
-    this.cleanId();
+    this.destroyBin();
+	this.cleanId();
 });
 
 Ext.Component.prototype.initComponent = Ext.Component.prototype.initComponent.createSequence(function () {
@@ -54,6 +55,13 @@ Ext.Component.prototype.initComponent = Ext.Component.prototype.initComponent.cr
 Ext.override(Ext.Component, {
     selectable      : true,    
     autoFocusDelay  : 10,
+	
+	destroyBin : function () {
+		if(this.bin){
+		    Ext.destroy(this.bin);
+		}
+		delete this.bin;
+	},
     
     setSelectable : function (selectable) {
         if (selectable === false) {

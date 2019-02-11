@@ -23,7 +23,7 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
     renderAll : function (ct, target) {
         if (this.split && !this.splitBars) {
             this.splitBars = [];
-            this.margin = 5;
+            this.margin = this.margin || 5;
         }
 
         Ext.net.ColumnLayout.superclass.renderAll.apply(this, arguments);

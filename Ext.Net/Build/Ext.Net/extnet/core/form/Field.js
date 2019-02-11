@@ -119,7 +119,12 @@ Ext.form.Field.override({
         }
 
         if (this.disabled || (clientValid && (!this.rvConfig.remoteValidated || this.rvConfig.remoteValid))) {
-            this.clearInvalid();
+            if (this.rvConfig.lastValue === this.getValue() && this.rvConfig.remoteValid === false) {
+                this.markInvalid(this.rv_response.message || "Invalid");
+            }
+            else{
+                this.clearInvalid();
+            }
             return this.rvConfig.remoteValid;
         }
 
@@ -135,11 +140,10 @@ Ext.form.Field.override({
     },   
     
     performRemoteValidation : function (e) {        
-        if (this.rvConfig.lastValue === this.getValue()) {
+        if (this.rvConfig.lastValue === this.getValue() || !this.originalIsValid(true)) {
             this.rvTask.cancel();
-            this.rvConfig.remoteValid = true;
             return;
-        }        
+        }
         
         if (!e || !e.isNavKeyPress || (e && e.isNavKeyPress && !e.isNavKeyPress())) {
             if (e && e.normalizeKey) {
@@ -149,14 +153,15 @@ Ext.form.Field.override({
                     return;
                 }
             }
-
-			this.rvConfig.remoteValid = false;
-			this.rvConfig.remoteValidated = false;
+			
             this.rvTask.delay(this.rvConfig.validationBuffer);
         }
     },
     
     remoteValidate : function () {
+        this.rvConfig.remoteValid = false;
+	    this.rvConfig.remoteValidated = false;
+			
         var dc = Ext.apply({}, this.remoteValidationOptions),
 		    options = {params : {}};
 		

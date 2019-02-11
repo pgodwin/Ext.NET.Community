@@ -73,7 +73,7 @@ Ext.extend(Ext.calendar.BoxLayoutTemplate, Ext.XTemplate, {
             weeks[w] = [];
             
             for(var d = 0; d < this.dayCount; d++){
-                isToday = dt.getTime() === today.getTime();
+                isToday = Ext.calendar.Date.equalDates(dt, today);
                 showMonth = first || (dt.getDate() == 1);
                 prevMonth = (dt.getMonth() < thisMonth) && this.weekCount == -1;
                 nextMonth = (dt.getMonth() > thisMonth) && this.weekCount == -1;

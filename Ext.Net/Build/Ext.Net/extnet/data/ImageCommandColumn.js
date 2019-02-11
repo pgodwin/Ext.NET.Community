@@ -261,6 +261,7 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
 
     getRecords : function (groupId) {
         if (groupId) {
+            groupId = Ext.util.Format.htmlEncode(groupId);
             var records = this.grid.store.queryBy(function (record) {
                     return record._groupId === groupId;
                 });

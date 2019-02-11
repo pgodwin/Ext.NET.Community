@@ -1,11 +1,10 @@
-﻿/**
- * @version: 1.0.0
- * @author: Ext.NET, Inc. http://www.ext.net/
- * @date: 2008-05-26
- * @copyright: Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
- * @license: See license.txt and http://www.ext.net/license/. 
- * @website: http://www.ext.net/
- */
+﻿/********
+ * @version   : 1.0.0
+ * @author    : Ext.NET, Inc. http://www.ext.net/
+ * @date      : 2011-06-15
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @license   : See license.txt and http://www.ext.net/license/. 
+ ********/
 
 using System;
 using System.Globalization;
@@ -17,6 +16,36 @@ namespace Ext.Net.Utilities
 {
     public static class DateTimeUtils
     {
+        /// <summary>
+        /// Returns an ISO 8601 formatted DateTime string
+        /// </summary>
+        /// <param name="instance">The DateTime object to format</param>
+        /// <returns>The ISO 8601 formatted string</returns>
+        public static string ToISOString(this DateTime instance)
+        {
+            return instance.ToString("yyyy-MM-ddTHH:mm:ss");
+        }
+
+        /// <summary>
+        /// Returns the Date portion only of an ISO 8601 formatted DateTime string
+        /// </summary>
+        /// <param name="instance">The DateTime object to format</param>
+        /// <returns>The ISO 8601 formatted string</returns>
+        public static string ToISODateString(this DateTime instance)
+        {
+            return instance.ToString("yyyy-MM-dd");
+        }
+
+        /// <summary>
+        /// Returns the Time portion only of an ISO 8601 formatted DateTime string
+        /// </summary>
+        /// <param name="instance">The DateTime object to format</param>
+        /// <returns>The ISO 8601 formatted string</returns>
+        public static string ToISOTimeString(this DateTime instance)
+        {
+            return instance.ToString("HH:mm:ss");
+        }
+
         /// <summary>
         /// Accepts a Unix/PHP date string format and returns a valid .NET date format
         /// </summary>

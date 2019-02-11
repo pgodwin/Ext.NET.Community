@@ -316,8 +316,7 @@ Ext.Panel.override({
         } catch (e) { }
 
         if (al.showMask) {
-            /*LOCALIZE*/
-            this.body.mask(al.maskMsg || "Loading...", al.maskCls || "x-mask-loading");
+            this.body.mask(al.maskMsg || Ext.LoadMask.prototype.msg, al.maskCls || "x-mask-loading");
         }
 
         this.autoLoad = al;

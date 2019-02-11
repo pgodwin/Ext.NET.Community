@@ -84,6 +84,8 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
             if (!Ext.isEmpty(this.cls, false)) {
                 this.el.dom.className = this.cls;
             }
+            
+            this.setNavigateUrl();
 
             Ext.BoxComponent.superclass.onRender.call(this, ct, position);
         }

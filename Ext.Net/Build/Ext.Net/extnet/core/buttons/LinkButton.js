@@ -130,6 +130,8 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
             this.disabled = false;
             this.el.dom.style.cursor = "pointer";
         }
+        
+        this.setNavigateUrl();
 
         Ext.ButtonToggleMgr.register(this);
     },
@@ -155,17 +157,17 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
             img.dom.style.display = (cls === "") ? "none" : "inline";
         }
     },
+
+    onDisable : function () {
+        Ext.net.LinkButton.superclass.onDisable.apply(this);
+        this.textEl.setAttribute("disabled", "1");
+        this.textEl.removeAttribute("href");
+    },
     
-    setDisabled : function (disabled) {
-        Ext.net.LinkButton.superclass.setDisabled.apply(this, arguments);
-        
-        if (disabled) {
-            this.textEl.setAttribute("disabled", "1");
-            this.textEl.removeAttribute("href");
-        } else {
-            this.textEl.removeAttribute("disabled");
-            this.textEl.setAttribute("href", "#");
-        }
+    onEnable : function () {
+        Ext.net.LinkButton.superclass.onEnable.apply(this);
+        this.textEl.removeAttribute("disabled");
+        this.textEl.setAttribute("href", "#");
     }
 });
 

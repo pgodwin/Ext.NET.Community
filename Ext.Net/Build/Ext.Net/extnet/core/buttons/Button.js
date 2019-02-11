@@ -49,6 +49,18 @@ Ext.override(Ext.Button, {
     
     setTarget : function (target) {
         this.target = target;
+    },
+    
+    setNavigateUrl : function () {
+        if (this.navigateUrl) {
+            this.on("click", function () {
+                if (this.target) {
+                    window.open(this.navigateUrl, this.target);
+                } else {
+                    window.location = this.navigateUrl;
+                }
+            }, this);
+        }
     }
 });
 
@@ -75,13 +87,5 @@ Ext.Button.prototype.onRender = Ext.Button.prototype.onRender.createSequence(fun
         this.hideMenuArrow();
     }
     
-    if (this.navigateUrl) {
-        this.on("click", function () {
-            if (this.target) {
-                window.open(this.navigateUrl, this.target);
-            } else {
-                window.location = this.navigateUrl;
-            }
-        }, this);
-    }
+    this.setNavigateUrl();
 });

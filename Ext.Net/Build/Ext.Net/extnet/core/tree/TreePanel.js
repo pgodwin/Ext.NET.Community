@@ -893,9 +893,11 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
  
         var f = function () {
             if (this.getUI().rendered) {
-                this.getUI().toggleCheck(Ext.isDefined(value) ? value : !this.attribute.checked);
+                this.getUI().toggleCheck(Ext.isDefined(value) ? value : !this.attributes.checked);
             } else {
-                this.attributes.checked = Ext.isDefined(value) ? value : !this.attribute.checked;
+                if (Ext.isDefined(this.attributes.checked)) {
+                    this.attributes.checked = Ext.isDefined(value) ? value : !this.attributes.checked;
+                }
             }
         };
         startNode.cascade(f);

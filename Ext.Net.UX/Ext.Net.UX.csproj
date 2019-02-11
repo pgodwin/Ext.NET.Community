@@ -84,7 +84,6 @@
     <EmbeddedResource Include="Extensions\GMapPanel\GMapPanel.bmp" />
     <EmbeddedResource Include="Plugins\InputTextMask\InputTextMask.bmp" />
     <Content Include="Build\ReferenceAssemblies\README.txt" />
-    <Content Include="Build\Resources\Templates\Copyright - LGPL3.txt" />
     <Content Include="Extensions\GMapPanel\Example\Example.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>

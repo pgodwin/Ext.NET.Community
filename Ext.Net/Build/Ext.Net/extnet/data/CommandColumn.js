@@ -213,7 +213,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
                         }
 
                         if (!Ext.isEmpty(button.command, false)) {
-                            button.on("click", function () {
+                            button.on("click", function (e) {
                                 this.toolbar.grid.fireEvent("groupcommand", this.command, this.toolbar.groupId, this.column.getRecords.apply(this.column, [this.toolbar._groupId]));
                             }, button);
                         }
@@ -286,6 +286,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
     getRecords : function (groupId) {
         if (groupId) {
+            groupId = Ext.util.Format.htmlEncode(groupId);
             var records = this.grid.store.queryBy(function (r) {
                     return r._groupId === groupId;
                 });

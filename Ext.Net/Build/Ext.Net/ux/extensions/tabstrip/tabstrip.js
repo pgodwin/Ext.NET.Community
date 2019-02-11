@@ -33,8 +33,13 @@
                 this.el.applyStyles("margin:0px 0 -3px 0;");
             } else {
                 this.el.applyStyles("margin:-1px 0 -3px 0;");
-            }
-        }       
+            }       
+            
+            if(Ext.isIE8 || Ext.isIE9){
+                toolbar.setStyle("padding-bottom", "3px");
+                this.el.child(".x-tab-strip-spacer").setStyle("border-bottom-width", "0px");
+            }     
+        }         
         
         this.strip.setStyle("margin-right", "2px");
         
@@ -134,10 +139,11 @@
                     Ext.fly(oldEl).removeClass("x-tab-strip-active");
                 }
             }
-            
+
             if (item) {
                 var el = this.getTabEl(item);
                 Ext.fly(el).addClass("x-tab-strip-active");
+                
                 this.activeTab = item;
                 this.stack.add(item);
 
@@ -146,7 +152,7 @@
                 if (this.scrolling) {
                     this.scrollToTab(item, this.animScroll);
                 }
-            }
+            }            
             
             this.syncSize();
             

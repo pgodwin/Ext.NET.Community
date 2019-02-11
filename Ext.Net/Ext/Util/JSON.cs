@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -45,6 +45,25 @@ namespace Ext.Net
         /// Serializes the specified object to a Json object.
         /// </summary>
         /// <param name="obj">The object to serialize.</param>
+        /// <param name="formatting">Format the JSON serialized string.</param>
+        /// <param name="converters">A List of JsonConverter objects to customize serialization.</param>
+        /// <param name="quoteName">Gets or Sets a value indicating whether object names will be surrounded with quotes.</param>
+        /// <param name="resolver">The IContractResolver object to customize serialization.</param>
+        /// <returns>A Json string representation of the object.</returns>
+        [Description("Serializes the specified object to a Json object.")]
+        public static string Serialize(object obj, Formatting formatting, List<JsonConverter> converters, bool quoteName, IContractResolver resolver)
+        {
+            return JsonConvert.SerializeObject(obj, formatting, new JsonSerializerSettings { 
+                ContractResolver = resolver,
+                Converters = converters,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+        }
+
+        /// <summary>
+        /// Serializes the specified object to a Json object.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
         /// <param name="converters">A List of JsonConverter objects to customize serialization.</param>
         /// <param name="quoteName">Gets or Sets a value indicating whether object names will be surrounded with quotes.</param>
         /// <param name="resolver">The IContractResolver object to customize serialization.</param>
@@ -52,11 +71,7 @@ namespace Ext.Net
         [Description("Serializes the specified object to a Json object.")]
         public static string Serialize(object obj, List<JsonConverter> converters, bool quoteName, IContractResolver resolver)
         {
-            return JsonConvert.SerializeObject(obj, Formatting.None, new JsonSerializerSettings { 
-                ContractResolver = resolver,
-                Converters = converters,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
+            return JSON.Serialize(obj, Formatting.None, converters, quoteName, resolver);
         }
 
         /// <summary>
@@ -92,6 +107,18 @@ namespace Ext.Net
         public static string Serialize(object obj, List<JsonConverter> converters)
         {
             return JSON.Serialize(obj, converters, true, null);
+        }
+
+        /// <summary>
+        /// Serializes the specified object to a Json object.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="formatting">Format the serialized JSON string.</param>
+        /// <returns>A Json string representation of the object.</returns>
+        [Description("Serializes the specified object to a Json object.")]
+        public static string Serialize(object obj, bool formatting)
+        {
+            return JSON.Serialize(obj, formatting ? Formatting.Indented : Formatting.None, JSON.ConvertersInternal, true, null);
         }
 
         /// <summary>

@@ -8,7 +8,7 @@
 <script runat="server">
     protected void Button1_Click(object sender, DirectEventArgs e)
     {
-        //Ext.History.Add("token here");
+        //this.History1.Add("token here");
     }
 </script>
 
@@ -65,7 +65,7 @@
                                 <ext:Panel ID="SubTab3" runat="server" Title="Sub-tab 3" />
                             </Items>
                             <Listeners>
-                                <TabChange Handler="History1.add(el.id + ':' + tab.id);" />
+                                <TabChange Handler="History1.add(this.id + ':' + tab.id);" />
                             </Listeners>
                         </ext:TabPanel>
                     </Items>
@@ -77,7 +77,7 @@
                 <ext:Panel ID="Tab5" runat="server" Title="Tab 5" />
             </Items>
             <Listeners>
-                <TabChange Handler="if (tab.id != '#{Tab1}') {History1.add(el.id + ':' + tab.id);}" />
+                <TabChange Handler="if (tab.id != '#{Tab1}') {History1.add(this.id + ':' + tab.id);}" />
             </Listeners>
         </ext:TabPanel>
     </form>

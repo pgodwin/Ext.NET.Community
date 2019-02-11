@@ -155,14 +155,14 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
         result.success = true;
 
-        try {
-            if (/^<\?xml/.test(response.responseText)) {
+        try {            
+            if (/^<\?xml/.test(text)) {
                 //xml parsing      
                 var xmlData = response.responseXML,
                     root = xmlData.documentElement || xmlData,
                     q = Ext.DomQuery;
 
-                if (root.nodeName === "DirectResponse") {
+                if (root && root.nodeName === "DirectResponse") {
                     //root = q.select("DirectResponse", root);
                     //success
                     var sv = q.selectValue("Success", root, true),
@@ -420,7 +420,10 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
                         if (o.json) {
                             o.jsonData = o.params;
-                            o.params = "";
+
+                            if ((o.method || this.method) !== "GET") {
+                                o.params = "";
+                            }
                         } else {
 							var ov,
                                 key;

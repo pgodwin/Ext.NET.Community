@@ -60,7 +60,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
         cfg.showTodatText = this.showTodayText;
         cfg.todayText = this.todayText;
         cfg.dayCount = this.dayCount;
-        cfg.wekkCount = 1; 
+        cfg.weekCount = 1; 
         
         var header = Ext.applyIf({
             xtype: 'dayheaderview',

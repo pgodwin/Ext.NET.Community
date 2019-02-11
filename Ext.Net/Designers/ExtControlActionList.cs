@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -117,7 +117,7 @@ namespace Ext.Net
 		[Description("")]
         public void LaunchForums()
         {
-            System.Diagnostics.Process.Start("http://www.ext.net/forums/");
+            System.Diagnostics.Process.Start("http://forums.ext.net/");
         }
 
 		/// <summary>
@@ -126,7 +126,7 @@ namespace Ext.Net
 		[Description("")]
         public void LaunchDocumentation()
         {
-            System.Diagnostics.Process.Start("http://www.ext.net/docs/");
+            System.Diagnostics.Process.Start("http://docs.ext.net/");
         }
 
 		/// <summary>
@@ -135,7 +135,7 @@ namespace Ext.Net
 		[Description("")]
         public void LaunchExamples()
         {
-            System.Diagnostics.Process.Start("http://www.ext.net/examples/");
+            System.Diagnostics.Process.Start("http://examples.ext.net/");
         }
 
 		/// <summary>
@@ -162,10 +162,10 @@ namespace Ext.Net
             this.AddHeaderItem(new DesignerActionHeaderItem("Properties", "500"));
             this.AddHeaderItem(new DesignerActionHeaderItem("Support [Version " + this.Control.Version + "]", "1000"));
 
-            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchExamples", "Examples Explorer", "1000", "View the Ext.Net examples online"));
-            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchForums", "Online Forums", "1000", "Visit the Ext.Net Forums"));
-            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchSupportHome", "Ext.Net Support Home", "1000", "Visit the Ext.Net website for more support options", true));
-            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchDocumentation", "Online Documentation", "1000", "View online documentation"));
+            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchForums", "Community Forums", "1000", "Visit the Ext.NET Forums"));
+            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchExamples", "Examples Explorer", "1000", "View Ext.NET examples online"));
+            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchDocumentation", "Documentation", "1000", "View online Ext.NET documentation"));
+            this.AddMethodItem(new DesignerActionMethodItem(this, "LaunchSupportHome", "Support Home", "1000", "Visit the Ext.NET website for more support options", true));
 
             this.Items = new DesignerActionItemCollection();
 
@@ -202,6 +202,7 @@ namespace Ext.Net
                     return;
                 }
             }
+
             this.Headers.Add(item);
         }
 
@@ -216,6 +217,7 @@ namespace Ext.Net
                 if (item.DisplayName == header.DisplayName)
                 {
                     this.Headers.Remove(header);
+
                     return;
                 }
             }

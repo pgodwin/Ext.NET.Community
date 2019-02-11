@@ -78,7 +78,7 @@ Ext.ux.form.SelectBox = Ext.extend(Ext.form.ComboBox, {
 		if ( (e.hasModifier() && !e.shiftKey) || e.isNavKeyPress() || e.isSpecialKey() || (raw >= e.F1 && raw <=e.F12)) {
 			return;
 		}
-		if ( this.lastSearchTerm == key ) {
+		if ( this.lastSearchTerm === key ) {
 			startIndex = this.lastSelectedIndex;
 		}
 		this.search(this.displayField, key, startIndex);

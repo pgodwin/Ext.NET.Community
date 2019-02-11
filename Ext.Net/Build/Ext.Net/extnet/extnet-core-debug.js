@@ -1,8 +1,8 @@
 /*
- * @version   : 1.0.0 - Professional Edition (Ext.Net Professional License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-06-15
- * @copyright : Copyright (c) 2006-2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : See license.txt and http://www.ext.net/license/. 
  * @website   : http://www.ext.net/
  */
@@ -10,113 +10,6 @@
 Ext.ns("Ext.net", "Ext.net.DirectMethods", "Ext.ux", "Ext.ux.plugins", "Ext.ux.layout");
 
 Ext.net.Version = "1.0.0";
-
-(function () {
-    // IE9 fixes
-    var docMode = document.documentMode,
-        ua = navigator.userAgent.toLowerCase(),
-        check = function (r) {
-            return r.test(ua);
-        };
-    
-    Ext.isIE7 = Ext.isIE && (check(/msie 7/) || docMode === 7);
-    Ext.isIE8 = Ext.isIE && ((check(/msie 8/) && docMode !== 7 && docMode !== 9) || docMode === 8);
-    Ext.isIE9 = Ext.isIE && ((check(/msie 9/) && docMode !== 7 && docMode !== 8) || docMode === 9);
-    Ext.isIE6 = Ext.isIE && !Ext.isIE7 && !Ext.isIE8 && !Ext.isIE9;
-
-    if ((typeof Range !== "undefined") && !Range.prototype.createContextualFragment) {
-	    Range.prototype.createContextualFragment = function (html) {
-		    var frag = document.createDocumentFragment(), 
-		        div = document.createElement("div");
-
-		    frag.appendChild(div);
-		    div.outerHTML = html;
-		    
-            return frag;
-	    };
-    }
-
-    Ext.Element.addMethods({
-        getAttribute : Ext.isIE && !Ext.isIE9 ?
-            function (name, ns) {
-                var d = this.dom,
-                    type;
-
-                if (ns) {
-                    type = typeof d[ns + ":" + name];
-                
-                    if (type !== "undefined" && type !== "unknown") {
-                        return d[ns + ":" + name] || null;
-                    }
-                
-                    return null;
-                }
-
-                if (name === "for") {
-                    name = "htmlFor";
-                }
-                
-                return d[name] || null;
-            } : function (name, ns) {
-
-                var d = this.dom;
-            
-                if (ns) {
-                    if (d.getAttributeNS) {
-                        return d.getAttributeNS(ns, name) || d.getAttribute(ns + ":" + name);
-                    } else {
-                        return d.getAttribute(ns + ":" + name);
-                    }
-                }
-
-                return d.getAttribute(name) || d[name] || null;
-            }
-    });
-
-    Ext.removeNode = (Ext.isIE && !Ext.isIE8 && !Ext.isIE9) ? function () {
-        var d;
-
-        return function (n) {
-            if (n && n.tagName !== "BODY") {
-                if (Ext.enableNestedListenerRemoval === true) {
-                    Ext.EventManager.purgeElement(n, true);
-                } else {
-                    Ext.EventManager.removeAll(n);
-                }
-
-                d = d || document.createElement("div");
-                d.appendChild(n);
-                d.innerHTML = "";
-
-                delete Ext.elCache[n.id];
-            }
-        };
-    }() : function (n) {
-        if (n && n.parentNode && n.tagName !== "BODY") {
-            if (Ext.enableNestedListenerRemoval === true) {
-                Ext.EventManager.purgeElement(n, true);
-            } else {
-                Ext.EventManager.removeAll(n);
-            }
-
-            n.parentNode.removeChild(n);
-            
-            delete Ext.elCache[n.id];
-        }
-    };
-    
-    Ext.Resizable.Handle.override({            
-        onMouseOver : function(){
-            if(this.enabled){
-                this.el.addClass('x-resizable-over');
-            }
-            
-            if(this.transparent && Ext.isIE9){
-                this.el.dom.opacity = "";
-            }
-        }
-    });
-})();
 
 // @source core/net/ResourceMgr.js
 
@@ -717,6 +610,10 @@ Ext.override(Ext.util.Observable, {
 
 
 Ext.isEmptyObj = function (obj) {
+    if (typeof obj === "undefined" || obj === null) {
+        return true;
+    }
+
     if (!(!Ext.isEmpty(obj) && typeof obj === "object")) {
         return false;
     }
@@ -907,7 +804,7 @@ Ext.net.append = function (elTo, html) {
                 if (window.execScript) {
                     window.execScript(match[2]);
                 } else {
-                    eval(match[2]);
+                    window.eval.call(window, match[2]);
                 }
             }
         }
@@ -1077,7 +974,8 @@ Ext.apply(Ext.form.VTypes, {
 // @source core/Component.js
 
 Ext.Component.prototype.destroy = Ext.Component.prototype.destroy.createInterceptor(function () {
-    this.cleanId();
+    this.destroyBin();
+	this.cleanId();
 });
 
 Ext.Component.prototype.initComponent = Ext.Component.prototype.initComponent.createSequence(function () {
@@ -1129,6 +1027,13 @@ Ext.Component.prototype.initComponent = Ext.Component.prototype.initComponent.cr
 Ext.override(Ext.Component, {
     selectable      : true,    
     autoFocusDelay  : 10,
+	
+	destroyBin : function () {
+		if(this.bin){
+		    Ext.destroy(this.bin);
+		}
+		delete this.bin;
+	},
     
     setSelectable : function (selectable) {
         if (selectable === false) {
@@ -1544,8 +1449,7 @@ Ext.Panel.override({
         } catch (e) { }
 
         if (al.showMask) {
-            
-            this.body.mask(al.maskMsg || "Loading...", al.maskCls || "x-mask-loading");
+            this.body.mask(al.maskMsg || Ext.LoadMask.prototype.msg, al.maskCls || "x-mask-loading");
         }
 
         this.autoLoad = al;
@@ -1876,7 +1780,7 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
     renderAll : function (ct, target) {
         if (this.split && !this.splitBars) {
             this.splitBars = [];
-            this.margin = 5;
+            this.margin = this.margin || 5;
         }
 
         Ext.net.ColumnLayout.superclass.renderAll.apply(this, arguments);
@@ -2148,7 +2052,7 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
     renderAll : function (ct, target) {
         if (this.split && !this.splitBars) {
             this.splitBars = [];
-            this.margin = 5;
+            this.margin = this.margin || 5;
         }
 
         Ext.ux.RowLayout.superclass.renderAll.apply(this, arguments);
@@ -2519,11 +2423,11 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                     }, {
                         x  : 0,
                         y  : 42,
-                        itemId : "__ErrorMessageEditor",
+                        itemId   : "__ErrorMessageEditor",
                         xtype    : "htmleditor",
                         value    : errorMsg,
                         readOnly : true,
-                        submitValue : false,
+                        submitValue      : false,
                         enableAlignments : false,
                         enableColors     : false,
                         enableFont       : false,
@@ -2546,14 +2450,14 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
         result.success = true;
 
-        try {
-            if (/^<\?xml/.test(response.responseText)) {
+        try {            
+            if (/^<\?xml/.test(text)) {
                 //xml parsing      
                 var xmlData = response.responseXML,
                     root = xmlData.documentElement || xmlData,
                     q = Ext.DomQuery;
 
-                if (root.nodeName === "DirectResponse") {
+                if (root && root.nodeName === "DirectResponse") {
                     //root = q.select("DirectResponse", root);
                     //success
                     var sv = q.selectValue("Success", root, true),
@@ -2811,7 +2715,10 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
                         if (o.json) {
                             o.jsonData = o.params;
-                            o.params = "";
+
+                            if ((o.method || this.method) !== "GET") {
+                                o.params = "";
+                            }
                         } else {
 							var ov,
                                 key;
@@ -3089,10 +2996,9 @@ Ext.net.DirectMethod = {
             for (key in options.params) {
                 obj = options.params[key];
                 
-                if(obj === undefined){
+                if (obj === undefined) {
                     delete options.params[key];
-                }
-                else if (obj && typeof obj === "object") {
+                } else if (obj && typeof obj === "object") {
                     options.params[key] = Ext.encode(obj);
                 }
             }
@@ -3191,6 +3097,18 @@ Ext.override(Ext.Button, {
     
     setTarget : function (target) {
         this.target = target;
+    },
+    
+    setNavigateUrl : function () {
+        if (this.navigateUrl) {
+            this.on("click", function () {
+                if (this.target) {
+                    window.open(this.navigateUrl, this.target);
+                } else {
+                    window.location = this.navigateUrl;
+                }
+            }, this);
+        }
     }
 });
 
@@ -3217,15 +3135,7 @@ Ext.Button.prototype.onRender = Ext.Button.prototype.onRender.createSequence(fun
         this.hideMenuArrow();
     }
     
-    if (this.navigateUrl) {
-        this.on("click", function () {
-            if (this.target) {
-                window.open(this.navigateUrl, this.target);
-            } else {
-                window.location = this.navigateUrl;
-            }
-        }, this);
-    }
+    this.setNavigateUrl();
 });
 
 // @source core/buttons/CycleButton.js
@@ -3380,6 +3290,8 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
             if (!Ext.isEmpty(this.cls, false)) {
                 this.el.dom.className = this.cls;
             }
+            
+            this.setNavigateUrl();
 
             Ext.BoxComponent.superclass.onRender.call(this, ct, position);
         }
@@ -3696,6 +3608,8 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
             this.disabled = false;
             this.el.dom.style.cursor = "pointer";
         }
+        
+        this.setNavigateUrl();
 
         Ext.ButtonToggleMgr.register(this);
     },
@@ -3721,17 +3635,17 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
             img.dom.style.display = (cls === "") ? "none" : "inline";
         }
     },
+
+    onDisable : function () {
+        Ext.net.LinkButton.superclass.onDisable.apply(this);
+        this.textEl.setAttribute("disabled", "1");
+        this.textEl.removeAttribute("href");
+    },
     
-    setDisabled : function (disabled) {
-        Ext.net.LinkButton.superclass.setDisabled.apply(this, arguments);
-        
-        if (disabled) {
-            this.textEl.setAttribute("disabled", "1");
-            this.textEl.removeAttribute("href");
-        } else {
-            this.textEl.removeAttribute("disabled");
-            this.textEl.setAttribute("href", "#");
-        }
+    onEnable : function () {
+        Ext.net.LinkButton.superclass.onEnable.apply(this);
+        this.textEl.removeAttribute("disabled");
+        this.textEl.setAttribute("href", "#");
     }
 });
 
@@ -3891,7 +3805,12 @@ Ext.form.Field.override({
         }
 
         if (this.disabled || (clientValid && (!this.rvConfig.remoteValidated || this.rvConfig.remoteValid))) {
-            this.clearInvalid();
+            if (this.rvConfig.lastValue === this.getValue() && this.rvConfig.remoteValid === false) {
+                this.markInvalid(this.rv_response.message || "Invalid");
+            }
+            else{
+                this.clearInvalid();
+            }
             return this.rvConfig.remoteValid;
         }
 
@@ -3907,11 +3826,10 @@ Ext.form.Field.override({
     },   
     
     performRemoteValidation : function (e) {        
-        if (this.rvConfig.lastValue === this.getValue()) {
+        if (this.rvConfig.lastValue === this.getValue() || !this.originalIsValid(true)) {
             this.rvTask.cancel();
-            this.rvConfig.remoteValid = true;
             return;
-        }        
+        }
         
         if (!e || !e.isNavKeyPress || (e && e.isNavKeyPress && !e.isNavKeyPress())) {
             if (e && e.normalizeKey) {
@@ -3921,14 +3839,15 @@ Ext.form.Field.override({
                     return;
                 }
             }
-
-			this.rvConfig.remoteValid = false;
-			this.rvConfig.remoteValidated = false;
+			
             this.rvTask.delay(this.rvConfig.validationBuffer);
         }
     },
     
     remoteValidate : function () {
+        this.rvConfig.remoteValid = false;
+	    this.rvConfig.remoteValidated = false;
+			
         var dc = Ext.apply({}, this.remoteValidationOptions),
 		    options = {params : {}};
 		
@@ -5399,7 +5318,7 @@ Ext.form.ComboBox.override({
 
     triggerBlur : function () {
         this.mimicing = false;
-        Ext.getDoc().un("mousewheel", this.mimicBlur, this);
+        //Ext.getDoc().un("mousewheel", this.mimicBlur, this);
         Ext.getDoc().un("mousedown", this.mimicBlur, this);
         
         if (this.monitorTab && this.el) {
@@ -5421,7 +5340,7 @@ Ext.form.ComboBox.override({
         if (!this.mimicing) {
             this.wrap.addClass(this.wrapFocusClass);
             this.mimicing = true;
-            Ext.getDoc().on("mousewheel", this.mimicBlur, this, { delay: 10 });
+            //Ext.getDoc().on("mousewheel", this.mimicBlur, this, { delay: 10 });
             Ext.getDoc().on("mousedown", this.mimicBlur, this, { delay: 10 });
 
             if (this.monitorTab) {
@@ -6947,6 +6866,7 @@ Ext.form.CompositeField.override({
 
 Ext.form.TextField.prototype.initComponent = Ext.form.TextField.prototype.initComponent.createSequence(function () {
     this.addEvents("iconclick");
+    this.setIconClass = this.setIconCls;
 });
 
 Ext.override(Ext.form.TextField, {
@@ -9714,9 +9634,11 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
  
         var f = function () {
             if (this.getUI().rendered) {
-                this.getUI().toggleCheck(Ext.isDefined(value) ? value : !this.attribute.checked);
+                this.getUI().toggleCheck(Ext.isDefined(value) ? value : !this.attributes.checked);
             } else {
-                this.attributes.checked = Ext.isDefined(value) ? value : !this.attribute.checked;
+                if (Ext.isDefined(this.attributes.checked)) {
+                    this.attributes.checked = Ext.isDefined(value) ? value : !this.attributes.checked;
+                }
             }
         };
         startNode.cascade(f);
@@ -10199,7 +10121,7 @@ Ext.Window.override({
     
     defaultRenderTo : "body",
     
-    showModal   : function () {
+    showModal : function () {
         this.initMask();
         this.modal = true;
         Ext.getBody().addClass("x-body-masked");
@@ -10324,7 +10246,11 @@ Ext.TabPanel.override({
             return;
         }
         
-        e.preventDefault();
+        if (!Ext.isIE9) {
+            e.preventDefault();
+        }
+
+        this.focus();
         
         var t = this.findTargets(e);
         
@@ -10335,7 +10261,11 @@ Ext.TabPanel.override({
         }
         
         if (t.item && t.item != this.activeTab) {
-            this.setActiveTab(t.item);
+            if (Ext.isIE9) {
+               this.setActiveTab.defer(100, this, [t.item]);
+            } else {
+                this.setActiveTab(t.item);
+            }
         }
     },
 
@@ -10900,14 +10830,6 @@ Ext.extend(Ext.net.XTemplate, Ext.XTemplate, {
 
 // @source core/utils/History.js
 
-//Ext.History.init = Ext.History.init.createInterceptor(function (onReady, scope) {
-//    if (this.listeners) {
-//        this.on(this.listeners);
-//        delete this.listeners;
-//    }
-//});
-
-
 // Unfortunatelly we need use whole Ext.History we need override private functions
 // when IE8 fix will be included to the ExtJS repository we can remove it
 Ext.History = (function () {
@@ -10916,10 +10838,16 @@ Ext.History = (function () {
         ready = false,
         currentToken;
 
-    var getHash = function () {
-        var href = top.location.href, i = href.indexOf("#");
-        return i >= 0 ? href.substr(i + 1) : null;
-    };
+    function getHash() {
+        var href = location.href, i = href.indexOf("#"),
+            hash = i >= 0 ? href.substr(i + 1) : null;
+             
+        if (Ext.isGecko) {
+            hash = decodeURIComponent(hash);
+        }
+
+        return hash;
+    }
 
     var doSave = function () {
         hiddenField.value = currentToken;
@@ -10931,7 +10859,7 @@ Ext.History = (function () {
     };
 
     var updateIFrame = function (token) {
-        var html = ['<html><body><div id="state">', token, "</div></body></html>"].join("");
+        var html = ['<html><body><div id="state">', Ext.util.Format.htmlEncode(token), "</div></body></html>"].join("");
         try {
             var doc = iframe.contentWindow.document;
             doc.open();
@@ -10985,7 +10913,7 @@ Ext.History = (function () {
     var startUp = function () {
         currentToken = hiddenField.value ? hiddenField.value : getHash();
 
-        if (Ext.isIE && !Ext.isIE8) {
+        if (Ext.isIE6 || Ext.isIE7 || !Ext.isStrict && Ext.isIE8) {
             checkIFrame();
         } else {
             var hash = getHash();
@@ -11032,7 +10960,7 @@ Ext.History = (function () {
             
             hiddenField = Ext.getDom(Ext.History.fieldId);
             
-            if (Ext.isIE && !Ext.isIE8) {
+            if (Ext.isIE6 || Ext.isIE7 || !Ext.isStrict && Ext.isIE8) {
                 iframe = Ext.getDom(Ext.History.iframeId);
             }
             
@@ -11053,7 +10981,7 @@ Ext.History = (function () {
                 }
             }
             
-            if (Ext.isIE && !Ext.isIE8) {
+            if (Ext.isIE6 || Ext.isIE7 || !Ext.isStrict && Ext.isIE8) {
                 return updateIFrame(token);
             } else {
                 top.location.hash = token;
@@ -11517,6 +11445,33 @@ Ext.extend(Ext.net.TaskManager, Ext.util.Observable, {
                 }
             }
         });
+    },
+    
+    destroy : function () {
+        var ns = this.ns || Ext.net.ResourceMgr.ns,
+            id = this.itemId || this.proxyId;        
+            
+        if (ns && id) {                
+            if (Ext.isObject(ns) && ns[id]) {
+                try {
+                    delete ns[id];
+                } catch (e) {
+                    ns[id] = undefined;
+                }
+            } else if (Ext.net.ResourceMgr.getCmp(ns + "." + id)) {
+                try {
+                    delete Ext.ns(ns)[id];
+                } catch (f) {
+                    Ext.ns(ns)[id] = undefined;
+                }
+            }
+        } else if (window[this.proxyId]) {
+            window[this.proxyId] = null;
+        }
+        
+        this.stopAll();
+        delete this.tasks;
+        delete this.runner;
     }
 });
 // @source core/utils/ClickRepeater.js
@@ -11784,6 +11739,35 @@ Ext.dd.DragSource.override({
     }
 });
 
+// in future, check that Window is dragable under Chrome, if true then remove the following code
+Ext.dd.DragDropMgr.getLocation = function(oDD) {
+	if (! this.isTypeOfDD(oDD)) {
+		return null;
+	}
+
+	var el = oDD.getEl(), pos, x1, x2, y1, y2, t, r, b, l;
+
+	try {
+		pos= Ext.lib.Dom.getXY(el);
+	} catch (e) { }
+
+	if (!pos) {
+		return null;
+	}
+
+	x1 = pos[0];
+	x2 = x1 + el.offsetWidth;
+	y1 = pos[1];
+	y2 = y1 + el.offsetHeight;
+
+	t = y1 - oDD.padding[0];
+	r = x2 + oDD.padding[1];
+	b = y2 + oDD.padding[2];
+	l = x1 - oDD.padding[3];
+
+	return new Ext.lib.Region( t, r, b, l );
+};
+
 // @source core/dd/ProxyDDCreator.js
 
 Ext.net.ProxyDDCreator = function (config) {
@@ -11874,6 +11858,34 @@ Ext.extend(Ext.net.ProxyDDCreator, Ext.util.Observable, {
 
 // @source core/dd/DragTracker.js
 
+Ext.dd.DragTracker.override({
+    onMouseMove : function (e, target) {
+        // HACK: IE hack to see if button was released outside of window. */
+        if (this.active && Ext.isIE && !e.browserEvent.button && !Ext.isIE9) {
+            e.preventDefault();
+            this.onMouseUp(e);
+
+            return;
+        }
+
+        e.preventDefault();
+        var xy = e.getXY(), s = this.startXY;
+        this.lastXY = xy;
+
+        if (!this.active) {
+            if (Math.abs(s[0]-xy[0]) > this.tolerance || Math.abs(s[1]-xy[1]) > this.tolerance) {
+                this.triggerStart(e);
+            } else {
+                return;
+            }
+        }
+
+        this.fireEvent('mousemove', this, e);
+        this.onDrag(e);
+        this.fireEvent('drag', this, e);
+    }
+});
+
 Ext.net.DragTracker = function (config) {
     Ext.net.DragTracker.superclass.constructor.call(this, config);    
 };
@@ -11937,6 +11949,7 @@ Ext.lib.Region.prototype.isIntersect = function (region) {
         buf.push(".ext-ie6 .x-form-field-wrap.x-form-field-trigger-wrap{padding-bottom:1px;}");
         buf.push(".ext-ie6 .x-form-element .x-form-field-wrap.x-form-field-trigger-wrap{padding-bottom:0px;}");
         buf.push(".x-layout-split{background-color:transparent;} .ext-strict .ext-ie6 .x-layout-split{background-color:transparent!important;filter:none;}");
+        buf.push(".ext-ie6 .x-form-group .x-form-group-header-text {margin-left:0px !important;left:5px;}");
     }
 
     if (Ext.isIE7) {
@@ -11949,12 +11962,6 @@ Ext.lib.Region.prototype.isIntersect = function (region) {
         buf.push(".ext-ie .x-form-check-wrap.x-item-disabled{filter:none;}");
         buf.push(".ext-ie .x-item-disabled.x-box-item{filter: none;}");
         buf.push(".ext-ie .x-fieldset LEGEND{margin-bottom:0px;}");
-    }
-
-    if (Ext.isWebKit) {
-        buf.push(".ext-webkit .x-tree-editor .x-form-text {padding-bottom:1;padding-top:1px;}");
-        buf.push(".ext-webkit .x-small-editor .x-form-field-trigger-wrap .x-form-trigger{height:21px;}");
-        buf.push(".ext-webkit .x-grid3-add-row .x-small-editor .x-form-field-trigger-wrap .x-form-trigger{height:19px;}");
     }
 
     buf.push(".ext-ie6 .x-form-field-trigger-wrap .x-form-text, .ext-ie7 .x-form-field-trigger-wrap .x-form-text{margin-bottom: -2px;}");
@@ -11989,7 +11996,7 @@ Ext.lib.Region.prototype.isIntersect = function (region) {
     buf.push(".x-fieldset{padding-top: 0px !important;}");       
     
     if (Ext.isIE9) {
-        buf.push(".ext-ie input.x-tree-node-cb, .ext-strict .ext-ie8 .ext-ie input.x-tree-node-cb, .ext-ie8 .x-form-check-wrap input {width:auto;height:auto;}");
+        buf.push(".ext-ie input.x-tree-node-cb, .ext-strict .ext-ie9 .ext-ie input.x-tree-node-cb, .ext-ie9 .x-form-check-wrap input {width:auto;height:auto;}");
     } 
 
     if (Ext.isIE7 && (document.documentMode === 7 || document.documentMode === 5)) {

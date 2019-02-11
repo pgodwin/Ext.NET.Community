@@ -186,7 +186,7 @@
             Height="350"
             AutoExpandColumn="Company">
             <Store>
-                <ext:Store runat="server">
+                <ext:Store ID="Store1" runat="server">
                     <Reader>
                         <ext:ArrayReader>
                             <Fields>

@@ -134,7 +134,7 @@
                     Icon="User"
                     DefaultAnchor="100%">
                     <Items>
-                        <ext:TextField runat="server" FieldLabel="Employee ID" DataIndex="EmployeeID" />
+                        <ext:DisplayField runat="server" FieldLabel="Employee ID" DataIndex="EmployeeID" />
                         <ext:TextField runat="server" FieldLabel="First Name" DataIndex="FirstName" />
                         <ext:TextField runat="server" FieldLabel="Last Name" DataIndex="LastName" />
                         <ext:TextField runat="server" FieldLabel="Title" DataIndex="Title" />

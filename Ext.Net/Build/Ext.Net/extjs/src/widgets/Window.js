@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.4.0
+ * Copyright(c) 2006-2011 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Window
@@ -34,8 +34,8 @@ Ext.Window = Ext.extend(Ext.Panel, {
      */
     /**
      * @cfg {Boolean} modal
-* True to make the window modal and mask everything behind it when displayed, false to display it without
-* restricting access to other UI elements (defaults to false).
+     * True to make the window modal and mask everything behind it when displayed, false to display it without
+     * restricting access to other UI elements (defaults to false).
      */
     /**
      * @cfg {String/Element} animateTarget
@@ -357,6 +357,9 @@ Ext.Window = Ext.extend(Ext.Panel, {
 
    // private
     onEsc : function(k, e){
+        if (this.activeGhost) {
+            this.unghost();
+        }
         e.stopEvent();
         this[this.closeAction]();
     },
@@ -697,7 +700,7 @@ Ext.Window = Ext.extend(Ext.Panel, {
                 var s = this.getSize();
                 offsets = {
                     right:-(s.width - 100),
-                    bottom:-(s.height - 25)
+                    bottom:-(s.height - 25 + this.el.getConstrainOffset())
                 };
             }
 

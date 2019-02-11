@@ -1,6 +1,6 @@
 Ext.NET Pro For ASP.NET Software License Agreement
 
-Version 1.0
+Version 1.2.0
 
 THIS DOCUMENT IS A LEGAL AGREEMENT (the "License Agreement") BETWEEN EXT.NET, INC. ("We," "Us") AND
 YOU OR THE ORGANIZATION ON WHOSE BEHALF YOU ARE UNDERTAKING THE LICENSE DESCRIBED BELOW ("You") IN
@@ -139,10 +139,6 @@ sole responsibility, not on our behalf. You agree to indemnify, defend, and hold
 and against any liability incurred by, or claims asserted against, Us by reason of Your accepting
 any such support, warranty, indemnity or additional liability.
 
-You agree to be identified as a customer of ours and You agree that We may refer to You by name,
-trade name and trademark, if applicable, and may briefly describe Your business in our marketing
-materials and web site.
-
 You may not assign this License Agreement without Our prior written consent. This License Agreement
 will inure to the benefit of Our successors and assigns.
 
@@ -168,9 +164,7 @@ documentation," pursuant to SFAR Section 227.7202 and FAR Section 12.212. Any us
 related documentation by the U.S. government will be governed solely by the terms of this License
 Agreement.
 
-                     Copyright 2010 Ext.NET, Inc., All rights reserved.
                   
                                      Ext.NET, Inc.
-                                   +1(888)775-5888
-                                  licensing@ext.net
+								   support@ext.net
                                      www.ext.net

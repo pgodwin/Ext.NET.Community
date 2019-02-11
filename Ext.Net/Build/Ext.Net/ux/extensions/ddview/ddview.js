@@ -437,8 +437,8 @@ Ext.extend(Ext.ux.DDView, Ext.DataView, {
             return false;
         }
 
-        //for (var i = 0; i < data.records.length; i++) {
-        for (var i = data.records.length-1; i >-1 ; i--) {
+        for (var i = 0; i < data.records.length; i++) {
+        //for (var i = data.records.length-1; i >-1 ; i--) {
             var r = data.records[i];
             var dup = this.store.getById(r.id);
 

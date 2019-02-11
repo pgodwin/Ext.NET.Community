@@ -1,14 +1,6 @@
 
 // @source core/utils/History.js
 
-//Ext.History.init = Ext.History.init.createInterceptor(function (onReady, scope) {
-//    if (this.listeners) {
-//        this.on(this.listeners);
-//        delete this.listeners;
-//    }
-//});
-
-
 // Unfortunatelly we need use whole Ext.History we need override private functions
 // when IE8 fix will be included to the ExtJS repository we can remove it
 Ext.History = (function () {
@@ -17,10 +9,16 @@ Ext.History = (function () {
         ready = false,
         currentToken;
 
-    var getHash = function () {
-        var href = top.location.href, i = href.indexOf("#");
-        return i >= 0 ? href.substr(i + 1) : null;
-    };
+    function getHash() {
+        var href = location.href, i = href.indexOf("#"),
+            hash = i >= 0 ? href.substr(i + 1) : null;
+             
+        if (Ext.isGecko) {
+            hash = decodeURIComponent(hash);
+        }
+
+        return hash;
+    }
 
     var doSave = function () {
         hiddenField.value = currentToken;
@@ -32,7 +30,7 @@ Ext.History = (function () {
     };
 
     var updateIFrame = function (token) {
-        var html = ['<html><body><div id="state">', token, "</div></body></html>"].join("");
+        var html = ['<html><body><div id="state">', Ext.util.Format.htmlEncode(token), "</div></body></html>"].join("");
         try {
             var doc = iframe.contentWindow.document;
             doc.open();
@@ -86,7 +84,7 @@ Ext.History = (function () {
     var startUp = function () {
         currentToken = hiddenField.value ? hiddenField.value : getHash();
 
-        if (Ext.isIE && !Ext.isIE8) {
+        if (Ext.isIE6 || Ext.isIE7 || !Ext.isStrict && Ext.isIE8) {
             checkIFrame();
         } else {
             var hash = getHash();
@@ -146,7 +144,7 @@ Ext.History = (function () {
             
             hiddenField = Ext.getDom(Ext.History.fieldId);
             
-            if (Ext.isIE && !Ext.isIE8) {
+            if (Ext.isIE6 || Ext.isIE7 || !Ext.isStrict && Ext.isIE8) {
                 iframe = Ext.getDom(Ext.History.iframeId);
             }
             
@@ -181,7 +179,7 @@ tabPanel.on('tabchange', function (tabPanel, tab) {
                 }
             }
             
-            if (Ext.isIE && !Ext.isIE8) {
+            if (Ext.isIE6 || Ext.isIE7 || !Ext.isStrict && Ext.isIE8) {
                 return updateIFrame(token);
             } else {
                 top.location.hash = token;

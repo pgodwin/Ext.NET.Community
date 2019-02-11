@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -53,7 +53,6 @@ namespace Ext.Net
             get
             {
                 return ((ResourceManager)this.Control).HideInDesign;
-
             }
             set
             {
@@ -277,7 +276,7 @@ namespace Ext.Net
 
             this.AddPropertyItem(new DesignerActionPropertyItem("CleanResourceUrl", "CleanResourceUrl", "500", "Specifies whether the Ext.Net ResourceManager will output 'clean' Url's when linking to Embedded Resources"));
             this.AddPropertyItem(new DesignerActionPropertyItem("QuickTips", "QuickTips", "500", "Enable QuickTips"));
-            this.AddPropertyItem(new DesignerActionPropertyItem("RemoveViewState", "RemoveViewState", "500", "Remove ViewState from the page rendering"));
+            this.AddPropertyItem(new DesignerActionPropertyItem("DisableViewState", "DisableViewState", "500", "Disable ViewState from the page rendering"));
             //this.AddPropertyItem(new DesignerActionPropertyItem("SourceFormatting", "SourceFormatting", "500", "Specifies whether the scripts rendered to the page should be formatted"));
 
             this.AddPropertyItem(new DesignerActionPropertyItem("ScriptMode", "ScriptMode", "500", "Specifies whether the Scripts should be rendered in Release or Debug mode"));

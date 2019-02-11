@@ -1,8 +1,8 @@
 /*
- * @version   : 1.0.0 - Professional Edition (Ext.Net Professional License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-06-15
- * @copyright : Copyright (c) 2006-2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : See license.txt and http://www.ext.net/license/. 
  * @website   : http://www.ext.net/
  */
@@ -26,6 +26,10 @@ Ext.data.HttpProxy.prototype.doRequest = function (action, rs, params, reader, c
 
     if (this.conn.json) {
         o.jsonData = params;
+
+        if ((o.method || this.conn.method) === "GET") {
+           o.params = params || {};
+        }
     } else if (params.jsonData) {
         o.jsonData = params.jsonData;
     } else if (params.xmlData) {
@@ -147,10 +151,9 @@ Ext.extend(Ext.net.HttpWriteProxy, Ext.data.HttpProxy, {
             return;
         }
         
-        if(result.success){
+        if (result.success) {
             this.fireEvent("save", this, o, o.request.arg);
-        }
-        else{
+        } else {
             this.fireEvent("saveexception", this, o, response, { message : result.msg });
         }
         
@@ -949,7 +952,8 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                                 i2 = 0;
 
                             for (i2; i2 < d.length; i2++) {
-                                if (this.metaId() && d[i2].id === r[i].oldId) {
+                                //do not replace == by ===
+                                if (this.metaId() && d[i2].id == r[i].oldId) {
                                     this.deleted.splice(i2, 1);
                                     failCount--;
                                     break;
@@ -1464,7 +1468,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             var index = this.data.keys.indexOf(record._phid);
             this.data.keys.splice(index, 1, record.id);
             
-            if(this.allData){
+            if (this.allData) {
                 delete this.allData.map[record._phid];
                 this.allData.map[record.id] = record;
                 index = this.allData.keys.indexOf(record._phid);
@@ -3205,7 +3209,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                         },
                         complete   : this.onEditComplete,
                         canceledit : this.stopEditing.createDelegate(this, [true])
-                    });                    
+                    });
                 }
 
                 Ext.apply(ed, {
@@ -4526,16 +4530,27 @@ Ext.grid.ColumnModel.override({
 
     isFixed : function (colIndex) {
         return colIndex >= 0 && this.config[colIndex].fixed;
-    },
-    
-    setState : function (col, state) {
-        state = Ext.applyIf(state, this.defaults);
-        Ext.apply(this.lookup[col], state);
     }
 });
 
 Ext.grid.Column.override({
-    forbidIdScoping : true
+    forbidIdScoping : true,
+
+    getCellEditor: function(rowIndex){
+        var ed = this.getEditor(rowIndex);
+        if(ed){
+            if(!ed.startEdit){
+                if(!ed.gridEditor){
+                    ed.gridEditor = new Ext.grid.GridEditor(ed);
+                }
+                ed = ed.gridEditor;
+            }
+            else if(ed.field){
+                ed.field.gridEditor = ed;
+            }
+        }
+        return ed;
+    }
 });
 
 // @source data/GridView.js
@@ -4973,7 +4988,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
                         }
 
                         if (!Ext.isEmpty(button.command, false)) {
-                            button.on("click", function () {
+                            button.on("click", function (e) {
                                 this.toolbar.grid.fireEvent("groupcommand", this.command, this.toolbar.groupId, this.column.getRecords.apply(this.column, [this.toolbar._groupId]));
                             }, button);
                         }
@@ -5046,6 +5061,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
     getRecords : function (groupId) {
         if (groupId) {
+            groupId = Ext.util.Format.htmlEncode(groupId);
             var records = this.grid.store.queryBy(function (r) {
                     return r._groupId === groupId;
                 });
@@ -5564,6 +5580,7 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
 
     getRecords : function (groupId) {
         if (groupId) {
+            groupId = Ext.util.Format.htmlEncode(groupId);
             var records = this.grid.store.queryBy(function (record) {
                     return record._groupId === groupId;
                 });

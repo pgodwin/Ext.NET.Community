@@ -23,15 +23,6 @@ namespace Ext.Net.Examples
           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
            })();
-
-            /* !!! remove after adding IE9 support to the ExtJS */
-          if(Ext){
-             var ieVer = /msie (\d+)/i.exec(navigator.userAgent);
-             ieVer = ieVer ? parseInt(ieVer[1], 10) : 0;
-             Ext.isIE6 = Ext.isIE && ieVer <= 6;
-             Ext.isIE7 = Ext.isIE && ieVer == 7;
-             Ext.isIE8 = Ext.isIE && ieVer >= 8;
-          }         
         </script>";
 
         public AnalyticsFilter(Stream stream)

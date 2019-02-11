@@ -50,7 +50,7 @@
         
         var startDrag = function () {
             Ext.select(".dropable").addClass("x-drop-marker");
-            Ext.select(".draggable").hide();
+            Ext.select(".draggable:not(.x-panel-ghost)").hide();
         };
         
         var endDrag = function () {

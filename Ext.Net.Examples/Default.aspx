@@ -89,7 +89,7 @@
                 Header="false"
                 Region="North"
                 Border="false"
-                Html="<div id='header' style='height:32px;'><a style='float:right;margin-right:10px;' href='http://www.ext.net/' target='_blank'><img style='margin-top: 4px;' src='resources/images/ext_net_badge.gif'/></a><div class='api-title'>Ext.NET Examples Explorer (Version 1.0 RC2)</div></div>"
+                Html="<div id='header' style='height:32px;'><a style='float:right;margin-right:10px;' href='http://www.ext.net/' target='_blank'><img style='margin-top: 4px;' src='resources/images/ext_net_badge.gif'/></a><div class='api-title'>Ext.NET Examples Explorer (Version 1.2)</div></div>"
                 />
             <ext:Panel 
                 runat="server"
@@ -121,7 +121,7 @@
                                         runat="server" 
                                         EnableKeyEvents="true" 
                                         Width="150"
-                                        EmptyText="Filter...">
+                                        EmptyText="Filter Examples...">
                                         <Triggers>
                                             <ext:FieldTrigger Icon="Clear" HideTrigger="true" />
                                         </Triggers>
@@ -296,7 +296,6 @@
     <exm:CommentWindow runat="server" />
     
 	<script type="text/javascript">
-
 	  var _gaq = _gaq || [];
 	  _gaq.push(['_setAccount', 'UA-19135912-3']);
 	  _gaq.push(['_setDomainName', '.ext.net']);
@@ -308,7 +307,6 @@
 		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();
-
 	</script>	
 </body>
 </html>

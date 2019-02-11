@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -272,22 +272,6 @@ namespace Ext.Net
 		/// 
 		/// </summary>
 		[Description("")]
-        public string BodyStyle
-        {
-            get
-            {
-                return ((PanelBase)this.Control).BodyStyle;
-            }
-            set
-            {
-                this.GetPropertyByName("BodyStyle").SetValue(this.Control, value);
-            }
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
         public Icon Icon
         {
             get
@@ -297,39 +281,6 @@ namespace Ext.Net
             set
             {
                 this.GetPropertyByName("Icon").SetValue(this.Control, value);
-            }
-        }
-
-        private string padding = "padding: 6px;";
-        private bool paddingAdded = false;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public void AddPadding()
-        {
-            string style = ((PanelBase)this.Control).BodyStyle;
-
-            if (!this.paddingAdded || style.IsEmpty())
-            {
-                this.paddingAdded = true;
-                this.GetPropertyByName("BodyStyle").SetValue(this.Control, style + padding);
-            }
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public void RemovePadding()
-        {
-            string style = ((PanelBase)this.Control).BodyStyle;
-
-            if (this.paddingAdded || style.Contains(padding))
-            {
-                this.paddingAdded = false;
-                this.GetPropertyByName("BodyStyle").SetValue(this.Control, style.Replace(padding, ""));
             }
         }
 
@@ -346,22 +297,7 @@ namespace Ext.Net
             this.AddPropertyItem(new DesignerActionPropertyItem("Width", "Width", "500", "Change the Width of the control"));
             this.AddPropertyItem(new DesignerActionPropertyItem("Height", "Height", "500", "Change the Height of the control"));
             this.AddPropertyItem(new DesignerActionPropertyItem("Icon", "Icon", "500", "Set an icon to use in the Title bar"));
-            this.AddPropertyItem(new DesignerActionPropertyItem("BodyStyle", "BodyStyle", "500", "Custom CSS styles to be applied to the body element"));
             
-            DesignerActionMethodItem add = new DesignerActionMethodItem(this, "AddPadding", "Add Body Padding", "500", "Add 6px of padding to the Body");
-            DesignerActionMethodItem remove = new DesignerActionMethodItem(this, "RemovePadding", "Remove Body Padding", "500", "Remove the 6px of padding from the Body");
-
-            if (!this.paddingAdded && !((PanelBase)this.Control).BodyStyle.Contains(this.padding))
-            {
-                this.AddMethodItem(add);
-                this.RemoveMethodItem(remove);
-            }
-            else
-            {
-                this.AddMethodItem(remove);
-                this.RemoveMethodItem(add);
-            }
-
             this.AddPropertyItem(new DesignerActionPropertyItem("Hidden", "Show on Page Load", "600", "Automatically show the window on Page Load"));
             this.AddPropertyItem(new DesignerActionPropertyItem("InitCenter", "Center on Page Load", "600", "Center this Window in the viewport on Page Load"));
 

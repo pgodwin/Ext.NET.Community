@@ -1,26 +1,34 @@
-﻿Product      : Ext.NET Community
-Version      : 1.0.0 RC2
-Last Updated : 2011-05-31
-
+﻿Product      : Ext.NET Pro
+Version      : 1.2.0
+Last Updated : 2011-09-12
 
 --------------------------------------------------------------------------
    CONTENTS
 --------------------------------------------------------------------------
 
-I.    ADD TO VISUAL STUDIO TOOLBOX INSTRUCTIONS
-II.   Version 1.0.0 BREAKING CHANGES
+I.    Version 1.2.0 CHANGELOG
+II.   ADD TO VISUAL STUDIO (or VISUAL WEB DEVELOPER) PROJECT INSTRUCTIONS
 III.  SAMPLE WEB.CONFIG
 IV.   <extnet> WEB.CONFIG GLOBAL CONFIGURATION PROPERTIES
 V.    CREDITS
 
 
--------------------------------------------------------------------------
-   I. ADD TO VISUAL STUDIO TOOLBOX INSTRUCTIONS
+--------------------------------------------------------------------------
+   I. Version 1.2.0 CHANGELOG
 --------------------------------------------------------------------------
 
-The following steps are required to manually install the controls into 
-your Visual Studio or Visual Web Developer Express Toolbox. 
-		
+See CHANGELOG.txt
+
+
+--------------------------------------------------------------------------
+   II. ADD TO VISUAL STUDIO (or VISUAL WEB DEVELOPER) PROJECT INSTRUCTIONS
+--------------------------------------------------------------------------
+
+The following steps are required to manually install the controls into your 
+Visual Studio (2008 or 2010) or Visual Web Developer (2008 or 210) Express Toolbox. 
+	
+	ADD TO VISUAL STUDIO TOOLBOX
+	----------------------------	
 	1.  Open Visual Studio or Visual Web Developer Express.
 
 	2.  Open an existing web site or create a new web site project.
@@ -42,7 +50,11 @@ your Visual Studio or Visual Web Developer Express Toolbox.
 	    button.
 
 	8.  Navigate to and select the Ext.Net.dll file, choose open, then 
-	    select the Ext.NET.dll from download .zip package. 
+	    select the "Ext.NET.dll" from the extracted download .zip package.
+		
+		Ext.NET can always be downloaded from the following location, see
+		
+		http://www.ext.net/download/ 
 			
 	9.  The component items should now be added to the list and 
 	    pre-checked. You can confirm by sorting the list by "Namespace" 
@@ -50,15 +62,34 @@ your Visual Studio or Visual Web Developer Express Toolbox.
 
 	10. Click "OK". The icons should be added to your ToolBox. You should 
 	    now be able to drag/drop a Ext.NET component onto your WebForm.
+
+		When a Component is drag/dropped into your .aspx, Visual Studio
+		will automatically add the proper project Assembly References. 
+
+		A project Assembly Reference can be manually added with the 
+		following steps:
+
+		10.1  In Visual Studio, open your project, then open the 
+		      "Solution Explorer" panel. 
+			  
+			  Or, from the main Visual Studio menu, select "Project",
+			  then "Add Reference...".
+			  
+		10.2  Right-click on your project, select "Add Reference...".
+ 
+
+		10.3  Under the "Browse" Tab, navigate and find the "Ext.Net.dll" 
+			  from the extracted download .zip package. 
+
+		10.4  Click "OK" button. Project Reference has now been added. 
 	
-	11. Enjoy.
 
+	ADD REQUIRED WEB.CONFIG NODES
+	-----------------------------
+	1.  Open your projects Web.config file. 
 
---------------------------------------------------------------------------
-   II. Version 1.0.0 BREAKING CHANGES
---------------------------------------------------------------------------
-
-See CHANGELOG.txt
+	2.  Add required Ext.NET related node as provided in item III.
+		"SAMPLE WEB.CONFIG" below.
 
 
 --------------------------------------------------------------------------
@@ -123,11 +154,11 @@ directEventUrl : string
 directMethodNamespace : string
 	Specifies a custom namespace prefix to use for the DirectMethods. Example "CompanyX".
 	
-	Example with default value:
+	Example (default):
 	
 		Ext.net.DirectMethods.doSomething();
 	
-	Example with a custom value:
+	Example:
 	
 		CompanyX.doSomething();
 
@@ -176,7 +207,7 @@ scriptAdapter : ScriptAdapter
 	Gets or Sets the current script Adapter.     
 	Default is "Ext". Options include [Ext|jQuery|Prototype|YUI]
 
-removeViewState : boolean
+disableViewState : boolean
 	True to completely remove the __VIEWSTATE field from the client. 
 	If true, the VIEWSTATE is not sent to, nor returned from the client. 
 	Default is "false". Options include [true|false]
@@ -239,7 +270,7 @@ quickTips : boolean
                                
 --------------------------------------------------------------------------
 	
-          Copyright 2011 Ext.NET, Inc., All rights reserved.
+      Copyright (c) 2006-2011, Ext.NET, Inc. All rights reserved.
 
                            Ext.NET, Inc.
                          support@ext.net

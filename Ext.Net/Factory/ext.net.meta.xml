@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Ext.Net xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Classes>
-    <Class Name="_Highlight" Extends="FxAction">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
     <Class Name="AbsoluteLayout" Extends="AnchorLayout">
       <Summary><![CDATA[This layout adds the ability for x/y positioning using the standard x and y component config options.]]></Summary>
       <Attributes>
@@ -228,11 +223,6 @@
           </Attributes>
         </ConfigOption>
       </ConfigOptions>
-      <Methods />
-    </Class>
-    <Class Name="ActionMethodArgumentAttribute" Extends="Attribute">
-      <Attributes />
-      <ConfigOptions />
       <Methods />
     </Class>
     <Class Name="AfterDirectEventArgs" Extends="EventArgs">
@@ -4555,6 +4545,7 @@
         <ConfigOption Name="InputValue" Type="string" DefaultValue="&quot;&quot;">
           <Summary><![CDATA[The value that should go into the generated input element's value attribute (defaults to undefined, with no value attribute)]]></Summary>
           <Attributes>
+            <Attribute Type="Meta" />
             <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;6. Checkbox&quot;" />
             <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
@@ -17321,11 +17312,6 @@
       </ConfigOptions>
       <Methods />
     </Class>
-    <Class Name="FxAction" Abstract="true" Extends="ListenerMethod">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
     <Class Name="FxConfig" Extends="ElementFxConfig">
       <Attributes>
         <Attribute Type="Description" />
@@ -24212,16 +24198,6 @@
       <ConfigOptions />
       <Methods />
     </Class>
-    <Class Name="ListenerAction" Abstract="true" Extends="StateManagedItem">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="ListenerActionCollection" Extends="StateManagedCollection&lt;ListenerAction&gt;">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
     <Class Name="ListenerArgumentAttribute" Extends="System">
       <Attributes>
         <Attribute Type="AttributeUsage" RawValue="AttributeTargets.Property, AllowMultiple = true, Inherited = true" />
@@ -24248,16 +24224,6 @@
       <Attributes>
         <Attribute Type="Description" />
       </Attributes>
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="ListenerMethod" Abstract="true" Extends="ListenerAction">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="ListenerProperty" Abstract="true" Extends="ListenerAction">
-      <Attributes />
       <ConfigOptions />
       <Methods />
     </Class>
@@ -26008,22 +25974,22 @@
       <ConfigOptions />
       <Methods />
     </Class>
+    <Class Name="MessageBox">
+      <Attributes />
+      <ConfigOptions />
+      <Methods />
+    </Class>
+    <Class Name="MessageBox">
+      <Attributes />
+      <ConfigOptions />
+      <Methods />
+    </Class>
+    <Class Name="MessageBox">
+      <Attributes />
+      <ConfigOptions />
+      <Methods />
+    </Class>
     <Class Name="MessageBox" Extends="ScriptClass">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="MessageBox">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="MessageBox">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="MessageBox">
       <Attributes />
       <ConfigOptions />
       <Methods />
@@ -38319,13 +38285,6 @@
         <Attribute Type="Description" RawValue="Multiline text field. Can be used as a direct replacement for traditional textarea &lt;asp:TextBox TextMode='MultiLine'&gt; fields, plus adds support for auto-sizing." />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="AutoCreateProxy" Modifier="Override" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
-          <Attributes>
-            <Attribute Type="ConfigOption" RawValue="&quot;autoCreate&quot;, JsonMode.Raw" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
-            <Attribute Type="Description" />
-          </Attributes>
-        </ConfigOption>
         <ConfigOption Name="GrowMax" Modifier="Override" Type="Unit" DefaultValue="typeof(Unit), &quot;1000&quot;">
           <Summary><![CDATA[The maximum width to allow when grow = true (defaults to 800).]]></Summary>
           <Attributes>
@@ -38464,21 +38423,6 @@
             <Attribute Type="Category" RawValue="&quot;6. TextField&quot;" />
             <Attribute Type="Localizable" RawValue="true" />
             <Attribute Type="Description" RawValue="The Text value to initialize this field with." />
-          </Attributes>
-        </ConfigOption>
-        <ConfigOption Name="AutoCreate" Modifier="Override" Type="string" DefaultValue="&quot;&quot;">
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" RawValue="JsonMode.Ignore" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
-            <Attribute Type="Description" />
-          </Attributes>
-        </ConfigOption>
-        <ConfigOption Name="AutoCreateProxy" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
-          <Attributes>
-            <Attribute Type="ConfigOption" RawValue="&quot;autoCreate&quot;, JsonMode.Raw" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
-            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="AllowBlank" Type="bool" DefaultValue="true">
@@ -43499,11 +43443,6 @@
       </ConfigOptions>
       <Methods />
     </Class>
-    <Class Name="WindowAction" Abstract="true" Extends="ListenerMethod">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
     <Class Name="WindowBase" Abstract="true" Extends="PanelBase">
       <Attributes>
         <Attribute Type="Meta" />
@@ -44054,16 +43993,6 @@
         </Method>
       </Methods>
     </Class>
-    <Class Name="WindowClose" Extends="WindowAction">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="WindowCollapse" Extends="WindowAction">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
     <Class Name="WindowDirectEvents" Extends="PanelDirectEvents">
       <Attributes>
         <Attribute Type="Description" />
@@ -44103,16 +44032,6 @@
           </Attributes>
         </ConfigOption>
       </ConfigOptions>
-      <Methods />
-    </Class>
-    <Class Name="WindowExpand" Extends="WindowCollapse">
-      <Attributes />
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="WindowHide" Extends="WindowShow">
-      <Attributes />
-      <ConfigOptions />
       <Methods />
     </Class>
     <Class Name="WindowListeners" Extends="PanelListeners">
@@ -44160,11 +44079,6 @@
       <Attributes>
         <Attribute Type="Description" />
       </Attributes>
-      <ConfigOptions />
-      <Methods />
-    </Class>
-    <Class Name="WindowShow" Extends="WindowAction">
-      <Attributes />
       <ConfigOptions />
       <Methods />
     </Class>

@@ -143,8 +143,8 @@
             </Triggers>
             <Listeners>
                 <BeforeQuery Handler="this.triggers[0][ this.getRawValue().toString().length == 0 ? 'hide' : 'show']();" />
-                <TriggerClick Handler="if (index == 0) { el.focus().clearValue(); trigger.hide();}" />
-                <Select Handler="el.triggers[0].show();" />
+                <TriggerClick Handler="if (index == 0) { this.focus().clearValue(); trigger.hide();}" />
+                <Select Handler="this.triggers[0].show();" />
             </Listeners>
         </ext:ComboBox>           
     </form>

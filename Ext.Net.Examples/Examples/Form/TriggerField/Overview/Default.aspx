@@ -103,7 +103,7 @@
                 <ext:FieldTrigger Icon="Combo" HideTrigger="true" />
             </Triggers>
             <Listeners>
-                <TriggerClick Handler="Ext.Msg.alert('Message', 'TriggerIndex: ' + index + '<br /><br />Text: ' + el.getValue());" />
+                <TriggerClick Handler="Ext.Msg.alert('Message', 'TriggerIndex: ' + index + '<br /><br />Text: ' + this.getValue());" />
             </Listeners>
         </ext:TriggerField> 
         

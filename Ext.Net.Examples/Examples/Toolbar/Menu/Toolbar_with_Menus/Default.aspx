@@ -101,22 +101,20 @@
                                         <ext:MenuItem runat="server" Text="Choose a Date" Icon="Calendar">
                                             <Menu>
                                                 <ext:DateMenu runat="server">
-                                                    <Picker runat="server">
-                                                        <Listeners>
-                                                            <Select Handler="msg('Date Selected', 'You chose {0}.', date.format('M j, Y'));" />
-                                                        </Listeners>
-                                                    </Picker>
+                                                    <Picker runat="server" />
+                                                    <Listeners>
+                                                        <Select Handler="msg('Date Selected', 'You chose {0}.', date.format('M j, Y'));" />
+                                                    </Listeners>
                                                 </ext:DateMenu>
                                             </Menu>
                                         </ext:MenuItem>
                                         <ext:MenuItem runat="server" Text="Choose a Color" Icon="ColorSwatch">
                                             <Menu>
                                                 <ext:ColorMenu runat="server">
-                                                    <Palette runat="server">
-                                                        <Listeners>
-                                                            <Select Handler="msg('Color Selected', 'You chose {0}.', color);" />
-                                                        </Listeners>
-                                                    </Palette>
+                                                    <Palette runat="server" />
+                                                    <Listeners>
+                                                        <Select Handler="msg('Color Selected', 'You chose {0}.', color);" />
+                                                    </Listeners>
                                                 </ext:ColorMenu>
                                             </Menu>
                                         </ext:MenuItem>

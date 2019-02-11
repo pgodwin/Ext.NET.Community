@@ -168,7 +168,7 @@
                                 <ext:FieldTrigger Icon="SimpleTick" Tag="complete" />
                             </Triggers>
                             <Listeners>
-                                <TriggerClick Handler="triggerClick(el, trigger, tag, true, 0);" />
+                                <TriggerClick Handler="triggerClick(this, trigger, tag, true, 0);" />
                             </Listeners>
                         </ext:TriggerField>
                     </Editor>
@@ -192,7 +192,7 @@
                                 <ext:FieldTrigger Icon="SimpleTick" Tag="complete" />
                             </Triggers>
                             <Listeners>
-                                <TriggerClick Handler="triggerClick(el, trigger, tag, false, 1);" />
+                                <TriggerClick Handler="triggerClick(this, trigger, tag, false, 1);" />
                             </Listeners>
                         </ext:ComboBox>
                     </Editor>

@@ -343,7 +343,7 @@ Ext.form.ComboBox.override({
 
     triggerBlur : function () {
         this.mimicing = false;
-        Ext.getDoc().un("mousewheel", this.mimicBlur, this);
+        //Ext.getDoc().un("mousewheel", this.mimicBlur, this);
         Ext.getDoc().un("mousedown", this.mimicBlur, this);
         
         if (this.monitorTab && this.el) {
@@ -365,7 +365,7 @@ Ext.form.ComboBox.override({
         if (!this.mimicing) {
             this.wrap.addClass(this.wrapFocusClass);
             this.mimicing = true;
-            Ext.getDoc().on("mousewheel", this.mimicBlur, this, { delay: 10 });
+            //Ext.getDoc().on("mousewheel", this.mimicBlur, this, { delay: 10 });
             Ext.getDoc().on("mousedown", this.mimicBlur, this, { delay: 10 });
 
             if (this.monitorTab) {

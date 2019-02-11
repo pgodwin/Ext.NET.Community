@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -291,13 +291,6 @@ namespace Ext.Net
                 this.BoxMinWidth = value;
             }
         }
-
-        // <new date="2010-02-18" owner="geoff" key="BoxComponent">
-        // Added new RegionMaxHeight, RegionMinHeight, RegionMaxWidth and RegionMinWidth properties to BoxComponentBase.cs. 
-        // These properties will render as .maxHeight, minHeight, maxWidth and .minWidth in the components client configuration. 
-        // These properties will only be applied when this BoxComponent is rendered within a BorderLayout Region.
-        // See also .BoxMaxHeight property. 
-        // </new>
 
         /// <summary>
         /// The maximum value in pixels which this BoxComponent will set its height to in a BorderLayout Region. Warning: This will property will only be applied when this BoxComponent is rendered within a BorderLayout Region. 

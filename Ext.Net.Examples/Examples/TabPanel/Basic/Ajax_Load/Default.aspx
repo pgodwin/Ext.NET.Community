@@ -60,7 +60,7 @@
                         Padding="6" 
                         AutoScroll="true">
                         <Listeners>
-                            <Activate Handler="Ext.Msg.alert('Event', el.title + ' was activated.');" />
+                            <Activate Handler="Ext.Msg.alert('Event', this.title + ' was activated.');" />
                         </Listeners>
                     </ext:Panel>
                     <ext:Panel 

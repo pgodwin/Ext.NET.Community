@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -32,6 +32,8 @@ using System.Configuration;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.Design;
+
+using Ext.Net.Utilities;
 
 namespace Ext.Net
 {
@@ -61,34 +63,8 @@ namespace Ext.Net
         }
 
         private DesignMode ReadDesignMode()
-        {
-            if (this.Component.Site == null)
-            {
-                return DesignMode.Enabled;
-            }
-
-            try
-            {
-                IWebApplication app = (IWebApplication)this.Component.Site.GetService(typeof(IWebApplication));
-
-                if (app == null)
-                {
-                    return DesignMode.Enabled;
-                }
-
-                Configuration configFile = app.OpenWebConfiguration(true);
-                GlobalConfig config = configFile.GetSection("extnet") as GlobalConfig;
-
-                if (config != null)
-                {
-                    return config.DesignMode;
-                }
-            }
-            catch (Exception)
-            {
-            }
-
-            return DesignMode.Enabled;
+        {            
+            return DesignMode.ActionsOnly;
         }
 
         private static DesignMode? designMode;
@@ -101,7 +77,7 @@ namespace Ext.Net
         {
             get
             {
-                return DesignMode.Disabled;
+                return DesignMode.ActionsOnly;
             }
         }
 
@@ -139,7 +115,21 @@ namespace Ext.Net
         {
             get
             {
-                return base.CreatePlaceHolderDesignTimeHtml(this.Message);    
+                bool hide = false;
+                try
+                {
+                    if (this.Control is ResourceManager)
+                    {
+                        hide = (this.Control as ResourceManager).HideInDesign;
+                    }
+                    else
+                    {
+                        hide = this.Control.ResourceManager.HideInDesign;
+                    }
+                }
+                catch { }
+
+                return hide ? "" : this.Message;
             }
         }
 
@@ -147,9 +137,17 @@ namespace Ext.Net
         {
             get
             {
-                return @"<table style=""margin: 8px;"">
+                string id = this.Control.ID;
+                string temp = "";
+
+                if (id.IsNotEmpty() && !id.StartsWith("ctl"))
+                {
+                    temp = " [{0}]".FormatWith(id);
+                }
+
+                return @"<table style=""border:1px solid black;"">
                     <tr>
-                        <td style=""white-space: nowrap;padding-right:8px;"">Please configure in Source View.</td>
+                        <td style=""padding:4px;white-space: nowrap;font-size:12px !important;font-family: tahoma !important;"">" + this.Control.GetType().Name + temp + @"</td>
                     </tr>
                 </table>";
             }
@@ -183,6 +181,7 @@ namespace Ext.Net
             {
                 return this.EmptyDesignerText;
             }
+
             return this.XGetDesignTimeHtml(regions);
         }
 
@@ -312,6 +311,7 @@ namespace Ext.Net
 		[Description("")]
         public string GetIconStyleBlock()
         {
+            /*
             try
             {
                 if (this.icons.Count > 0)
@@ -330,7 +330,7 @@ namespace Ext.Net
             {
                 // swallow Exception
             }
-
+            */
             return "";
         }
         
@@ -346,44 +346,6 @@ namespace Ext.Net
         /// 
         /// </summary>
         public virtual string HtmlEnd { get { return ""; } }
-
-        /*  ActionList
-            -----------------------------------------------------------------------------------------------*/
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public string WriteLog(string message)
-        {
-            //string path = @"c:\Ext.Net.Designer.Log.txt";
-            //FileUtils.WriteFile(path, message);
-
-            return message;
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public void Refresh()
-        {
-            try
-            {
-                IMenuCommandService menuService =
-                    (IMenuCommandService)GetService(typeof(IMenuCommandService));
-
-                if (menuService != null)
-                {
-                    CommandID r = new CommandID(new Guid("{5efc7975-14bc-11cf-9b2b-00aa00573819}"), 189);
-                    menuService.GlobalInvoke(r);
-                }
-            }
-            catch { }
-        }
-
-
 
         /*  Error Handeling
             -----------------------------------------------------------------------------------------------*/
@@ -429,28 +391,5 @@ return @"<br /><div class=""x-tip x-form-invalid-tip"" style=""position: autstar
             }
         }
 
-
-        /*  Simple DesignTime Log
-            -----------------------------------------------------------------------------------------------*/
-
-        //StringBuilder log = null;
-
-        //private string ReadLog()
-        //{
-        //    if (this.control.Trace)
-        //    {
-        //        return this.log.ToString();
-        //    }
-        //    return "";
-        //}
-
-        //private void WriteLog(string name, string value)
-        //{
-        //    if (this.control.Trace)
-        //    {
-        //        string template = "<div style=\"margin: 12px;font:normal 11px tahoma, arial, helvetica, sans-serif;color:#444;\"><h4>{0}</h4><code>{1}</code></div>";
-        //        this.log.Append(string.Format(template, name, HttpUtility.HtmlAttributeEncode(value)));
-        //    }
-        //}
     }
 }

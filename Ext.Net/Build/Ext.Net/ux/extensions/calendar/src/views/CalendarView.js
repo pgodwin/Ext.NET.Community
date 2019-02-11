@@ -299,6 +299,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         weeks = this.weekCount < 1 ? 6: this.weekCount;
 		
 		dt.setHours(1);
+		lastInMonth.setHours(1);
 
         this.eventGrid = [[]];
         this.allDayGrid = [[]];
@@ -864,7 +865,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * Updates the view to the next consecutive date(s)
      */
     moveNext: function(noRefresh, reload) {
-        return this.moveTo(this.viewEnd.add(Date.HOUR, 25),noRefresh, reload);
+        //return this.moveTo(this.viewEnd.add(Date.HOUR, 25),noRefresh, reload);
+		return this.moveTo(this.viewEnd.add(Date.DAY, 1),noRefresh, reload);
     },
 
     /**

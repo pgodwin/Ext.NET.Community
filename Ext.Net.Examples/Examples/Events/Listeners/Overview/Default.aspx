@@ -6,16 +6,16 @@
     protected void Page_Load(object sender, EventArgs e)
     {
         // Define a generic JavaScript function to use later
-        string fn = "Ext.Msg.alert('Confirm', String.format('You Clicked {0}', el.id));";
+        string fn = "Ext.Msg.alert('Confirm', String.format('You Clicked {0}', this.id));";
 
         // 2. Click Listener from Code-Behind
         this.Button2.Listeners.Click.Handler = fn;
 
         // 3. Click Listener using .On() method
-        this.Button3.On("click", "function(el) {" + fn + "}");
+        this.Button3.On("click", "function() {" + fn + "}");
 
         // 4. Click Listener using .AddListener() method
-        this.Button4.AddListener("click", "function(el) {" + fn + "}");
+        this.Button4.AddListener("click", "function() {" + fn + "}");
 
         // 11. Click Listener which only fires once (set from code-behind)
         this.Button11.Listeners.Click.Handler = fn;
@@ -46,13 +46,13 @@
     <form runat="server">
         <ext:ResourceManager runat="server">
             <Listeners>
-                <DocumentReady Handler="this.Button5.on('click', function (el) { Ext.Msg.alert('Confirm', String.format('You Clicked {0}', el.id)); });" />
+                <DocumentReady Handler="this.Button5.on('click', function () { Ext.Msg.alert('Confirm', String.format('You Clicked {0}', this.id)); });" />
             </Listeners>
         </ext:ResourceManager>
         
         <script type="text/javascript">
-            var myCustomFn = function (el) {
-                Ext.Msg.alert('Confirm', String.format('You Clicked {0}', el.id));
+            var myCustomFn = function () {
+                Ext.Msg.alert('Confirm', String.format('You Clicked {0}', this.id));
             };
         </script>
     

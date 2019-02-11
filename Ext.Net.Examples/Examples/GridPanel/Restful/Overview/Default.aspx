@@ -25,46 +25,6 @@
         
         <p>(also see <a href="http://mvc.ext.net/restdemo/">http://mvc.ext.net/restdemo/</a>)</p>
        
-        <ext:Store 
-            ID="Store1" 
-            runat="server" 
-            AutoSave="true" 
-            Restful="true"
-            ShowWarningOnFailure="false"
-            SkipIdForNewRecords="false"
-            RefreshAfterSaving="None">
-            <Proxy>
-                <ext:HttpProxy Url="RestfulPersons.ashx/person" />
-            </Proxy>
-            
-            <Reader>
-                <ext:JsonReader IDProperty="Id" Root="data" MessageProperty="message">
-                    <Fields>
-                        <ext:RecordField Name="Id" />
-                        <ext:RecordField Name="Email" AllowBlank="false" />
-                        <ext:RecordField Name="First" AllowBlank="false" />
-                        <ext:RecordField Name="Last" AllowBlank="false" />
-                    </Fields>
-                </ext:JsonReader>
-            </Reader>
-            
-            <Listeners>
-                <Exception Handler="
-                    Ext.net.Notification.show({
-                        iconCls    : 'icon-exclamation', 
-                        html       : e && e.message ? e.message : response.message || response.statusText, 
-                        title      : 'EXCEPTION', 
-                        hideDelay  : 5000
-                    });" />
-                <Save Handler=" Ext.net.Notification.show({
-                        iconCls    : 'icon-information', 
-                        html       : arg.message, 
-                        title      : 'Success', 
-                        hideDelay  : 5000
-                    });" />
-            </Listeners>
-        </ext:Store>
-        
         <ext:GridPanel 
             ID="UserGrid" 
             runat="server"
@@ -73,24 +33,58 @@
             Title="Users"
             Height="400"
             Width="500"
-            StoreID="Store1"
             StyleSpec="margin-top: 10px">
+            <Store>
+                <ext:Store 
+                    runat="server" 
+                    AutoSave="true" 
+                    Restful="true"
+                    ShowWarningOnFailure="false"
+                    SkipIdForNewRecords="false"
+                    RefreshAfterSaving="None">
+                    <Proxy>
+                        <ext:HttpProxy Url="RestfulPersons.ashx/person" />
+                    </Proxy>
+                    <Reader>
+                        <ext:JsonReader IDProperty="Id" Root="data" MessageProperty="message">
+                            <Fields>
+                                <ext:RecordField Name="Id" />
+                                <ext:RecordField Name="Email" AllowBlank="false" />
+                                <ext:RecordField Name="First" AllowBlank="false" />
+                                <ext:RecordField Name="Last" AllowBlank="false" />
+                            </Fields>
+                        </ext:JsonReader>
+                    </Reader>
+                    <Listeners>
+                        <Exception Handler="
+                            Ext.net.Notification.show({
+                                iconCls    : 'icon-exclamation', 
+                                html       : e && e.message ? e.message : response.message || response.statusText, 
+                                title      : 'EXCEPTION', 
+                                hideDelay  : 5000
+                            });" />
+                        <Save Handler=" Ext.net.Notification.show({
+                                iconCls    : 'icon-information', 
+                                html       : arg.message, 
+                                title      : 'Success', 
+                                hideDelay  : 5000
+                            });" />
+                    </Listeners>
+                </ext:Store>
+            </Store>
             <ColumnModel>
                 <Columns>
                     <ext:Column Header="ID" Width="40" DataIndex="Id" />
-                    
                     <ext:Column Header="Email" Width="100" DataIndex="Email">
                         <Editor>
                             <ext:TextField runat="server" />    
                         </Editor>
                     </ext:Column>
-                    
                     <ext:Column Header="First" Width="50" DataIndex="First">
                         <Editor>
                             <ext:TextField runat="server" />    
                         </Editor>
                     </ext:Column>
-                    
                     <ext:Column Header="Last" Width="50" DataIndex="Last">
                         <Editor>
                             <ext:TextField runat="server" />    
@@ -98,15 +92,12 @@
                     </ext:Column>
                 </Columns>
             </ColumnModel>
-            
             <SelectionModel>
                 <ext:RowSelectionModel runat="server" />
             </SelectionModel>
-            
             <View>
                 <ext:GridView runat="server" ForceFit="true" />
             </View>
-            
             <TopBar>
                 <ext:Toolbar runat="server">
                     <Items>
@@ -115,7 +106,6 @@
                                 <Click Handler="#{UserGrid}.insertRecord();#{UserGrid}.getRowEditor().startEditing(0);" />
                             </Listeners>
                         </ext:Button>
-                        
                         <ext:Button runat="server" Text="Delete" Icon="Exclamation">
                             <Listeners>
                                 <Click Handler="#{UserGrid}.deleteSelected();" />
@@ -124,7 +114,6 @@
                     </Items>
                 </ext:Toolbar>
             </TopBar>
-            
             <Plugins>
                 <ext:RowEditor runat="server" SaveText="Update" />
             </Plugins>

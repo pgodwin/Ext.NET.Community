@@ -34,14 +34,25 @@ Ext.grid.ColumnModel.override({
 
     isFixed : function (colIndex) {
         return colIndex >= 0 && this.config[colIndex].fixed;
-    },
-    
-    setState : function (col, state) {
-        state = Ext.applyIf(state, this.defaults);
-        Ext.apply(this.lookup[col], state);
     }
 });
 
 Ext.grid.Column.override({
-    forbidIdScoping : true
+    forbidIdScoping : true,
+
+    getCellEditor: function(rowIndex){
+        var ed = this.getEditor(rowIndex);
+        if(ed){
+            if(!ed.startEdit){
+                if(!ed.gridEditor){
+                    ed.gridEditor = new Ext.grid.GridEditor(ed);
+                }
+                ed = ed.gridEditor;
+            }
+            else if(ed.field){
+                ed.field.gridEditor = ed;
+            }
+        }
+        return ed;
+    }
 });

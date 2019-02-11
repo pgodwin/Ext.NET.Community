@@ -132,5 +132,32 @@ Ext.extend(Ext.net.TaskManager, Ext.util.Observable, {
                 }
             }
         });
+    },
+    
+    destroy : function () {
+        var ns = this.ns || Ext.net.ResourceMgr.ns,
+            id = this.itemId || this.proxyId;        
+            
+        if (ns && id) {                
+            if (Ext.isObject(ns) && ns[id]) {
+                try {
+                    delete ns[id];
+                } catch (e) {
+                    ns[id] = undefined;
+                }
+            } else if (Ext.net.ResourceMgr.getCmp(ns + "." + id)) {
+                try {
+                    delete Ext.ns(ns)[id];
+                } catch (f) {
+                    Ext.ns(ns)[id] = undefined;
+                }
+            }
+        } else if (window[this.proxyId]) {
+            window[this.proxyId] = null;
+        }
+        
+        this.stopAll();
+        delete this.tasks;
+        delete this.runner;
     }
 });

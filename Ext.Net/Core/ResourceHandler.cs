@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -77,8 +77,7 @@ namespace Ext.Net
         byte[] output;
         int length;
         bool compress;
-
-        [FileIOPermission(SecurityAction.Assert, Unrestricted = true)]
+        
         private static long GetAssemblyTime(Assembly assembly)
         {
             AssemblyName assemblyName = assembly.GetName();
@@ -130,14 +129,14 @@ namespace Ext.Net
 
             bool isInitScript = file.Contains("extnet/extnet-init-js/ext.axd?");
 
-            if (!ResourceHandler.IsSourceModified(context.Request) && !isInitScript)
+            if ((!isInitScript && !ResourceHandler.IsSourceModified(context.Request)) || (isInitScript && !string.IsNullOrEmpty(context.Request.Headers["If-Modified-Since"])))
             {
                 context.Response.SuppressContent = true;
                 context.Response.StatusCode = 304;
                 context.Response.StatusDescription = "Not Modified";
                 context.Response.AddHeader("Content-Length", "0");
                 return;
-            }
+            }            
             
             this.SetResponseCache(context);
 

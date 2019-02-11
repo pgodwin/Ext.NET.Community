@@ -7,6 +7,10 @@
  * @return {Boolean} Returns true|false
  */
 Ext.isEmptyObj = function (obj) {
+    if (typeof obj === "undefined" || obj === null) {
+        return true;
+    }
+
     if (!(!Ext.isEmpty(obj) && typeof obj === "object")) {
         return false;
     }
@@ -197,7 +201,7 @@ Ext.net.append = function (elTo, html) {
                 if (window.execScript) {
                     window.execScript(match[2]);
                 } else {
-                    eval(match[2]);
+                    window.eval.call(window, match[2]);
                 }
             }
         }

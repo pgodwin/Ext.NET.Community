@@ -1,11 +1,10 @@
-﻿/**
- * @version: 1.0.0
- * @author: Ext.NET, Inc. http://www.ext.net/
- * @date: 2008-05-26
- * @copyright: Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
- * @license: See license.txt and http://www.ext.net/license/. 
- * @website: http://www.ext.net/
- */
+﻿/********
+ * @version   : 1.0.0
+ * @author    : Ext.NET, Inc. http://www.ext.net/
+ * @date      : 2011-06-15
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @license   : See license.txt and http://www.ext.net/license/. 
+ ********/
 
 using System.Reflection;
 using System;

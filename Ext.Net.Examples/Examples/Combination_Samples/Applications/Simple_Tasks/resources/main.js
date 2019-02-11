@@ -412,9 +412,7 @@ SimpleTasks.TaskWindow = {
         
         var values = Ext.encode(w.taskForm.getForm().getFieldValues());
         
-        Ext.Msg.wait({
-            msg: "The task is saving..."
-        });
+        Ext.Msg.wait("The task is saving...");
         
         Ext.net.DirectMethods.SaveTask(w.taskId, values, {
             success : function () {

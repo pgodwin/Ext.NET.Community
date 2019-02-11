@@ -1,15 +1,15 @@
 /*
- * @version   : 1.0.0 - Professional Edition (Ext.Net Professional License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-06-15
- * @copyright : Copyright (c) 2006-2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : See license.txt and http://www.ext.net/license/. 
  * @website   : http://www.ext.net/
  */
 
 
 
-Ext.data.HttpProxy.prototype.doRequest=function(action,rs,params,reader,cb,scope,arg){var o={method:(this.api[action])?this.api[action].method:undefined,request:{callback:cb,scope:scope,arg:arg},reader:reader,callback:this.createCallback(action,rs),scope:this};if(this.conn.json){o.jsonData=params;}else if(params.jsonData){o.jsonData=params.jsonData;}else if(params.xmlData){o.xmlData=params.xmlData;}else{o.params=params||{};}
+Ext.data.HttpProxy.prototype.doRequest=function(action,rs,params,reader,cb,scope,arg){var o={method:(this.api[action])?this.api[action].method:undefined,request:{callback:cb,scope:scope,arg:arg},reader:reader,callback:this.createCallback(action,rs),scope:this};if(this.conn.json){o.jsonData=params;if((o.method||this.conn.method)==="GET"){o.params=params||{};}}else if(params.jsonData){o.jsonData=params.jsonData;}else if(params.xmlData){o.xmlData=params.xmlData;}else{o.params=params||{};}
 this.conn.url=this.buildUrl(action,rs);if(this.useAjax){Ext.applyIf(o,this.conn);this.activeRequest[action]=Ext.Ajax.request(o);}else{this.conn.request(o);}
 this.conn.url=null;};
 
@@ -18,8 +18,7 @@ if(this.useAjax){Ext.applyIf(o,this.conn);o.url=this.conn.url;if(this.activeRequ
 this.activeRequest=Ext.Ajax.request(o);}else{this.conn.request(o);}}else{callback.call(scope||this,null,arg,false);}},saveResponse:function(o,success,response){delete this.activeRequest;if(!success){this.fireEvent("saveexception",this,o,response,{message:response.statusText});this.fireEvent("exception",this,"response","write",o,response,{message:response.statusText});o.request.callback.call(o.request.scope,null,o.request.arg,false);return;}
 var result;try{if(!this.handleSaveResponseAsXml){var json=response.responseText,responseObj=eval("("+json+")");result={success:responseObj.success,msg:responseObj.message,data:responseObj.data};}else{var doc=response.responseXML,root=doc.documentElement||doc,q=Ext.DomQuery,sv=q.selectValue("Success",root,false),data=q.selectValue("Data",root,undefined);success=sv!==false&&sv!=="false";if(data){data=Ext.decode(data);}
 result={success:success,msg:q.selectValue("Message",root,""),data:data};}}catch(e){this.fireEvent("saveexception",this,o,response,e);this.fireEvent("exception",this,"remote","write",o,response,e);o.request.callback.call(o.request.scope,null,o.request.arg,false);return;}
-if(result.success){this.fireEvent("save",this,o,o.request.arg);}
-else{this.fireEvent("saveexception",this,o,response,{message:result.msg});}
+if(result.success){this.fireEvent("save",this,o,o.request.arg);}else{this.fireEvent("saveexception",this,o,response,{message:result.msg});}
 o.request.callback.call(o.request.scope,result,o.request.arg,result.success);}});
 
 
@@ -95,7 +94,7 @@ var serviceResult=o.data||{},newRecordsExists=false,deletedExists=this.deleted.l
 if(this.useIdConfirmation){if(Ext.isEmpty(serviceResult.confirm)&&serverSuccess){msg="The confirmation list is absent";this.fireEvent("commitfailed",this,msg);this.fireEvent("exception",this,"remote","write",{},{},{message:msg});if(this.showWarningOnFailure){Ext.net.DirectEvent.showFailure({status:"",statusText:""},msg);}
 return;}
 if(!Ext.isEmpty(serviceResult.confirm)){var r=serviceResult.confirm,failCount=0,i=0;for(i;i<r.length;i++){if(r[i].s===false){failCount++;}else{var record=this.getById(r[i].oldId)||this.getByDataId(r[i].oldId);if(record){if(record.isNew()){this.updateRecordId(record,r[i].newId||r[i].oldId);}
-record.phantom=false;record.commit();}else{var d=this.deleted,i2=0;for(i2;i2<d.length;i2++){if(this.metaId()&&d[i2].id===r[i].oldId){this.deleted.splice(i2,1);failCount--;break;}}
+record.phantom=false;record.commit();}else{var d=this.deleted,i2=0;for(i2;i2<d.length;i2++){if(this.metaId()&&d[i2].id==r[i].oldId){this.deleted.splice(i2,1);failCount--;break;}}
 failCount++;}}}
 if(failCount>0&&serverSuccess){msg="Some records have no success confirmation!";this.fireEvent("commitfailed",this,msg);this.fireEvent("exception",this,"remote","write",{},{},{message:msg});if(this.showWarningOnFailure){Ext.net.DirectEvent.showFailure({status:"",statusText:""},msg);}
 return;}
@@ -373,7 +372,10 @@ this.grid.on("rowclick",function(grid,rowIndex,e){if(this.deselectingFlag&&this.
 Ext.grid.ColumnModel.override({defaultSortable:true,isMenuDisabled:function(col){var column=this.config[col];if(Ext.isEmpty(column)){return true;}
 return!!column.menuDisabled;},isSortable:function(col){var column=this.config[col];if(Ext.isEmpty(column)){return false;}
 if(typeof this.config[col].sortable==="undefined"){return this.defaultSortable;}
-return this.config[col].sortable;},isHidden:function(colIndex){return colIndex>=0&&this.config[colIndex].hidden;},isFixed:function(colIndex){return colIndex>=0&&this.config[colIndex].fixed;},setState:function(col,state){state=Ext.applyIf(state,this.defaults);Ext.apply(this.lookup[col],state);}});Ext.grid.Column.override({forbidIdScoping:true});
+return this.config[col].sortable;},isHidden:function(colIndex){return colIndex>=0&&this.config[colIndex].hidden;},isFixed:function(colIndex){return colIndex>=0&&this.config[colIndex].fixed;}});Ext.grid.Column.override({forbidIdScoping:true,getCellEditor:function(rowIndex){var ed=this.getEditor(rowIndex);if(ed){if(!ed.startEdit){if(!ed.gridEditor){ed.gridEditor=new Ext.grid.GridEditor(ed);}
+ed=ed.gridEditor;}
+else if(ed.field){ed.field.gridEditor=ed;}}
+return ed;}});
 
 Ext.grid.GridView.prototype.initEvents=Ext.grid.GridView.prototype.initEvents.createSequence(function(){this.addEvents("afterRender","beforerowupdate");});Ext.grid.GridView.prototype.afterRender=Ext.grid.GridView.prototype.afterRender.createSequence(function(){this.fireEvent("afterRender",this);});Ext.grid.GridView.override({getCell:function(row,col){var tds=this.getRow(row).getElementsByTagName("td"),ind=-1,i=0;if(tds){for(i;i<tds.length;i++){if(Ext.fly(tds[i]).hasClass("x-grid3-col x-grid3-cell")){ind++;if(ind===col){return tds[i];}}}}
 return tds[col];},getColumnData:function(){var cs=[],cm=this.cm,colCount=cm.getColumnCount(),i=0;for(i;i<colCount;i++){var name=cm.getDataIndex(i);cs[i]={name:(!Ext.isDefined(name)?this.ds.fields.get(i).name:name),renderer:cm.getRenderer(i),scope:cm.getRendererScope(i),id:cm.getColumnId(i),style:this.getColumnStyle(i)};if(cs[i].scope&&!cs[i].scope.grid){cs[i].scope.grid=this.grid;}}
@@ -405,11 +407,11 @@ var tb=e.getTarget('.x-toolbar',this.grid.view.mainBody);if(tb){e.stopEvent();re
 this.menu.show(this.el,this.menuAlign);this.menu.ownerCt=this;this.ignoreNextClick=0;this.el.addClass('x-btn-menu-active');this.fireEvent('menushow',this,this.menu);}
 return this;};item.menu=Ext.ComponentMgr.create(item.menu,"menu");this[initMenu](item.menu,null,true);}else{this.shareMenus(item.menu.items||[]);}}},this);},insertGroupToolbars:function(){var groupCmd=this.selectGroups(),i;if(this.groupCommands){for(i=0;i<groupCmd.length;i++){var toolbar=new Ext.Toolbar({items:this.groupCommands,enableOverflow:false}),div=Ext.fly(groupCmd[i]).first("div");this.cache.push(toolbar);div.addClass("row-cmd-cell-ct");toolbar.render(div);var group=this.grid.view.findGroup(div),groupId=group?group.id.replace(/ext-gen[0-9]+-gp-/,""):null,records=this.getRecords(group.id);if(this.prepareGroupToolbar&&this.prepareGroupToolbar(this.grid,toolbar,groupId,records)===false){toolbar.destroy();continue;}
 toolbar.grid=this.grid;toolbar.groupId=groupId;toolbar._groupId=group.id;toolbar.items.each(function(button){if(button.on){button.toolbar=toolbar;button.column=this;if(button.standOut){button.on("mouseout",function(){this.getEl().addClass("x-btn-over");},button);}
-if(!Ext.isEmpty(button.command,false)){button.on("click",function(){this.toolbar.grid.fireEvent("groupcommand",this.command,this.toolbar.groupId,this.column.getRecords.apply(this.column,[this.toolbar._groupId]));},button);}
+if(!Ext.isEmpty(button.command,false)){button.on("click",function(e){this.toolbar.grid.fireEvent("groupcommand",this.command,this.toolbar.groupId,this.column.getRecords.apply(this.column,[this.toolbar._groupId]));},button);}
 if(button.menu&&!button.menu.shared){this.initGroupMenu(button.menu,toolbar);}}},this);}}},initGroupMenu:function(menu,toolbar,shared){menu.items.each(function(item){if(item.on){item.toolbar=toolbar;item.column=this;if(!Ext.isEmpty(item.command,false)){if(shared){item.on("click",function(){var pm=this.parentMenu;while(pm&&!pm.shared){pm=pm.parentMenu;}
 if(pm&&pm.shared&&pm.ownerCt&&pm.ownerCt.toolbar){var toolbar=pm.ownerCt.toolbar;toolbar.grid.fireEvent("groupcommand",this.command,toolbar.groupId,this.column.getRecords.apply(this.column,[toolbar._groupId]));}},item);item.getGroup=function(){var pm=this.parentMenu;while(pm&&!pm.shared){pm=pm.parentMenu;}
 if(pm&&pm.shared&&pm.ownerCt&&pm.ownerCt.toolbar){var toolbar=pm.ownerCt.toolbar;return{groupId:toolbar.groupId,records:this.column.getRecords.apply(this.column,[toolbar._groupId])};}};}else{item.getGroup=function(){return{groupId:this.toolbar.groupId,records:this.column.getRecords.apply(this.column,[this.toolbar._groupId])};};item.on("click",function(){this.toolbar.grid.fireEvent("groupcommand",this.command,this.toolbar.groupId,this.column.getRecords.apply(this.column,[this.toolbar._groupId]));},item);}}
-if(item.menu){this.initGroupMenu(item.menu,toolbar,shared);}}},this);},getRecords:function(groupId){if(groupId){var records=this.grid.store.queryBy(function(r){return r._groupId===groupId;});return records?records.items:[];}},getAllGroupToolbars:function(){var groups=this.selectGroups(),toolbars=[],i;for(i=0;i<groups.length;i++){var div=Ext.fly(groups[i]).first("div"),el=div.last();if(!Ext.isEmpty(el)){var cmp=Ext.getCmp(el.id);toolbars.push(cmp);}}
+if(item.menu){this.initGroupMenu(item.menu,toolbar,shared);}}},this);},getRecords:function(groupId){if(groupId){groupId=Ext.util.Format.htmlEncode(groupId);var records=this.grid.store.queryBy(function(r){return r._groupId===groupId;});return records?records.items:[];}},getAllGroupToolbars:function(){var groups=this.selectGroups(),toolbars=[],i;for(i=0;i<groups.length;i++){var div=Ext.fly(groups[i]).first("div"),el=div.last();if(!Ext.isEmpty(el)){var cmp=Ext.getCmp(el.id);toolbars.push(cmp);}}
 return toolbars;},getGroupToolbar:function(groupId){var groups=this.selectGroups(),i;for(i=0;i<groups.length;i++){var div=Ext.fly(groups[i]).first("div"),_group=this.grid.view.findGroup(div),_groupId=_group?_group.id.replace(/ext-gen[0-9]+-gp-/,""):null;if(_groupId===groupId){var el=div.last();if(!Ext.isEmpty(el)){var cmp=Ext.getCmp(el.id);return cmp;}}}
 return undefined;},insertToolbars:function(start,end,row){var tdCmd=this.select(),width=0;if(Ext.isEmpty(start)||Ext.isEmpty(end)){start=0;end=tdCmd.length;}
 if(this.commands){var i=start;for(i;i<end;i++){var toolbar=new Ext.Toolbar({items:this.commands,enableOverflow:false,buttonAlign:this.buttonAlign}),div;if(row){div=Ext.fly(this.select(row)[0]).first("div");}else{div=Ext.fly(tdCmd[i]).first("div");}
@@ -447,7 +449,7 @@ var row=e.getTarget(".x-grid3-row");if(row===false){return;}
 var colIndex=this.grid.view.findCellIndex(target.parentNode.parentNode);if(colIndex!==this.grid.getColumnModel().getIndexById(this.id)){return;}
 this.grid.fireEvent("command",cmd,this.grid.store.getAt(row.rowIndex),row.rowIndex,colIndex);}
 t=e.getTarget(".group-row-imagecommand");if(t){var group=view.findGroup(target),groupId=group?group.id.replace(/ext-gen[0-9]+-gp-/,""):null;cmd=Ext.fly(t).getAttributeNS("","cmd");if(Ext.isEmpty(cmd,false)){return;}
-this.grid.fireEvent("groupcommand",cmd,groupId,this.getRecords(group.id));}},getRecords:function(groupId){if(groupId){var records=this.grid.store.queryBy(function(record){return record._groupId===groupId;});return records?records.items:[];}
+this.grid.fireEvent("groupcommand",cmd,groupId,this.getRecords(group.id));}},getRecords:function(groupId){if(groupId){groupId=Ext.util.Format.htmlEncode(groupId);var records=this.grid.store.queryBy(function(record){return record._groupId===groupId;});return records?records.items:[];}
 return[];},destroy:function(){this.grid.getView().mainBody.un("click",this.onClick,this);if(this.grid.getView().lockedBody){this.grid.getView().lockedBody.un("click",this.onClick,this);}}});
 
 Ext.net.CellCommands=function(config){Ext.apply(this,config);Ext.net.CellCommands.superclass.constructor.call(this);};Ext.extend(Ext.net.CellCommands,Ext.util.Observable,{commandTemplate:'<div class="cell-imagecommands <tpl if="rightValue === true">cell-imagecommand-right-value</tpl>">'+'<tpl if="rightAlign === true && rightValue === false"><div class="cell-imagecommand-value">{value}</div></tpl>'+'<tpl for="commands">'+'<div cmd="{command}" class="cell-imagecommand <tpl if="parent.rightAlign === false">left-cell-imagecommand</tpl> {cls} {iconCls} {hideCls}" '+'style="{style}" ext:qtip="{qtext}" ext:qtitle="{qtitle}">'+'<tpl if="text"><span ext:qtip="{qtext}" ext:qtitle="{qtitle}">{text}</span></tpl>'+'</div>'+'</tpl>'+'<tpl if="rightAlign === false || rightValue === true"><div class="cell-imagecommand-value">{value}</div></tpl>'+'</div>',getTemplate:function(){if(Ext.isEmpty(this.template)){this.template=new Ext.XTemplate(this.commandTemplate);}

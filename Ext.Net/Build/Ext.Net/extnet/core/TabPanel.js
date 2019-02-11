@@ -51,7 +51,11 @@ Ext.TabPanel.override({
             return;
         }
         
-        e.preventDefault();
+        if (!Ext.isIE9) {
+            e.preventDefault();
+        }
+
+        this.focus();
         
         var t = this.findTargets(e);
         
@@ -62,7 +66,11 @@ Ext.TabPanel.override({
         }
         
         if (t.item && t.item != this.activeTab) {
-            this.setActiveTab(t.item);
+            if (Ext.isIE9) {
+               this.setActiveTab.defer(100, this, [t.item]);
+            } else {
+                this.setActiveTab(t.item);
+            }
         }
     },
 

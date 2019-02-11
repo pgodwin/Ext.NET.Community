@@ -60,8 +60,6 @@
     <title>Simple Array Grid - Ext.NET Examples</title>
     <link href="../../../../resources/css/examples.css" rel="stylesheet" type="text/css" />    
 
-    <ext:ResourcePlaceHolder runat="server" />
-
     <script type="text/javascript">
         var template = '<span style="color:{0};">{1}</span>';
 

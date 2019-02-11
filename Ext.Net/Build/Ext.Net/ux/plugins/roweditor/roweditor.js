@@ -16,31 +16,31 @@ Ext.ns('Ext.ux.grid');
  * @ptype roweditor
  */
 Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
-    floating: true,
-    shadow: false,
-    layout: 'hbox',
-    cls: 'x-small-editor',
-    buttonAlign: 'center',
-    baseCls: 'x-row-editor',
-    elements: 'header,footer,body',
-    frameWidth: 5,
-    buttonPad: 3,
-    clicksToEdit: 'auto',
-    monitorValid: true,
-    autoFocusDelay: 250,
-    errorSummary: true,
+    floating       : true,
+    shadow         : false,
+    layout         : 'hbox',
+    cls            : 'x-small-editor',
+    buttonAlign    : 'center',
+    baseCls        : 'x-row-editor',
+    elements       : 'header,footer,body',
+    frameWidth     : 5,
+    buttonPad      : 3,
+    clicksToEdit   : 'auto',
+    monitorValid   : true,
+    autoFocusDelay : 250,
+    errorSummary   : true,
 
-    saveText: 'Save',
-    cancelText: 'Cancel',
-    commitChangesText: 'You need to commit or cancel your changes',
-    errorText: 'Errors',
-    isRowEditor: true,
+    saveText    : 'Save',
+    cancelText  : 'Cancel',
+    commitChangesText : 'You need to commit or cancel your changes',
+    errorText   : 'Errors',
+    isRowEditor : true,
 
-    defaults: {
+    defaults : {
         normalWidth: true
     },
 
-    initComponent: function () {
+    initComponent : function () {
         Ext.ux.grid.RowEditor.superclass.initComponent.call(this);
         this.addEvents(
         /**
@@ -82,7 +82,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         );
     },
 
-    init: function (grid) {
+    init : function (grid) {
         this.grid = grid;
         this.ownerCt = grid;
         
@@ -130,22 +130,26 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         };
     },
 
-    beforedestroy: function () {
+    beforedestroy : function () {
         this.stopMonitoring();
         this.grid.getStore().un('remove', this.onStoreRemove, this);
         this.stopEditing(false);
         Ext.destroy(this.btns, this.tooltip);
     },
 
-    refreshFields: function () {
+    refreshFields : function () {
         this.initFields();
         this.verifyLayout();
     },
 
-    isDirty: function () {
-        var dirty;
-        this.items.each(function (f) {
-            if (String(this.values[f.id]) !== String(f.getValue())) {
+    isDirty : function () {
+        var dirty,
+            column;
+
+        this.items.each (function (f, i) {
+            column = this.grid.getColumnModel().getColumnAt(i);
+
+            if (String(this.values[f.id]) !== String(f.getValue()) && column.getEditor && column.getEditor()) {
                 dirty = true;
                 return false;
             }
@@ -153,7 +157,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         return dirty;
     },
 
-    startEditing: function (rowIndex, doFocus) {
+    startEditing : function (rowIndex, doFocus) {
         if (this.editing && this.isDirty()) {
             this.showTooltip(this.commitChangesText);
             return;
@@ -209,21 +213,25 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
     },
 
-    stopEditing: function (saveChanges) {
+    stopEditing : function (saveChanges) {
         this.editing = false;
+
         if (!this.isVisible()) {
             return;
         }
+
         if (saveChanges === false || !this.isValid()) {
             this.hide();
             this.fireEvent('canceledit', this, saveChanges === false);
             return;
         }
+
         var changes = {},
             r = this.record,
             hasChange = false,
             cm = this.grid.colModel,
             fields = this.items.items;
+
         for (var i = 0, len = cm.getColumnCount(); i < len; i++) {
             if (!cm.isHidden(i)) {
                 var dindex = cm.getDataIndex(i),
@@ -238,6 +246,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
                 }
             }
         }
+
         if (hasChange && this.fireEvent('validateedit', this, changes, r, this.rowIndex) !== false) {
             r.beginEdit();
             Ext.iterate(changes, function (name, value) {
@@ -246,10 +255,11 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             r.endEdit();
             this.fireEvent('afteredit', this, changes, r, this.rowIndex);
         }
+
         this.hide();
     },
 
-    verifyLayout: function (force) {
+    verifyLayout : function (force) {
         if (this.el && (this.isVisible() || force === true)) {
             var row = this.grid.getView().getRow(this.rowIndex);
             this.setSize(Ext.fly(row).getWidth(), Ext.fly(row).getHeight() + 9);
@@ -257,11 +267,13 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             for (var i = 0, len = cm.getColumnCount(); i < len; i++) {
                 if (!cm.isHidden(i)) {
                     var adjust = 0;
+
                     if (i === (len - 1)) {
                         adjust += 3; // outer padding
                     } else {
                         adjust += 1;
                     }
+
                     fields[i].show();
                     fields[i].setWidth(cm.getColumnWidth(i) - adjust);
                 } else {
@@ -273,19 +285,21 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
     },
 
-    slideHide: function () {
+    slideHide : function () {
         this.hide();
     },
 
-    initFields: function () {
+    initFields : function () {
         var cm = this.grid.getColumnModel(), pm = Ext.layout.ContainerLayout.prototype.parseMargins;
         this.removeAll(false);
+
         for (var i = 0, len = cm.getColumnCount(); i < len; i++) {
             var c = cm.getColumnAt(i),
                 ed = c.getEditor ? this.getEditor(c) : null;
             if (!ed) {
                 ed = c.displayEditor || new Ext.form.DisplayField();
             }
+
             if (i === 0) {
                 ed.margins = pm('0 1 2 1');
             } else if (i == len - 1) {
@@ -298,25 +312,28 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
                     ed.margins = pm('0 1 2 0');
                 }
             }
+
             ed.setWidth(cm.getColumnWidth(i));
             ed.column = c;
+
             if (ed.ownerCt !== this) {
                 ed.on('focus', this.ensureVisible, this);
                 ed.on('specialkey', this.onKey, this);
             }
+
             this.insert(i, ed);
         }
         this.initialized = true;
     },
 
-    onKey: function (f, e) {
+    onKey : function (f, e) {
         if (e.getKey() === e.ENTER) {
             this.stopEditing(true);
             e.stopPropagation();
         }
     },
 
-    onGridKey: function (e) {
+    onGridKey : function (e) {
         if (e.getKey() === e.ENTER && !this.isVisible()) {
             var r = this.grid.getSelectionModel().getSelected();
             if (r) {
@@ -327,13 +344,13 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
     },
 
-    ensureVisible: function (editor) {
+    ensureVisible : function (editor) {
         if (this.isVisible()) {
             this.grid.getView().ensureVisible(this.rowIndex, this.grid.colModel.getIndexById(editor.column.id), true);
         }
     },
 
-    onRowClick: function (g, rowIndex, e) {
+    onRowClick : function (g, rowIndex, e) {
         if (this.clicksToEdit == 'auto') {
             var li = this.lastClickIndex;
             this.lastClickIndex = rowIndex;
@@ -345,12 +362,12 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         this.doFocus.defer(this.autoFocusDelay, this, [e.getPoint()]);
     },
 
-    onRowDblClick: function (g, rowIndex, e) {
+    onRowDblClick : function (g, rowIndex, e) {
         this.startEditing(rowIndex, false);
         this.doFocus.defer(this.autoFocusDelay, this, [e.getPoint()]);
     },
 
-    onRender: function () {
+    onRender : function () {
         Ext.ux.grid.RowEditor.superclass.onRender.apply(this, arguments);
         this.el.swallowEvent(['keydown', 'keyup', 'keypress']);
         this.btns = new Ext.Panel({
@@ -378,7 +395,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             this.btns.render(this.bwrap);
         },
 
-        afterRender: function () {
+        afterRender : function () {
             Ext.ux.grid.RowEditor.superclass.afterRender.apply(this, arguments);
             this.positionButtons();
             if (this.monitorValid) {
@@ -386,20 +403,20 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             }
         },
 
-        onShow: function () {
+        onShow : function () {
             if (this.monitorValid) {
                 this.startMonitoring();
             }
             Ext.ux.grid.RowEditor.superclass.onShow.apply(this, arguments);
         },
 
-        onHide: function () {
+        onHide : function () {
             Ext.ux.grid.RowEditor.superclass.onHide.apply(this, arguments);
             this.stopMonitoring();
             this.grid.getView().focusRow(this.rowIndex);
         },
 
-        positionButtons: function () {
+        positionButtons : function () {
             if (this.btns) {
                 var g = this.grid,
                 h = this.el.dom.clientHeight,
@@ -412,7 +429,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             }
         },
 
-        renderedValue: function (value, field, r, colIndex, preedit) {
+        renderedValue : function (value, field, r, colIndex, preedit) {
             try {
                 var column = this.grid.getColumnModel().getColumnAt(colIndex),
                  meta,
@@ -466,7 +483,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         },
 
         // private
-        preEditValue: function (r, field, colIndex) {
+        preEditValue : function (r, field, colIndex) {
             var value = this.renderedValue(r.data[field], field, r, colIndex, true);
             value.value = this.autoEncode && typeof value.value === 'string' ? Ext.util.Format.htmlDecode(value.value) : value.value;
 
@@ -474,14 +491,14 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         },
 
         // private
-        postEditValue: function (value, originalValue, r, field, colIndex) {
-            if (this.renderedValue(originalValue, field, r, colIndex).value == value) {
+        postEditValue : function (value, originalValue, r, field, colIndex) {
+            if (this.renderedValue(originalValue, field, r, colIndex).value === value) {
                 value = originalValue;
             }
             return this.autoEncode && typeof value == 'string' ? Ext.util.Format.htmlEncode(value) : value;
         },
 
-        doFocus: function (pt) {
+        doFocus : function (pt) {
             if (this.isVisible()) {
                 var index = 0,
                 cm = this.grid.getColumnModel(),
@@ -502,7 +519,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             }
         },
 
-        getTargetColumnIndex: function (pt) {
+        getTargetColumnIndex : function (pt) {
             var grid = this.grid,
             v = grid.view,
             x = pt.left,
@@ -520,7 +537,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             return match;
         },
 
-        startMonitoring: function () {
+        startMonitoring : function () {
             if (!this.bound && this.monitorValid) {
                 this.bound = true;
                 Ext.TaskMgr.start({
@@ -531,14 +548,14 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             }
         },
 
-        stopMonitoring: function () {
+        stopMonitoring : function () {
             this.bound = false;
             if (this.tooltip) {
                 this.tooltip.hide();
             }
         },
 
-        isValid: function () {
+        isValid : function () {
             var valid = true;
             this.items.each(function (f) {
                 if (!f.isValid(true)) {
@@ -550,7 +567,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         },
 
         // private
-        bindHandler: function () {
+        bindHandler : function () {
             if (!this.bound) {
                 return false; // stops binding
             }
@@ -573,7 +590,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
     },
 
-    showTooltip: function (msg) {
+    showTooltip : function (msg) {
         var t = this.tooltip;
         if (!t) {
             t = this.tooltip = new Ext.ToolTip({
@@ -606,7 +623,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
     },
 
-        getErrorText: function () {
+        getErrorText : function () {
             var data = ['<ul>'];
             this.items.each(function (f) {
                 if (!f.isValid(true)) {
@@ -625,6 +642,7 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
             return ed;
         }
     });
+
 Ext.preg('roweditor', Ext.ux.grid.RowEditor);
 
 if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

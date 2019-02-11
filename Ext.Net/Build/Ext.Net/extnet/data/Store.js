@@ -787,7 +787,8 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                                 i2 = 0;
 
                             for (i2; i2 < d.length; i2++) {
-                                if (this.metaId() && d[i2].id === r[i].oldId) {
+                                //do not replace == by ===
+                                if (this.metaId() && d[i2].id == r[i].oldId) {
                                     this.deleted.splice(i2, 1);
                                     failCount--;
                                     break;

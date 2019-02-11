@@ -3740,6 +3740,8 @@
     <EmbeddedResource Include="Build\Ext.Net\extjs\resources\images\default\grid\refresh-disabled.gif" />
     <EmbeddedResource Include="Build\Ext.Net\extjs\resources\images\access\gradient-bg.gif" />
     <EmbeddedResource Include="Build\Ext.Net\extjs\resources\images\access\s.gif" />
+    <EmbeddedResource Include="Build\Ext.Net\extjs\resources\css\theme-gray\pivotgrid.css" />
+    <EmbeddedResource Include="Build\Ext.Net\extjs\resources\images\gray\grid\sort-hd.gif" />
     <Content Include="Build\Ext.Net\extjs\resources\images\vista\basic-dialog\bg-center.gif" />
     <Content Include="Build\Ext.Net\extjs\resources\images\vista\basic-dialog\bg-left.gif" />
     <Content Include="Build\Ext.Net\extjs\resources\images\vista\basic-dialog\bg-right.gif" />

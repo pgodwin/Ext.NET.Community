@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -165,7 +165,8 @@ namespace Ext.Net
                 else if (selfRendering && this.Control.Page is ISelfRenderingPage)
                 {
                     pageHolder = this.Control.Page;
-                    ResourceManager newMgr = Ext.Net.Utilities.ControlUtils.FindControl<ResourceManager>(pageHolder);
+                    ResourceManager newMgr = ControlUtils.FindControl<ResourceManager>(pageHolder);
+
                     if (newMgr != null)
                     {
                         newMgr.IsDynamic = true;
@@ -174,13 +175,38 @@ namespace Ext.Net
 
                 StringBuilder sb = new StringBuilder();
 
+                List<XControl> childControls = this.FindControls(this.Control, selfRendering, sb, null);
+                childControls.Insert(0, this.Control);
+                /*
+                foreach (XControl c in childControls)
+                {
+                    if (c.Visible || Object.ReferenceEquals(c, this.Control))
+                    {
+                        c.EnsureDynamicID();
+
+                        foreach (KeyValuePair<long, string> proxyScript in c.ProxyScripts)
+                        {
+                            if (proxyScript.Value.IsNotEmpty())
+                            {
+                                this.ScriptOnReadyBag.Add(proxyScript.Key, proxyScript.Value);                                
+                            }
+                        }
+                        
+                        c.ProxyScripts.Clear();
+                    }
+                }
+
+                foreach (KeyValuePair<long, string> script in this.ScriptOnReadyBag)
+                {
+                    sb.Append(script.Value);
+                }
+
+                this.ScriptOnReadyBag.Clear();
+                */
                 if (this.Control.ClientID.IsNotEmpty())
                 {
                     sb.AppendFormat("Ext.net.ResourceMgr.destroyCmp(\"{0}\");", this.Control.ClientID);
                 }
-
-                List<XControl> childControls = this.FindControls(this.Control, selfRendering, sb, null);
-                childControls.Insert(0, this.Control);
 
                 foreach (XControl c in childControls)
                 {

@@ -16,6 +16,10 @@ Ext.data.HttpProxy.prototype.doRequest = function (action, rs, params, reader, c
 
     if (this.conn.json) {
         o.jsonData = params;
+
+        if ((o.method || this.conn.method) === "GET") {
+           o.params = params || {};
+        }
     } else if (params.jsonData) {
         o.jsonData = params.jsonData;
     } else if (params.xmlData) {

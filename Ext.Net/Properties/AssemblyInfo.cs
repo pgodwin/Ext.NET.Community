@@ -15,10 +15,10 @@
  * along with Ext.NET.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
- * @version   : 1.0.0 - Community Edition (AGPLv3 License)
+ * @version   : 1.2.0 - Ext.NET Pro License
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2011-05-31
- * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-09-12
+ * @copyright : Copyright (c) 2006-2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -30,15 +30,15 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Web.UI;
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.2.0.*")]
 [assembly: TagPrefix("Ext.NET", "ext")]
 
 [assembly: AssemblyTitle("Ext.NET")]
-[assembly: AssemblyDescription("Ext.NET Professional Edition")]
+[assembly: AssemblyDescription("Ext.NET Pro Edition")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ext.NET, Inc.")]
 [assembly: AssemblyProduct("Ext.NET")]
-[assembly: AssemblyCopyright("Copyright © 2010 Ext.NET, Inc.")]
+[assembly: AssemblyCopyright("Copyright © 2006-2011 Ext.NET, Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -568,6 +568,7 @@ using System.Web.UI;
 [assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.grid.row-expand-sprite.gif", "image/gif")]
 [assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.grid.sort_asc.gif", "image/gif")]
 [assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.grid.sort_desc.gif", "image/gif")]
+[assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.grid.sort-hd.gif", "image/gif")]
 [assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.hd-sprite.gif", "image/gif")]
 [assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.left-btn.gif", "image/gif")]
 [assembly: WebResource("Ext.Net.Build.Ext.Net.extjs.resources.images.gray.menu.group-checked.gif", "image/gif")]
