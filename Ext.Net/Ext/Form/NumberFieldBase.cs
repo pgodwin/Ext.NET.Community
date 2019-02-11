@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -171,24 +171,6 @@ namespace Ext.Net
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        [ConfigOption("value")]
-        [DefaultValue(null)]
-        protected internal virtual object ValueProxy
-        {
-            get
-            {
-                if (!this.IsEmpty)
-                {
-                    return this.Number;
-                }
-
-                return null;
-            }
-        }
-
-		/// <summary>
 		/// 
 		/// </summary>
 		[Description("")]
@@ -408,8 +390,7 @@ namespace Ext.Net
         /// <summary>
         /// Character(s) to allow as the decimal separator (defaults to '.').
         /// </summary>
-        [Meta]
-        [ConfigOption]
+        [Meta]        
         [Category("7. NumberField")]
         [DefaultValue(".")]
         [Description("Character(s) to allow as the decimal separator (defaults to '.').")]
@@ -428,7 +409,7 @@ namespace Ext.Net
 
                 if (rm != null)
                 {
-                    System.Globalization.CultureInfo locale = rm.CurrentLocale;
+                    CultureInfo locale = rm.CurrentLocale;
                     return locale.NumberFormat.NumberDecimalSeparator;
                 }
 
@@ -437,6 +418,28 @@ namespace Ext.Net
             set
             {
                 this.ViewState["DecimalSeparator"] = value;
+            }
+        }
+
+        [ConfigOption("decimalSeparator")]
+        [DefaultValue("")]
+        protected virtual string DecimalSeparatorProxy
+        {
+            get
+            {
+                //ResourceManager rm = this.SafeResourceManager;
+                string ds = this.DecimalSeparator;
+
+                //if (rm != null)
+                //{
+                //    CultureInfo locale = rm.CurrentLocale;
+                //    return locale.NumberFormat.NumberDecimalSeparator == ds ? "" : ds;                    
+                //}
+
+                //return ds == "." ? "" : ds;
+                
+                // Temporary solution because ExtJS locales don't have always proper decimal separator
+                return ds;
             }
         }
 

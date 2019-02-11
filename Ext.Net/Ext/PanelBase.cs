@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -318,7 +318,7 @@ namespace Ext.Net
         {
             this.HasLoadPostData = true;
 
-            string val = postCollection[this.ClientID.ConcatWith("_Collapsed")];
+            string val = postCollection[this.ConfigID.ConcatWith("_Collapsed")];
 
             if (val.IsNotEmpty())
             {
@@ -763,12 +763,32 @@ namespace Ext.Net
                 if (this.buttons == null)
                 {
                     this.buttons = new ItemsCollection<ButtonBase>();
-                    this.buttons.AfterItemAdd += this.AfterItemAdd;
-                    this.buttons.AfterItemRemove += this.AfterItemRemove;
+                    this.buttons.AfterItemAdd += this.Buttons_AfterItemAdd;
+                    this.buttons.AfterItemRemove += this.Buttons_AfterItemRemove;
                 }
 
                 return this.buttons;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        protected virtual void Buttons_AfterItemAdd(Component item)
+        {
+            item.RenderXType = !item.XType.Equals("button");
+            this.AfterItemAdd(item);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        protected virtual void Buttons_AfterItemRemove(Component item)
+        {
+            item.RenderXType = true;
+            this.AfterItemRemove(item);
         }
 
         /// <summary>
@@ -1074,29 +1094,7 @@ namespace Ext.Net
             {
                 this.ViewState["HideCollapseTool"] = value;
             }
-        }
-
-        /// <summary>
-        /// An HTML fragment, or a DomHelper specification to use as the panel's body content (defaults to '').
-        /// </summary>
-        [Meta]
-        [DirectEventUpdate(MethodName = "Update")]
-        [ConfigOption("html")]
-        [Category("6. Panel")]
-        [DefaultValue("")]
-        [NotifyParentProperty(true)]
-        [Description("An HTML fragment, or a DomHelper specification to use as the panel's body content (defaults to '').")]
-        public virtual string Html
-        {
-            get
-            {
-                return (string)this.ViewState["Html"] ?? "";
-            }
-            set
-            {
-                this.ViewState["Html"] = value;
-            }
-        }
+        }        
 
         /// <summary>
         /// The icon to use in the Title bar. See also, IconCls to set an icon with a custom Css class.
@@ -1665,16 +1663,7 @@ namespace Ext.Net
         {
             this.Call("reload");
         }
-
-        /// <summary>
-        /// Updates the content of the Panel body with the supplied string ('html') value.
-        /// </summary>
-        [Description("Updates the content of the Panel body with the supplied string ('html') value.")]
-        protected virtual void SetHtml(string html)
-        {
-            this.Update(html);
-        }
-
+        
         /// <summary>
         /// Sets the CSS class that provides the icon image for this panel. This method will replace any existing icon class if one has already been set.
         /// </summary>
@@ -1749,54 +1738,13 @@ namespace Ext.Net
             this.Call(collapsed ? "collapse" : "expand");
         }
 
-        /// <summary>
-        /// Update the html of the Body, optionally searching for and processing scripts.
-        /// </summary>
-        /// <param name="html">The html string to update the body with. Replaces all content of the body.</param>
-        [Meta]
-        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
-        public virtual void Update(string html)
-        {
-            string template = "if({0}.rendered){{{0}.update({1});}}else{{{0}.html={1};}}";
-            this.AddScript(template, this.ClientID, JSON.Serialize(html));
-        }
-
-        /// <summary>
-        /// Update the html of the Body, optionally searching for and processing scripts.
-        /// </summary>
-        [Meta]
-        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
-        public virtual void Update(string html, bool loadScripts)
-        {
-            this.Call("update", html, loadScripts);
-        }
-
-        /// <summary>
-        /// Update the html of the Body, optionally searching for and processing scripts.
-        /// </summary>
-        [Meta]
-        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
-        public virtual void Update(string html, bool loadScripts, string callback)
-        {
-            this.Update(html, loadScripts, new JFunction(callback));
-        }
-
-        /// <summary>
-        /// Update the html of the Body, optionally searching for and processing scripts.
-        /// </summary>
-        [Meta]
-        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
-        public virtual void Update(string html, bool loadScripts, JFunction callback)
-        {
-            this.Call("update", html, loadScripts, callback);
-        }
-
-        List<Icon> IIcon.Icons
+        public virtual List<Icon> Icons
         {
             get
             {
                 List<Icon> icons = new List<Icon>(1);
                 icons.Add(this.Icon);
+
                 return icons;
             }
         }

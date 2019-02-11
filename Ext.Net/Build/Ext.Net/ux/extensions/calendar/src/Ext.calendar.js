@@ -35,6 +35,10 @@ Ext.ns('Ext.calendar');
                 }
                 return dt2.getTime() - dt1.getTime();
             },
+			
+			equalDates : function(dt1, dt2){
+				return dt1.getFullYear() == dt2.getFullYear() && dt1.getMonth() == dt2.getMonth() && dt1.getDate() == dt2.getDate();
+			},
 
             // private helper fn
             maxOrMin: function(max) {

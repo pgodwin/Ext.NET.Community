@@ -24,7 +24,9 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
         }
         
         if (this.ignoreTargets) {
-            for (var i = 0; i < this.ignoreTargets.length; i++) {
+            var i = 0;
+
+            for (i; i < this.ignoreTargets.length; i++) {
                 if (e.getTarget(this.ignoreTargets[i])) {
                     return;
                 }
@@ -32,9 +34,9 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
         }
 
         if (e.button === 0 &&
-            (this.keepSelectionOnClick == "always" || t.className == "x-grid3-row-checker") &&
-            t.className != "x-grid3-row-expander" &&
-            !Ext.fly(t).hasClass("x-grid3-td-expander")) {
+                (this.keepSelectionOnClick === "always" || t.className === "x-grid3-row-checker") &&
+                t.className !== "x-grid3-row-expander" &&
+                !Ext.fly(t).hasClass("x-grid3-td-expander")) {
 
             e.stopEvent();
             var row = e.getTarget(".x-grid3-row"),
@@ -46,7 +48,7 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
 
             index = row.rowIndex;
 
-            if (this.keepSelectionOnClick == "withctrlkey") {
+            if (this.keepSelectionOnClick === "withctrlkey") {
                 if (this.isSelected(index)) {
                     this.deselectRow(index);
                 } else {
@@ -123,7 +125,7 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
     },
 
     onHdMouseDown: function (e, t) {
-        if (t.className == "x-grid3-hd-checker") {
+        if (t.className === "x-grid3-hd-checker") {
             e.stopEvent();
             var hd = Ext.fly(t.parentNode);
             var isChecked = hd.hasClass("x-grid3-hd-checker-on");

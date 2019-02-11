@@ -22,6 +22,11 @@ Ext.DataView.override({
     getSelectionField : function () {
         if (!this.selectionField) {
             this.selectionField = new Ext.form.Hidden({ id: this.id + "_SN", name: this.id + "_SN" });
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectionField);
         }
 
         return this.selectionField;
@@ -30,9 +35,10 @@ Ext.DataView.override({
     updateSelection : function () {
         var records = [];
 
-        var selectedRecords = this.getSelectedRecords();
+        var selectedRecords = this.getSelectedRecords(),
+            i = 0;
 
-        for (var i = 0; i < selectedRecords.length; i++) {
+        for (i; i < selectedRecords.length; i++) {
             if (!Ext.isEmpty(selectedRecords[i])) {
                 records.push({ RecordID: selectedRecords[i].id, RowIndex: this.store.indexOfId(selectedRecords[i].id) });
             }
@@ -56,9 +62,10 @@ Ext.DataView.override({
 
             if (data.length > 0) {
                 var indexes = [],
-                    record;
+                    record,
+                    i = 0;
 
-                for (var i = 0; i < data.length; i++) {
+                for (i; i < data.length; i++) {
                     if (!Ext.isEmpty(data[i].recordID)) {
                         record = this.store.getById(data[i].recordID);
                         

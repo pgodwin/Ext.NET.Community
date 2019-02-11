@@ -70,9 +70,13 @@ Ext.Window.prototype.show = Ext.Window.prototype.show.createInterceptor(function
     if (!this.rendered) {
         this.render(this.renderTo || (this.defaultRenderTo === "body" ? Ext.getBody() : Ext.net.ResourceMgr.getAspForm()));
     }
-    
-    if (this.getEl().hasClass("x-window-dlg") && !this.dialogInitialized && this.closable) {
-        this.dialogInitialized = true;
-        this.mon(this.tools.close, "click", this.close.createDelegate(this, []));
+});
+
+Ext.MessageBox.show = Ext.MessageBox.show.createInterceptor(function () {
+    var dlg = this.getDialog("&#160;");
+
+    if (dlg.closeAction === "hide") {
+        dlg.closeAction = "close";
+        dlg.mon(dlg.tools.close, "click", dlg.close.createDelegate(dlg, []));
     }
 });

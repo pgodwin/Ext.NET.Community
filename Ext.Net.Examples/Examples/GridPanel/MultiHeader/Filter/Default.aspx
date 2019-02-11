@@ -78,17 +78,12 @@
     <ext:XScript runat="server">
         <script type="text/javascript">
                          
-            var applyFilter = function (field) {
-                if(field){
-                    var id = field.id,
-                        task = new Ext.util.DelayedTask(function(){
-                            var f = Ext.getCmp(id);
-                            f.focus();
-                            f.el.dom.value = f.el.dom.value;
-                        });
-                    task.delay(100);
-                }
-                #{Store1}.filterBy(getRecordFilter());                                
+            var applyFilter = function (field) {                
+                var store = #{GridPanel1}.getStore();
+                store.suspendEvents();
+                store.filterBy(getRecordFilter());                                
+                store.resumeEvents();
+                #{GridPanel1}.getView().refresh(false);
             };
              
             var clearFilter = function () {
@@ -103,9 +98,11 @@
  
             var filterString = function (value, dataIndex, record) {
                 var val = record.get(dataIndex);
+                
                 if (typeof val != "string") {
                     return value.length == 0;
                 }
+                
                 return val.toLowerCase().indexOf(value.toLowerCase()) > -1;
             };
  
@@ -124,6 +121,7 @@
                 if (!Ext.isEmpty(value, false) && val != value) {
                     return false;
                 }
+                
                 return true;
             };
  
@@ -132,31 +130,31 @@
  
                 f.push({
                     filter: function (record) {                         
-                        return filterString(#{ComboBox1}.getValue(), 'company', record);
+                        return filterString(#{ComboBox1}.getValue(), "company", record);
                     }
                 });
                  
                 f.push({
                     filter: function (record) {                         
-                        return filterNumber(#{PriceFilter}.getValue(), 'price', record);
+                        return filterNumber(#{PriceFilter}.getValue(), "price", record);
                     }
                 });
                  
                 f.push({
                     filter: function (record) {                         
-                        return filterNumber(#{ChangeFilter}.getValue(), 'change', record);
+                        return filterNumber(#{ChangeFilter}.getValue(), "change", record);
                     }
                 });
                  
                 f.push({
                     filter: function (record) {                         
-                        return filterNumber(#{PctChangeFilter}.getValue(), 'pctChange', record);
+                        return filterNumber(#{PctChangeFilter}.getValue(), "pctChange", record);
                     }
                 });
                  
                 f.push({
                     filter: function (record) {                         
-                        return filterDate(#{LastChangeFilter}.getValue(), 'lastChange', record);
+                        return filterDate(#{LastChangeFilter}.getValue(), "lastChange", record);
                     }
                 });
  

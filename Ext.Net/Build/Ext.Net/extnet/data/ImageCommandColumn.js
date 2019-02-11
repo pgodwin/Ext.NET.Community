@@ -8,7 +8,7 @@ Ext.net.ImageCommandColumn = function (config) {
         this.id = Ext.id();
     }
 
-    this.renderer = this.renderer.createDelegate(this);
+    //this.renderer = this.renderer.createDelegate(this);
 
     Ext.net.ImageCommandColumn.superclass.constructor.call(this);    
 };
@@ -26,9 +26,17 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
         
         if (this.grid.rendered) {
             view.mainBody.on("click", this.onClick, this);
+
+            if (view.lockedBody) {
+                view.lockedBody.on("click", this.onClick, this);
+            }
         } else {
             this.grid.afterRender = grid.afterRender.createSequence(function () {
                 view.mainBody.on("click", this.onClick, this);
+
+                if (view.lockedBody) {
+                    view.lockedBody.on("click", this.onClick, this);
+                }
             }, this);
         }
         
@@ -43,10 +51,12 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
         } else {
             sm.handleMouseDown = sm.handleMouseDown.createInterceptor(this.handleMouseDown, this);
         }
+        
+        this.renderer = this.renderer.createDelegate(this);
 
         if (view.groupTextTpl && this.groupCommands) {
             view.processEvent = view.processEvent.createInterceptor(function (name, e) {
-                if (name == "mousedown" && e.getTarget(".group-row-imagecommand")) {
+                if (name === "mousedown" && e.getTarget(".group-row-imagecommand")) {
                     return false;
                 }
             });
@@ -122,8 +132,8 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
     },
     
     interceptMouse : function (name, e) {
-        if (name == "mousedown" && e.getTarget('.group-row-imagecommand', this.grid.view.mainBody) ||
-           e.getTarget('.row-imagecommand ', this.grid.view.mainBody)) {
+        if ((name === "mousedown" && e.getTarget(".group-row-imagecommand", this.grid.view.mainBody)) ||
+                e.getTarget(".row-imagecommand ", this.grid.view.mainBody)) {
             e.stopEvent();
             return false;
         }
@@ -140,9 +150,11 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
             if (this.prepareCommands) {                
                 commands = Ext.net.clone(this.commands);
                 this.prepareCommands(this.grid, commands, record, row);
-            }            
+            }
             
-            for (var i = 0; i < commands.length; i++) {
+            var i = 0;
+                        
+            for (i; i < commands.length; i++) {
                 var cmd = commands[i];
                 
                 cmd.tooltip = cmd.tooltip || {};
@@ -250,7 +262,7 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
     getRecords : function (groupId) {
         if (groupId) {
             var records = this.grid.store.queryBy(function (record) {
-                    return record._groupId == groupId;
+                    return record._groupId === groupId;
                 });
                 
             return records ? records.items : [];
@@ -261,5 +273,8 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
     
     destroy : function () {
         this.grid.getView().mainBody.un("click", this.onClick, this);
+        if (this.grid.getView().lockedBody) {
+            this.grid.getView().lockedBody.un("click", this.onClick, this);
+        }
     }
 });

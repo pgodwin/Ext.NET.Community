@@ -133,8 +133,8 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * @param {Date} dt The date used to calculate the new view boundaries
      */
     setStartDate: function(dt){
-        this.header.setStartDate(dt, true);
-        this.body.setStartDate(dt, true);
+        this.header.setStartDate(dt, true, true);
+        this.body.setStartDate(dt, true, false);
     },
 
     // private
@@ -156,7 +156,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * @param {Date} dt The date to display
      */
     moveTo : function(dt, noRefresh){
-        this.header.moveTo(dt, noRefresh);
+        this.header.moveTo(dt, noRefresh, true);
         this.body.moveTo(dt, noRefresh);
     },
     
@@ -164,7 +164,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * Updates the view to the next consecutive date(s)
      */
     moveNext : function(noRefresh){
-        this.header.moveNext(noRefresh);
+        this.header.moveNext(noRefresh, true);
         this.body.moveNext(noRefresh);
     },
     
@@ -172,7 +172,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * Updates the view to the previous consecutive date(s)
      */
     movePrev : function(noRefresh){
-        this.header.movePrev(noRefresh);
+        this.header.movePrev(noRefresh, true);
         this.body.movePrev(noRefresh);
     },
 
@@ -181,7 +181,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * @param {Number} value The number of days (positive or negative) by which to shift the view
      */
     moveDays : function(value, noRefresh){
-        this.header.moveDays(value, noRefresh);
+        this.header.moveDays(value, noRefresh, true);
         this.body.moveDays(value, noRefresh);
     },
     
@@ -189,7 +189,7 @@ Ext.calendar.DayView = Ext.extend(Ext.Container, {
      * Updates the view to show today
      */
     moveToday : function(noRefresh){
-        this.header.moveToday(noRefresh);
+        this.header.moveToday(noRefresh, true);
         this.body.moveToday(noRefresh);
     }
 });

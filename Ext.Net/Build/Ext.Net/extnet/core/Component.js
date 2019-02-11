@@ -87,7 +87,8 @@ Ext.override(Ext.Component, {
         }
         
         if (Ext.isArray(plugins)) {
-            for (var i = 0; i < plugins.length; i++) {
+            var i = 0;
+            for (i; i < plugins.length; i++) {
                 this.plugins.push(this.initPlugin(plugins[i]));
             }
         } else {

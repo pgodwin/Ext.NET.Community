@@ -295,6 +295,7 @@
                         width      : 300, 
                         height     : 200
                     });" />
+                <BeforeSave Handler="var valid = true; this.each(function(r){if(r.dirty && !r.isValid()){valid=false;}}); return valid;" />
             </Listeners>
         </ext:Store>
         

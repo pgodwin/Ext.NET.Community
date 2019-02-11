@@ -52,6 +52,7 @@
                     iconCls : "icon-accept",
                     command : "accept"
                 }));
+                toolbar.doLayout();
             }
         };
         

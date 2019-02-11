@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -83,6 +83,9 @@ namespace Ext.Net
                 list.Add("qTipCfg", new ConfigOption("qTipCfg", new SerializationOptions("tooltip", JsonMode.Object), null, this.QTipCfg ));
                 list.Add("toolTipType", new ConfigOption("toolTipType", new SerializationOptions("tooltipType"), ToolTipType.Qtip, this.ToolTipType ));
                 list.Add("type", new ConfigOption("type", new SerializationOptions(JsonMode.ToLower), ButtonType.Button, this.Type ));
+                list.Add("navigateUrl", new ConfigOption("navigateUrl", new SerializationOptions(JsonMode.Ignore), "", this.NavigateUrl ));
+                list.Add("navigateUrlProxy", new ConfigOption("navigateUrlProxy", new SerializationOptions("navigateUrl"), "", this.NavigateUrlProxy ));
+                list.Add("target", new ConfigOption("target", null, "", this.Target ));
 
                 return list;
             }

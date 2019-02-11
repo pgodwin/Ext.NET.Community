@@ -402,7 +402,7 @@ Ext.ux.tree.TreeGrid = Ext.extend(Ext.net.TreePanel, {
     initNoLeafIcon : function () {
         if (this.noLeafIcon) {
             var css = "#" + this.id + " .x-tree-node-leaf .x-tree-node-icon{background-image: none;} #" + this.id + " .x-tree-node-leaf .x-tree-ec-icon{width:0px;}";
-            Ext.util.CSS.createStyleSheet(css, "ux.treegrid_css_"+this.id);
+			Ext.net.ResourceMgr.registerCssClass("ux.treegrid_css_" + this.id, css);        
         }
     },
 

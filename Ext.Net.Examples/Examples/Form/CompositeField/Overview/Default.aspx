@@ -31,7 +31,7 @@
             sb.AppendFormat("{0} = {1}<br />", value.Key, value.Value);
         }
 
-        X.Msg.Alert("Values", sb.ToString());
+        X.Msg.Alert("Values", sb.ToString()).Show();
     }
 
 </script>
@@ -248,7 +248,7 @@
                 <DirectEvents>
                     <Click OnEvent="SaveData" Before="return #{FormPanel1}.isValid();">
                         <ExtraParams>
-                            <ext:Parameter Name="values" Value="#{FormPanel1}.getForm().getValues()" Mode="Raw" />
+                            <ext:Parameter Name="values" Value="#{FormPanel1}.getForm().getValues()" Mode="Raw" Encode="true" />
                         </ExtraParams>
                     </Click>
                 </DirectEvents>

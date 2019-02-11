@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -99,15 +99,14 @@ namespace Ext.Net
         }
 
         /// <summary>
-        /// True if the the checkbox should render already checked (defaults to false).
+        /// True if the checkbox should render already checked (defaults to false).
         /// </summary>
         [Meta]
-        [ConfigOption]
         [DirectEventUpdate(MethodName = "SetValue")]
         [DefaultValue(false)]
         [Category("6. Checkbox")]
         [Bindable(true, BindingDirection.TwoWay)]
-        [Description("True if the the checkbox should render already checked (defaults to false).")]
+        [Description("True if the checkbox should render already checked (defaults to false).")]
         public virtual bool Checked
         {
             get
@@ -176,6 +175,7 @@ namespace Ext.Net
                 {
                     return "";
                 }
+
                 return (string)this.ViewState["InputValue"] ?? this.ClientID;
             }
             set

@@ -16,11 +16,15 @@ Ext.net.DirectMethod = {
             options = name;
         }
         
-        if (options.params) {
-            for (var key in options.params) {
-                obj = options.params[key];
+        if (options.params && options.json !== true) {
+            var key;
 
-                if (obj && typeof obj === "object") {
+            for (key in options.params) {
+                obj = options.params[key];
+                
+                if (obj === undefined) {
+                    delete options.params[key];
+                } else if (obj && typeof obj === "object") {
                     options.params[key] = Ext.encode(obj);
                 }
             }
@@ -40,6 +44,7 @@ Ext.net.DirectMethod = {
             directMethodFailure : options.failure,
             directMethodComplete : options.complete,
             viewStateMode       : options.viewStateMode,
+            isDirectMethod      : true,
             userSuccess         : function (response, result, control, eventType, action, extraParams, o) {
                 result = Ext.isEmpty(result.result, true) ? (result.d || result) : result.result;
                 
@@ -54,6 +59,8 @@ Ext.net.DirectMethod = {
             userFailure         : function (response, result, control, eventType, action, extraParams, o) {
                 if (!Ext.isEmpty(o.directMethodFailure)) {
                     o.directMethodFailure(result.errorMessage, response, extraParams, o);
+                } else if (o.showFailureWarning !== false) {
+                    Ext.net.DirectEvent.showFailure(response, result.errorMessage);
                 }
                 
                 if (!Ext.isEmpty(o.directMethodComplete)) {

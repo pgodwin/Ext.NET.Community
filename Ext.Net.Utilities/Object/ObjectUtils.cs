@@ -27,6 +27,11 @@ namespace Ext.Net.Utilities
 
         public static object Apply(object to, object from)
         {
+            return ObjectUtils.Apply(to, from, true);
+        }
+
+        public static object Apply(object to, object from, bool ignoreDefaultValues)
+        {
             PropertyInfo toProperty;
 
             object fromValue = null;
@@ -37,9 +42,18 @@ namespace Ext.Net.Utilities
                 if (fromProperty.CanRead)
                 {
                     fromValue = fromProperty.GetValue(from, null);
-                    defaultValue = ReflectionUtils.GetDefaultValue(fromProperty);
 
-                    if (fromValue != null && !fromValue.Equals(defaultValue))
+                    if (ignoreDefaultValues)
+                    {
+                        defaultValue = ReflectionUtils.GetDefaultValue(fromProperty);
+
+                        if (fromValue != null && fromValue.Equals(defaultValue))
+                        {
+                            continue;
+                        }
+                    }
+
+                    if (fromValue != null)
                     {
                         toProperty = to.GetType().GetProperty(fromProperty.Name, BindingFlags.Instance | BindingFlags.Public);
 

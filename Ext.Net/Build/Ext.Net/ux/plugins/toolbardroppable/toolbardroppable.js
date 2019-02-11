@@ -233,3 +233,5 @@ Ext.ux.ToolbarDroppable = Ext.extend(Object, {
      */
     afterLayout: Ext.emptyFn
 });
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

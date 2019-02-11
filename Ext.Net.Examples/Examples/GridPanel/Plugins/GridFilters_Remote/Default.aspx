@@ -213,7 +213,7 @@
                         </ext:GridFilters>
                     </Plugins>
                     <BottomBar>
-                        <ext:PagingToolbar runat="server" />
+                        <ext:PagingToolbar runat="server" PageSize="10" />
                     </BottomBar>
                 </ext:GridPanel>
             </Items>

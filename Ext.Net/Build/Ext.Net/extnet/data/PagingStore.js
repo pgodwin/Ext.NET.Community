@@ -6,6 +6,28 @@
 Ext.ns("Ext.ux.data");
 
 Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
+    reMap : function(record) {
+        if (Ext.isArray(record)) {
+            for (var i = 0, len = record.length; i < len; i++) {
+                this.reMap(record[i]);
+            }
+        } else {
+            delete this.data.map[record._phid];
+            this.data.map[record.id] = record;
+            var index = this.data.keys.indexOf(record._phid);
+            this.data.keys.splice(index, 1, record.id);
+            
+            if (this.allData) {
+                delete this.allData.map[record._phid];
+                this.allData.map[record.id] = record;
+                index = this.allData.keys.indexOf(record._phid);
+                this.allData.keys.splice(index, 1, record.id);
+            }           
+            
+            delete record._phid;
+        }
+    },
+    
     destroy : function () {
         if (window[this.storeId || this.id]) {
             window[this.storeId || this.id] = null;
@@ -94,7 +116,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
         this.totalLength--;
         // *** end ***
         
-        if (!record.newRecord) {
+        if (!record.isNew()) {
             record.lastIndex = index;
             this.deleted.push(record);
         }
@@ -209,7 +231,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
         } else {
             if (this.writer.listful === true && this.restful !== true) {
                 rs = (Ext.isArray(rs)) ? rs : [rs];
-            } else if (Ext.isArray(rs) && rs.length == 1) {
+            } else if (Ext.isArray(rs) && rs.length === 1) {
                 rs = rs.shift();
             }
             
@@ -273,8 +295,10 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             if (this.pruneModifiedRecords) {
                 this.modified = [];
             }
+
+            var i = 0;
             
-            for (var i = 0, len = r.length; i < len; i++) {
+            for (i, len = r.length; i < len; i++) {
                 r[i].join(this);
             }
             
@@ -355,10 +379,15 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     },
     
     collect : function (dataIndex, allowNull, bypassFilter) {
-        var d = (bypassFilter === true ? this.snapshot || this.allData || this.data: this.data).items;
-        var v, sv, r = [], l = {};
+        var d = (bypassFilter === true ? this.snapshot || this.allData || this.data : this.data).items,
+            v, 
+            sv, 
+            r = [], 
+            l = {},
+            i = 0,
+            len;
         
-        for (var i = 0, len = d.length; i < len; i++) {
+        for (i, len = d.length; i < len; i++) {
             v = d[i].data[dataIndex];
             sv = String(v);
         
@@ -389,7 +418,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             start = params[pn.start],
             limit = params[pn.limit];
             
-        if ((typeof start != "number") || (typeof limit != "number")) {
+        if ((typeof start !== "number") || (typeof limit !== "number")) {
             delete this.start;
             delete this.limit;
             this.lastParams = params;
@@ -412,7 +441,9 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             return false;
         }
         
-        for (var param in params) {
+        var param;
+
+        for (param in params) {
             if (params.hasOwnProperty(param) && (params[param] !== lastParams[param])) {
                 return false;
             }
@@ -430,7 +461,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     applyPaging : function () {
         var start = this.start, limit = this.limit;
         
-        if ((typeof start == "number") && (typeof limit == "number")) {
+        if ((typeof start === "number") && (typeof limit === "number")) {
             var allData = this.data, data = new Ext.util.MixedCollection(allData.allowFunctions, allData.getKey);
             
             if (start > allData.getCount()) {
@@ -439,10 +470,12 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             
             data.items = allData.items.slice(start, start + limit);
             data.keys = allData.keys.slice(start, start + limit);
-            var len = data.length = data.items.length;
-            var map = {};
+
+            var len = data.length = data.items.length,
+                map = {},
+                i = 0;
             
-            for (var i = 0; i < len; i++) {
+            for (i; i < len; i++) {
                 var item = data.items[i];
                 map[data.getKey(item)] = item;
             }
@@ -458,7 +491,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     },
 
     findPage : function (record) {
-        if ((typeof this.limit == "number")) {
+        if ((typeof this.limit === "number")) {
             return Math.ceil((this.allData || this.data).indexOf(record) / this.limit);
         }
 
@@ -466,11 +499,12 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     },
 
     openPage : function (pageIndex, callback) {
-        if ((typeof pageIndex != "number")) {
+        if ((typeof pageIndex !== "number")) {
             pageIndex = this.findPage(pageIndex);
         }
 
-        this.load({ params : {
+        this.load({ 
+            params : {
                 start : (pageIndex - 1) * this.limit, 
                 limit : this.limit
             }, 
@@ -490,27 +524,33 @@ Ext.ux.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
         this.cursor = (o.params && o.params[p.start]) ? o.params[p.start] : 0;
         this.onChange();
     },
+    
     onChange : function () {
         // *** add ***
         var t = this.store.getTotalCount(),
             s = this.pageSize;
-            
+
         if (t === 0) {
             this.cursor = 0;
         } else if (this.cursor >= t) {
-            this.cursor = Math.ceil((t + 1) / s) * s;
+            this.cursor = (Math.ceil(t / s) - 1) * s;
         }
-        
         // *** end ***
+
         var d = this.getPageData(),
             ap = d.activePage,
             ps = d.pages;
+
+        // *** add ***    
+        ap = ap > ps ? ps : ap;
+        // *** end ***
+
         this.afterTextItem.setText(String.format(this.afterPageText, d.pages));
         this.inputItem.setValue(ap);
-        this.first.setDisabled(ap == 1);
-        this.prev.setDisabled(ap == 1);
-        this.next.setDisabled(ap == ps);
-        this.last.setDisabled(ap == ps);
+        this.first.setDisabled(ap === 1);
+        this.prev.setDisabled(ap === 1);
+        this.next.setDisabled(ap === ps);
+        this.last.setDisabled(ap === ps);
         this.refresh.enable();
         this.updateInfo();
         this.fireEvent("change", this, d);

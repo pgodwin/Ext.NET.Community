@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -80,6 +80,7 @@ namespace Ext.Net
                 list.Add("transparent", new ConfigOption("transparent", null, false, this.Transparent ));
                 list.Add("widthIncrement", new ConfigOption("widthIncrement", new SerializationOptions(JsonMode.Raw), 0, this.WidthIncrement ));
                 list.Add("wrap", new ConfigOption("wrap", null, false, this.Wrap ));
+                list.Add("resizeElement", new ConfigOption("resizeElement", new SerializationOptions(JsonMode.Raw), null, this.ResizeElement ));
                 list.Add("listeners", new ConfigOption("listeners", new SerializationOptions("listeners", JsonMode.Object), null, this.Listeners ));
                 list.Add("directEvents", new ConfigOption("directEvents", new SerializationOptions("directEvents", JsonMode.Object), null, this.DirectEvents ));
 

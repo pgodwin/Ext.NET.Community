@@ -31,7 +31,7 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         Ext.grid.RowExpander.superclass.constructor.call(this);
 
         if (this.tpl) {
-            if (typeof this.tpl == "string") {
+            if (typeof this.tpl === "string") {
                 this.tpl = new Ext.Template(this.tpl);
             }
             
@@ -47,11 +47,6 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
 
         this.state = {};
         this.bodyContent = {};
-        
-        if (Ext.isEmpty(Ext.fly("Ext.grid.RowExpander_css"))) {
-            var css = ".x-grid3-row-expanded .x-grid3-row-expander {background-position:-21px 2px;} .x-grid3-row-collapsed .x-grid3-row-expander {background-position:4px 2px;} .x-grid3-row-expanded .x-grid3-row-body {display:block !important;} .x-grid3-row-collapsed .x-grid3-row-body {display:none !important;}";
-            Ext.util.CSS.createStyleSheet(css, "Ext.grid.RowExpander_css");
-        }
     },
     
     getExpanded : function () {
@@ -201,11 +196,13 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
     
     onEnter : function (e) {
-        var g = this.grid;
-        var sm = g.getSelectionModel();
-        var sels = sm.getSelections();
+        var g = this.grid,
+            sm = g.getSelectionModel(),
+            sels = sm.getSelections(),
+            i,
+            len;
         
-        for (var i = 0, len = sels.length; i < len; i++) {
+        for (i = 0, len = sels.length; i < len; i++) {
             var rowIdx = g.getStore().indexOf(sels[i]);
             this.toggleRow(rowIdx);
         }
@@ -255,7 +252,7 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     toggleRow : function (row) {
-        if (typeof row == "number") {
+        if (typeof row === "number") {
             row = this.grid.view.getRow(row);
         }
         
@@ -267,20 +264,24 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
             return;
         }
         
-        for (var i = 0; i < this.grid.store.getCount(); i++) {
+        var i = 0;
+
+        for (i; i < this.grid.store.getCount(); i++) {
             this.expandRow(i);
         }
     },
     
     collapseAll : function () {
-        for (var i = 0; i < this.grid.store.getCount(); i++) {
+        var i = 0;
+
+        for (i; i < this.grid.store.getCount(); i++) {
             this.collapseRow(i);
         }
         this.state = {};
     },
 
     expandRow : function (row) {
-        if (typeof row == "number") {
+        if (typeof row === "number") {
             row = this.grid.view.getRow(row);
         }
         
@@ -289,7 +290,6 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         }            
         
         var record = this.grid.store.getAt(row.rowIndex),
-            //body = Ext.DomQuery.selectNode("tr:nth(2) div.x-grid3-row-body", row);
             body = Ext.DomQuery.selectNode(this.rowBodySelector, row);
         
         if (this.beforeExpand(record, body, row.rowIndex)) {
@@ -323,7 +323,7 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     collapseRow : function (row) {
-        if (typeof row == "number") {
+        if (typeof row === "number") {
             row = this.grid.view.getRow(row);
         }
         
@@ -332,12 +332,28 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         } 
         
         var record = this.grid.store.getAt(row.rowIndex),
-            body = Ext.fly(row).child("tr:nth(1) div.x-grid3-row-body", true);
+            body = Ext.DomQuery.selectNode(this.rowBodySelector, row);
         
         if (this.fireEvent("beforecollapse", this, record, body, row.rowIndex) !== false) {
             this.state[record.id] = false;
             Ext.fly(row).replaceClass("x-grid3-row-expanded", "x-grid3-row-collapsed");
             this.fireEvent("collapse", this, record, body, row.rowIndex);
         }
+    },
+    
+    isCollapsed : function (row) {
+        if (typeof row === "number") {
+            row = this.grid.view.getRow(row);
+        }
+
+        return Ext.fly(row).hasClass("x-grid3-row-collapsed");
+    },
+    
+    isExpanded : function (row) {
+        if (typeof row === "number") {
+            row = this.grid.view.getRow(row);
+        }
+
+        return Ext.fly(row).hasClass("x-grid3-row-expanded");
     }
 });

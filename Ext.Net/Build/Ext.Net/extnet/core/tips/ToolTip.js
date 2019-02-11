@@ -49,3 +49,18 @@ Ext.ToolTip.override({
         }
     }
 });
+
+Ext.QuickTips.init = Ext.QuickTips.init.createSequence(function () {
+    var fn = function () {
+            var tip = Ext.QuickTips.getQuickTip();
+            if (tip) {
+                tip.disabled = true;
+            }
+        };
+        
+    if (window.addEventListener) {
+        window.addEventListener("unload", fn, false);
+    } else if (window.attachEvent) {
+        window.attachEvent("onunload", fn);
+    } 
+});

@@ -179,12 +179,12 @@
                                             <Items>
                                                 <ext:Button ID="Button1" runat="server" Text="Edit" Icon="Pencil">
                                                     <Listeners>
-                                                        <Click Handler="el.setDisabled(true);#{Button2}.setDisabled(false);#{PanelEditor}.startEdit(#{Panel1}.getBody());" />
+                                                        <Click Handler="this.setDisabled(true);#{Button2}.setDisabled(false);#{PanelEditor}.startEdit(#{Panel1}.getBody());" />
                                                     </Listeners>
                                                 </ext:Button>
                                                 <ext:Button ID="Button2" runat="server" Text="Save" Icon="Disk" Disabled="true">
                                                     <Listeners>
-                                                        <Click Handler="el.setDisabled(true);#{Button1}.setDisabled(false);#{PanelEditor}.completeEdit();" />
+                                                        <Click Handler="this.setDisabled(true);#{Button1}.setDisabled(false);#{PanelEditor}.completeEdit();" />
                                                     </Listeners>
                                                 </ext:Button>    
                                             </Items>

@@ -12,6 +12,12 @@ Ext.net.PropertyGrid = Ext.extend(Ext.grid.PropertyGrid, {
     getDataField : function () {
         if (!this.dataField) {
             this.dataField = new Ext.form.Hidden({ id : this.id + "_Data", name : this.id + "_Data" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.dataField);
         }
         
         return this.dataField;

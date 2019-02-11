@@ -447,6 +447,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
             this.updateNavState();
         }
         this.activeView = l.activeItem;
+        Ext.select('.ext-dd-shim').hide();  //added by Danill to clear selection
         this.fireViewChange();
     },
 
@@ -482,7 +483,7 @@ Ext.calendar.CalendarPanel = Ext.extend(Ext.Panel, {
      * @param {Date} dt
      */
     setStartDate: function(dt) {
-        this.layout.activeItem.setStartDate(dt, true);
+        this.layout.activeItem.setStartDate(dt, true, true);
         this.updateNavState();
         this.fireViewChange();
     },

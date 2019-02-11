@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -89,7 +89,7 @@ namespace Ext.Net
                 list.Add("applicationName", new ConfigOption("applicationName", new SerializationOptions("appName"), "", this.ApplicationName));
                 list.Add("registeredIcons", new ConfigOption("registeredIcons", new SerializationOptions("icons", JsonMode.Raw), "", this.RegisteredIcons));
 
-                ResourceManager.RemoveViewStateStatic = this.RemoveViewState;
+                ResourceManager.DisableViewStateStatic = this.DisableViewState;
 
                 return list;
             }
@@ -106,8 +106,8 @@ namespace Ext.Net
                 List<ResourceItem> baseList = base.Resources;
 
                 baseList.Capacity += 3;
-                baseList.Add(new ClientStyleItem(typeof(Component), "Ext.Net.Build.Ext.Net.extjs.resources.css.xtheme-gray-embedded.css", "/extjs/resources/css/xtheme-gray-embedded.css", "http://extjs.cachefly.net/ext-3.1.0/resources/css/xtheme-gray.css", Theme.Gray));
-                baseList.Add(new ClientStyleItem(typeof(Component), "Ext.Net.Build.Ext.Net.extjs.resources.css.xtheme-access-embedded.css", "/extjs/resources/css/xtheme-access-embedded.css", "http://extjs.cachefly.net/ext-3.1.0/resources/css/xtheme-access.css", Theme.Access));
+                baseList.Add(new ClientStyleItem(typeof(Component), "Ext.Net.Build.Ext.Net.extjs.resources.css.xtheme-gray-embedded.css", "/extjs/resources/css/xtheme-gray-embedded.css", this.GetCacheFlyLink("resources/css/xtheme-gray.css"), Theme.Gray));
+                baseList.Add(new ClientStyleItem(typeof(Component), "Ext.Net.Build.Ext.Net.extjs.resources.css.xtheme-access-embedded.css", "/extjs/resources/css/xtheme-access-embedded.css", this.GetCacheFlyLink("resources/css/xtheme-access.css"), Theme.Access));
                 baseList.Add(new ClientStyleItem(typeof(Component), "Ext.Net.Build.Ext.Net.extjs.resources.css.xtheme-slate-embedded.css", "/extjs/resources/css/xtheme-slate-embedded.css", Theme.Slate));
 
                 switch (this.DebugConsole)
@@ -122,8 +122,7 @@ namespace Ext.Net
                         break;
                     case DebugConsole.Firebug:
                         baseList.Capacity += 3;
-                        baseList.Add(new ClientScriptItem(typeof(DebugConsole), "Ext.Net.Build.Ext.Net.ux.extensions.debug.Debug.js", "/ux/extensions/debug/Debug.js"));
-                        baseList.Add(new ClientStyleItem(typeof(DebugConsole), "Ext.Net.Build.Ext.Net.ux.extensions.debug.firebug.css.firebug-lite-embedded.css", "/ux/extensions/debug/firebug/css/firebug-lite.css"));
+                        baseList.Add(new ClientScriptItem(typeof(DebugConsole), "Ext.Net.Build.Ext.Net.ux.extensions.debug.Debug.js", "/ux/extensions/debug/Debug.js"));                        
                         baseList.Add(new ClientScriptItem(typeof(DebugConsole), "Ext.Net.Build.Ext.Net.ux.extensions.debug.firebug.firebug-lite-min.js", "/ux/extensions/debug/firebug/firebug-lite-min.js"));
                         break;
                     default:
@@ -428,28 +427,6 @@ namespace Ext.Net
             }
         }
 
-        bool log = false;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [Browsable(false)]
-        [DefaultValue(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [Description("")]
-        public virtual bool Log
-        {
-            get
-            {
-                return this.log;
-            }
-            set
-            {
-                this.log = value;
-            }
-        }
-
 
         /*  Lifecycle
             -----------------------------------------------------------------------------------------------*/
@@ -484,13 +461,18 @@ namespace Ext.Net
                         {
                             string[] credentials = key.Split(',');
 
-                            if (credentials.Length == 2)
+                            if (credentials.Length == 3)
                             {
-                                DateTime dt;
-                            
-                                if (DateTime.TryParseExact(credentials[1], "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt) && dt >= DateTime.Now)
+                                int ver;
+
+                                if (Int32.TryParse(credentials[1], out ver) && ver >= 1)
                                 {
-                                    this.isValidLicenseKey = true;
+                                    DateTime dt;
+
+                                    if (DateTime.TryParseExact(credentials[2], "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt) && dt >= DateTime.Now)
+                                    {
+                                        this.isValidLicenseKey = true;
+                                    }
                                 }
                             }
                         }
@@ -618,13 +600,14 @@ namespace Ext.Net
                 if (this.IsPro &&
                     !X.IsAjaxRequest &&
                     !RequestManager.IsMicrosoftAjaxRequest &&
-                    !(this.Page.Request.IsLocal || this.Page.Request.UserHostAddress == "192.0.0.1") &&
+                    !this.Page.Request.IsLocal &&
                     !this.IsValidLicenseKey)
                 {
                     X.Msg.Notify(new NotificationConfig
                     {
                         Title = "Unlicensed",
-                        Html = "This product is Unlicensed",
+                        Icon = Icon.Exclamation,
+                        Html = "Ext.NET is Unlicensed.<br /><a href=\"http://www.ext.net/store/\">Purchase Ext.NET Pro License</a>",
                         Closable = false,
                         AutoHide = false
                     }).Show();
@@ -765,8 +748,24 @@ namespace Ext.Net
                                 sb.Append(",");
                             }
 
+                            bool force = false;
+                            string url = item.Value;
+
+                            if (url.StartsWith("_force_"))
+                            {
+                                url = url.Substring(7);
+                                force = true;
+                            }
+
                             comma = true;
-                            sb.Append("{url:").Append(JSON.Serialize(item.Value)).Append("}");
+                            sb.Append("{url:").Append(JSON.Serialize(url));
+
+                            if (force)
+                            {
+                                sb.Append(",force:true");
+                            }
+
+                            sb.Append("}");
                         }
 
                         foreach (KeyValuePair<string, string> item in this.ClientStyleIncludeInternalBag)
@@ -982,7 +981,7 @@ namespace Ext.Net
         [Description("")]
         public string GetCacheFlyLink(string relativePath)
         {
-            return "http://extjs.cachefly.net/ext-3.1.1/".ConcatWith(relativePath);
+            return "http://extjs.cachefly.net/ext-3.3.0/".ConcatWith(relativePath);
         }
 
         internal void RegisterDirectEvents()
@@ -1349,13 +1348,13 @@ namespace Ext.Net
                                 path = "adapter/ext/ext-base";
                                 break;
                             case ScriptAdapter.jQuery:
-                                path = "adapter/jquery/ext-jquery-adapter.js";
+                                path = "adapter/jquery/ext-jquery-adapter";
                                 break;
                             case ScriptAdapter.Prototype:
-                                path = "adapter/prototype/ext-prototype-adapter.js";
+                                path = "adapter/prototype/ext-prototype-adapter";
                                 break;
                             case ScriptAdapter.YUI:
-                                path = "adapter/yui/ext-yui-adapter.js";
+                                path = "adapter/yui/ext-yui-adapter";
                                 break;
                         }
 
@@ -1367,16 +1366,16 @@ namespace Ext.Net
                         switch (this.ScriptAdapter)
                         {
                             case ScriptAdapter.Ext:
-                                path =".extjs.adapter.ext.ext-base";
+                                path = ".extjs.adapter.ext.ext-base";
                                 break;
                             case ScriptAdapter.jQuery:
-                                path = ".extjs.adapter.jquery.ext-jquery-adapter.js";
+                                path = ".extjs.adapter.jquery.ext-jquery-adapter";
                                 break;
                             case ScriptAdapter.Prototype:
-                                path = ".extjs.adapter.prototype.ext-prototype-adapter.js";
+                                path = ".extjs.adapter.prototype.ext-prototype-adapter";
                                 break;
                             case ScriptAdapter.YUI:
-                                path = ".extjs.adapter.yui.ext-yui-adapter.js";
+                                path = ".extjs.adapter.yui.ext-yui-adapter";
                                 break;
                         }
 
@@ -1425,6 +1424,24 @@ namespace Ext.Net
             return source.ToString();
         }
 
+        public void RegisterLocale(string localeCode)
+        {
+            if (X.IsAjaxRequest)
+            {
+                bool isParent;
+
+                if (ResourceManager.IsSupportedCulture(localeCode, out isParent) && !(this.Locale.Equals("en") || this.Locale.Equals("en-US")))
+                {
+                    string cultureName = isParent ? localeCode.Split(new char[] { '-' })[0] : localeCode;
+                    this.RegisterClientScriptInclude(this.GetType(), ResourceManager.ASSEMBLYSLUG + ".extjs.locale.ext-lang-".ConcatWith(cultureName, ".js"), true);
+                }                
+            }
+            else
+            {
+                this.Locale = localeCode;
+            }
+        }
+
         private void RegisterLocale(StringBuilder source)
         {
             if (this.Locale.Equals("ignore", StringComparison.InvariantCultureIgnoreCase))
@@ -1434,16 +1451,23 @@ namespace Ext.Net
 
             if (HttpContext.Current != null && this.Locale.Equals("client", StringComparison.InvariantCultureIgnoreCase))
             {
-                string lang = HttpContext.Current.Request.UserLanguages[0];
-
-                if (lang != null)
+                if (HttpContext.Current.Request.UserLanguages != null && HttpContext.Current.Request.UserLanguages.Length > 0)
                 {
-                    if (lang.Length < 3)
-                    {
-                        lang = lang + "-" + lang.ToUpper();
-                    }
+                    string lang = HttpContext.Current.Request.UserLanguages[0];
 
-                    this.Locale = lang;
+                    if (lang != null)
+                    {
+                        if (lang.Length < 3)
+                        {
+                            lang = new CultureInfo(lang).TextInfo.CultureName;
+                        }
+                        
+                        this.Locale = lang;
+                    }
+                }
+                else
+                {
+                    return;
                 }
             }
             
@@ -1456,60 +1480,47 @@ namespace Ext.Net
                     return;
                 }
                 string cultureName = isParent ? this.Locale.Split(new char[]{'-'})[0] : this.Locale;
-                source.Append(string.Format(ResourceManager.ScriptIncludeTemplate, this.GetWebResourceUrl(ResourceManager.ASSEMBLYSLUG + ".extjs.locale.ext-lang-".ConcatWith(cultureName, ".js"))));
+                source.Append(string.Format(ResourceManager.ScriptIncludeTemplate, this.GetWebResourceUrl(ResourceManager.ASSEMBLYSLUG + ".extnet.locale.ext-lang-".ConcatWith(cultureName, ".js"))));
             }
         }
+
+        private CultureInfo currentLocale;
 
         /// <summary>
         /// 
         /// </summary>
         [Description("")]
-        public System.Globalization.CultureInfo CurrentLocale
+        public virtual CultureInfo CurrentLocale
         {
             get
             {
-                if (this.Locale.Equals("ignore", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return System.Globalization.CultureInfo.InvariantCulture;
-                }
+                string locale = this.Locale;
+                bool isParent;
+                this.currentLocale = CultureInfo.InvariantCulture;
 
-                if (HttpContext.Current != null && this.Locale.Equals("client", StringComparison.InvariantCultureIgnoreCase))
+                if (!locale.Equals("ignore", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string lang = HttpContext.Current.Request.UserLanguages[0];
-
-                    if (lang != null)
+                    if (locale.Equals("client", StringComparison.InvariantCultureIgnoreCase) && HttpContext.Current != null)
                     {
-                        if (lang.Length < 3)
+                        if (HttpContext.Current.Request.UserLanguages != null && HttpContext.Current.Request.UserLanguages.Length > 0)
                         {
-                            lang = lang + "-" + lang.ToUpper();
+                            locale = HttpContext.Current.Request.UserLanguages[0];
                         }
-
-                        this.Locale = lang;
                     }
+
+                    if (ResourceManager.IsSupportedCulture(locale, out isParent))
+                    {
+                        string cultureName = isParent ? locale.Split(new char[] { '-' })[0] : locale;
+                        this.currentLocale = new CultureInfo(cultureName.Length == 2 ? new CultureInfo(cultureName).TextInfo.CultureName : cultureName);
+                    }
+                    
                 }
 
-                if (ResourceManager.IsSupportedCulture(this.Locale))
-                {
-                    if (this.Locale == "en" || this.Locale == "en-US")
-                    {
-                        return System.Globalization.CultureInfo.InvariantCulture;
-                    }
-
-                    if (this.Locale.Length == 2)
-                    {
-                        return new System.Globalization.CultureInfo(this.Locale+"-"+this.Locale.ToUpperInvariant());
-                    }
-
-                    return new System.Globalization.CultureInfo(this.Locale);
-                }
-
-                return System.Globalization.CultureInfo.InvariantCulture;
+                return this.currentLocale;
             }
         }
 
-        private class DirectMethodList: List<DirectMethod>
-        {
-        }
+        private class DirectMethodList : List<DirectMethod> { }
 
         /// <summary>
         /// 
@@ -2059,7 +2070,7 @@ namespace Ext.Net
 
         internal void RegisterInitID(XControl control)
         {
-            if (!control.IsIdRequired && (control.IDMode == IDMode.Ignore || ((control.IDMode == IDMode.Explicit || control.IDMode == IDMode.ExplicitClientID) && control.IsGeneratedID)))
+            if (!control.IsIdRequired && (control.IDMode == IDMode.Ignore || ((control.IDMode == IDMode.Explicit || control.IDMode == IDMode.Client) && control.IsGeneratedID)))
             {
                 this.ExcludeFromLazyInit.Add(control.ClientID);
                 return;
@@ -2131,6 +2142,7 @@ namespace Ext.Net
         }
 
         private static Regex ClientInit_RE = new Regex(@"({)([\w\.]+)(_ClientInit})", RegexOptions.Compiled);
+
         private string Combine(string key)
         {
             string value = "";
@@ -2350,21 +2362,21 @@ namespace Ext.Net
                         throw new Exception("Several resource containers with the same type (" + container.Mode + ") is not allowed.");
                     }
 
-                    switch(container.Mode)
-                    {
-                        case ResourceMode.Script:
-                            if (this.GetResourceContainerCount(ResourceMode.ScriptFiles) > 0)
-                            {
-                                throw new Exception("ResourceContainer with Type='Script' can not be used with a container with Type='ScriptFiles'");
-                            }
-                            break;
-                        case ResourceMode.ScriptFiles:
-                            if (this.GetResourceContainerCount(ResourceMode.Script) > 0)
-                            {
-                                throw new Exception("ResourceContainer with Type='ScriptFiles' can not be used with a container with Type='Script'");
-                            }
-                            break;
-                    }
+                    //switch(container.Mode)
+                    //{
+                    //    case ResourceMode.Script:
+                    //        if (this.GetResourceContainerCount(ResourceMode.ScriptFiles) > 0)
+                    //        {
+                    //            throw new Exception("ResourceContainer with Type='Script' can not be used with a container with Type='ScriptFiles'");
+                    //        }
+                    //        break;
+                    //    case ResourceMode.ScriptFiles:
+                    //        if (this.GetResourceContainerCount(ResourceMode.Script) > 0)
+                    //        {
+                    //            throw new Exception("ResourceContainer with Type='ScriptFiles' can not be used with a container with Type='Script'");
+                    //        }
+                    //        break;
+                    //}
                 }
 
                 validated = true;
@@ -3178,7 +3190,7 @@ namespace Ext.Net
                 }
                 else
                 {
-                    ctrl = ControlUtils.FindControlByClientID(this.Page, controlID, true, null);
+                    ctrl = ResourceManager.FindControlByConfigID(this.Page, controlID, true, null);
 
                     if (ctrl == null)
                     {
@@ -3391,16 +3403,16 @@ namespace Ext.Net
             }
         }
 
-        internal static bool RemoveViewStateStatic
+        internal static bool DisableViewStateStatic
         {
             get
             {
-                object obj = HttpContext.Current.Items["ExtNetParam_RemoveViewStateStatic"];
+                object obj = HttpContext.Current.Items["ExtNetParam_DisableViewStateStatic"];
                 return obj == null ? false : (bool)obj;
             }
             set
             {
-                HttpContext.Current.Items["ExtNetParam_RemoveViewStateStatic"] = value;
+                HttpContext.Current.Items["ExtNetParam_DisableViewStateStatic"] = value;
             }
         }
 
@@ -3536,6 +3548,89 @@ namespace Ext.Net
             }
 
             return isMicrosoftCLR.Value;
+        }
+
+        public static Control FindControlByConfigID(Control seed, string configID, bool traverse, Control branch)
+        {
+            if (seed == null || string.IsNullOrEmpty(configID))
+            {
+                return null;
+            }
+
+            Control parent = (seed is INamingContainer) ? seed : seed.NamingContainer;
+
+            if ((parent is XControl) && configID.Equals(((XControl)parent).ConfigID ?? ""))
+            {
+                return parent;
+            }
+
+            Control found = null;
+            string exclude = ((branch != null && branch is XControl) ? ((XControl)branch).ConfigID : (branch != null ? branch.ClientID : "")) ?? "";
+            string tempID = "";
+            string tempConfigID = "";
+
+            List<Control> waiting = new List<Control>();
+
+            foreach (Control c in parent.Controls)
+            {
+                tempID = c.ID ?? "";
+                tempConfigID = (c is XControl ? ((XControl)c).ConfigID : c.ClientID) ?? "";
+
+                if (configID.Equals(tempID) || configID.Equals(tempConfigID))
+                {
+                    found = c;
+                }
+                else if (ControlUtils.HasControls(c) && (exclude.IsEmpty() || !exclude.Equals(tempConfigID)))
+                {
+                    found = ResourceManager.FindChildControlByConfigID(c, configID);
+                }
+
+                if (found != null)
+                {
+                    break;
+                }
+            }
+
+            if (traverse && found == null)
+            {
+                found = ResourceManager.FindControlByConfigID(parent.NamingContainer, configID, true, parent);
+            }
+
+            return found;
+        }
+
+        public static Control FindChildControlByConfigID(Control seed, string configID)
+        {
+            if (seed == null || string.IsNullOrEmpty(configID))
+            {
+                return null;
+            }
+
+            Control found = null;
+            string tempID = "";
+            string tempConfigID = "";
+
+            foreach (Control control in seed.Controls)
+            {
+                tempID = control.ID ?? "";
+                tempConfigID = control is XControl ?  ((XControl)control).ConfigID : control.ClientID;
+
+                if (configID.Equals(tempID) || configID.Equals(tempConfigID))
+                {
+                    found = control;
+                }
+                else if (ControlUtils.HasControls(control))
+                {
+                    found = ResourceManager.FindChildControlByConfigID(control, configID);
+                }
+
+                if (found != null)
+                {
+                    break;
+                }
+            }
+
+            return found;
         }
     }
 }

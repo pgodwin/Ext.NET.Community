@@ -21,7 +21,7 @@ Ext.form.CheckboxGroup.override({
         var box = null;
         
         this.eachItem(function (f) {
-            if (id == f || f.dataIndex == id || f.tag == id || f.id == id || f.getName() == id) {
+            if (id === f || f.dataIndex === id || f.tag === id || f.id === id || f.getName() === id) {
                 box = f;
                 return false;
             }

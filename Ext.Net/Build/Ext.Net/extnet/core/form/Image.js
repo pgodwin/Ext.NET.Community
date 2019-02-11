@@ -31,8 +31,7 @@ Ext.net.Image = Ext.extend(Ext.form.Label, {
                 this.on("complete", function () {
                     if (this.rendered) {
                         this.getMaskEl().unmask(this.loadMask.removeMask);
-                    }
-                    else {
+                    } else {
                         this.loadMask.deferredMask = false;
                     }
                 }, this);

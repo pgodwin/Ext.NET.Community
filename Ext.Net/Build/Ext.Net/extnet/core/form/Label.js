@@ -53,13 +53,13 @@ Ext.form.Label.override({
                 img.style.display = "none";
             }
 
-            if (this.iconAlign == "left") {
+            if (this.iconAlign === "left") {
                 this.el.appendChild(img);
             }
 
             this.el.appendChild(this.valueElement());
 
-            if (this.iconAlign == "right") {
+            if (this.iconAlign === "right") {
                 this.el.appendChild(img);
             }
 

@@ -1,9 +1,9 @@
 
 // @source data/CommandColumn.js
 
-Ext.grid.GridView.prototype.refreshRow = Ext.grid.GridView.prototype.refreshRow.createInterceptor(function (record) {
-    this.fireEvent("beforerowupdate", this, this.grid.store.indexOf(record), record);
-});
+//Ext.grid.GridView.prototype.refreshRow = Ext.grid.GridView.prototype.refreshRow.createInterceptor(function (record) {
+//    this.fireEvent("beforerowupdate", this, this.grid.store.indexOf(record), record);
+//});
 
 Ext.net.CommandColumn = function (config) {
     Ext.apply(this, config);
@@ -32,9 +32,9 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
         this.cache = [];
 
-        if (Ext.isEmpty(view.events) || Ext.isEmpty(view.events.beforerowupdated)) {
-            view.addEvents("beforerowupdated");
-        }
+//        if (Ext.isEmpty(view.events) || Ext.isEmpty(view.events.beforerowupdate)) {
+//            view.addEvents("beforerowupdate");
+//        }
         
         this.commands = this.commands || [];
 
@@ -287,7 +287,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
     getRecords : function (groupId) {
         if (groupId) {
             var records = this.grid.store.queryBy(function (r) {
-                    return r._groupId == groupId;
+                    return r._groupId === groupId;
                 });
 
             return records ? records.items : [];
@@ -321,7 +321,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
                 _group = this.grid.view.findGroup(div),
                 _groupId = _group ? _group.id.replace(/ext-gen[0-9]+-gp-/, "") : null;
 
-            if (_groupId == groupId) {
+            if (_groupId === groupId) {
                 var el = div.last();
 
                 if (!Ext.isEmpty(el)) {
@@ -344,11 +344,14 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
         }
 
         if (this.commands) {
-            for (var i = start; i < end; i++) {
+            var i = start;
+
+            for (i; i < end; i++) {
 
                 var toolbar = new Ext.Toolbar({
-                    items: this.commands,
-                    enableOverflow: false
+                    items          : this.commands,
+                    enableOverflow : false,
+                    buttonAlign    : this.buttonAlign
                 }),
                     div;
 
@@ -389,7 +392,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
                         if (!Ext.isEmpty(button.command, false)) {
                             button.on("click", function () {
-                                this.toolbar.grid.fireEvent("command", this.command, this.toolbar.record, this.toolbar.rowIndex);
+                                this.toolbar.grid.fireEvent("command", this.command, this.toolbar.record, this.toolbar.record.store.indexOf(this.toolbar.record));
                             }, button);
                         }
 
@@ -432,7 +435,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
                         }
                         if (pm && pm.shared && pm.ownerCt && pm.ownerCt.toolbar) {
                             var toolbar = pm.ownerCt.toolbar;
-                            toolbar.grid.fireEvent("command", this.command, toolbar.record, toolbar.rowIndex);
+                            toolbar.grid.fireEvent("command", this.command, toolbar.record, toolbar.record.store.indexOf(toolbar.record));
                         }
                     }, item);
 
@@ -466,21 +469,25 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
     },
 
     removeToolbar : function (view, rowIndex, record) {
-        for (var i = 0, l = this.cache.length; i < l; i++) {
-            if (this.cache[i].record && (this.cache[i].record.id == record.id)) {
+        var i,
+            l;
+
+        for (i = 0, l = this.cache.length; i < l; i++) {
+            if (this.cache[i].record && (this.cache[i].record.id === record.id)) {
                 try {
                     this.cache[i].destroy();
                     this.cache.remove(this.cache[i]);
-                }
-                catch (ex) {
-                }
+                } catch (ex) { }
                 break;
             }
         }
     },
 
     removeToolbars : function () {
-        for (var i = 0, l = this.cache.length; i < l; i++) {
+        var i,
+            l;
+
+        for (i = 0, l = this.cache.length; i < l; i++) {
             try {
                 this.cache[i].destroy();
             } catch (ex) { }
@@ -505,9 +512,10 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
     getAllToolbars : function () {
         var tdCmd = this.select(),
-            toolbars = [];
+            toolbars = [],
+            i = 0;
 
-        for (var i = 0; i < tdCmd.length; i++) {
+        for (i; i < tdCmd.length; i++) {
             var div = Ext.fly(tdCmd[i]).first("div"),
                 el = div.first();
 

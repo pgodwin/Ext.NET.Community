@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -146,13 +146,13 @@ namespace Ext.Net
         /// 
         /// </summary>
         [ConfigOption("value")]
-        [DefaultValue("")]
-        [Description("")]
-        protected virtual string SelectedTimeProxy
+        [DefaultValue(null)]
+        protected internal override object ValueProxy
         {
             get
             {
-                return (this.SelectedTime != this.initTime) ? new DateTime(this.SelectedTime.Ticks).ToString(this.Format, System.Threading.Thread.CurrentThread.CurrentCulture).ToLower(System.Threading.Thread.CurrentThread.CurrentCulture) : "";
+                CultureInfo culture = this.SafeResourceManager != null ? this.ResourceManager.CurrentLocale : CultureInfo.CurrentUICulture;
+                return (this.SelectedTime != this.initTime) ? new DateTime(this.SelectedTime.Ticks).ToString(this.Format, culture).ToLower(culture) : null;
             }
         }
 
@@ -187,7 +187,6 @@ namespace Ext.Net
         /// 
         /// </summary>
         [Meta]
-        [ConfigOption(JsonMode.Ignore)]
         [Browsable(false)]
         [DirectEventUpdate(MethodName = "SetTimeValue")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -202,6 +201,16 @@ namespace Ext.Net
             }
             set
             {
+                if (this.SafeResourceManager == null)
+                {
+                    this.Init += delegate
+                    {
+                        this.Value = this.ViewState["Value"];
+                    };
+                    this.ViewState["Value"] = value;
+                    return;
+                }
+                
                 TimeSpan obj = (TimeSpan)this.EmptyValue;
 
                 if (value is TimeSpan)
@@ -220,7 +229,7 @@ namespace Ext.Net
                 {
                     try
                     {
-                        DateTime postedValue = DateTime.ParseExact(value.ToString(), this.Format, System.Threading.Thread.CurrentThread.CurrentCulture);
+                        DateTime postedValue = DateTime.ParseExact(value.ToString(), this.Format, this.ResourceManager.CurrentLocale);
                         obj = postedValue.TimeOfDay;
                     }
                     catch
@@ -319,14 +328,14 @@ namespace Ext.Net
         /// <summary>
         /// 
         /// </summary>
-        [ConfigOption("format", typeof(NetToPHPDateFormatStringJsonConverter))]
+        [ConfigOption("format")]
         [DefaultValue("")]
         [Description("")]
         protected virtual string FormatProxy
         {
             get
             {
-                return this.Format;
+                return DateTimeUtils.ConvertNetToPHP(this.Format, this.HasResourceManager ? this.ResourceManager.CurrentLocale : CultureInfo.InvariantCulture);
             }
         }
 
@@ -409,7 +418,8 @@ namespace Ext.Net
         {
             get
             {
-                return (this.MaxTime != TimeSpan.MaxValue) ? new DateTime(this.MaxTime.Ticks).ToString(this.Format, System.Threading.Thread.CurrentThread.CurrentCulture).ToLower(System.Threading.Thread.CurrentThread.CurrentCulture) : "";
+                CultureInfo culture = this.SafeResourceManager != null ? this.ResourceManager.CurrentLocale : CultureInfo.CurrentUICulture;
+                return (this.MaxTime != TimeSpan.MaxValue) ? new DateTime(this.MaxTime.Ticks).ToString(this.Format, culture).ToLower(culture) : "";
             }
         }
 
@@ -450,7 +460,8 @@ namespace Ext.Net
         {
             get
             {
-                return (this.MinTime != (TimeSpan)this.EmptyValue) ? new DateTime(this.MinTime.Ticks).ToString(this.Format, System.Threading.Thread.CurrentThread.CurrentCulture).ToLower(System.Threading.Thread.CurrentThread.CurrentCulture) : "";
+                CultureInfo culture = this.SafeResourceManager != null ? this.ResourceManager.CurrentLocale : CultureInfo.CurrentUICulture;
+                return (this.MinTime != (TimeSpan)this.EmptyValue) ? new DateTime(this.MinTime.Ticks).ToString(this.Format, culture).ToLower(culture) : "";
             }
         }
 
@@ -477,7 +488,8 @@ namespace Ext.Net
 
         internal void SetSelectedTime(TimeSpan time)
         {
-            this.Call("setValue", new DateTime(time.Ticks).ToString(this.Format, System.Threading.Thread.CurrentThread.CurrentCulture).ToLower(System.Threading.Thread.CurrentThread.CurrentCulture));
+            CultureInfo culture = this.SafeResourceManager != null ? this.ResourceManager.CurrentLocale : CultureInfo.CurrentUICulture;
+            this.Call("setValue", new DateTime(time.Ticks).ToString(this.Format, culture).ToLower(culture));
         }
 
         internal void SetTimeValue(object time)

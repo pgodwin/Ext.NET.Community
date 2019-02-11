@@ -21,7 +21,7 @@ Ext.grid.ColumnModel.override({
             return false;
         }
     
-        if (typeof this.config[col].sortable == "undefined") {
+        if (typeof this.config[col].sortable === "undefined") {
             return this.defaultSortable;
         }
         

@@ -76,12 +76,12 @@ Ext.calendar.DayHeaderView = Ext.extend(Ext.calendar.MonthView, {
 
     // private
     moveNext: function(noRefresh) {
-        this.moveDays(this.dayCount, noRefresh);
+        this.moveDays(this.dayCount, noRefresh, true);
     },
 
     // private
     movePrev: function(noRefresh) {
-        this.moveDays( - this.dayCount, noRefresh);
+        this.moveDays( - this.dayCount, noRefresh, true);
     },
 
     // private

@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -162,7 +162,7 @@ namespace Ext.Net
 
                 if (paramValue == null)
                 {
-                    throw new ArgumentException("The parameter '{0}' is null".FormatWith(param.Name));
+                    throw new ArgumentException("DirectMethod: '{0}', The parameter '{1}' is undefined".FormatWith(method.Name, param.Name));
                 }
 
                 if (param.ParameterType == typeof(string))
@@ -479,7 +479,7 @@ namespace Ext.Net
                     if (HttpContext.Current != null)
                     {
                         ResourceManager sm = ResourceManager.GetInstance(HttpContext.Current);
-                        return sm.DirectMethodProxy;
+                        return sm != null ? sm.DirectMethodProxy : ClientProxy.Default;
                     }
                     return ClientProxy.Default;
                 }

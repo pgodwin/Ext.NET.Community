@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -159,7 +159,7 @@ namespace Ext.Net
 		/// 
 		/// </summary>
 		[Description("")]
-        protected bool RequiresDataBinding {
+        protected virtual bool RequiresDataBinding {
 			get 
             { 
                 return this.requiresDataBinding; 
@@ -186,7 +186,7 @@ namespace Ext.Net
 
         private bool ajaxDataBindingRequired = true;
 
-        private void AjaxDataBind()
+        protected virtual void AjaxDataBind()
         {
             if (RequestManager.IsAjaxRequest && this.IsAjaxRequestInitiator)
             {
@@ -204,10 +204,15 @@ namespace Ext.Net
             this.GenerateAjaxResponseScript();
         }
 
-        private void GenerateAjaxResponseScript()
+        protected virtual string GetAjaxDataJson()
+        {
+            return this.Data != null ? JSON.Serialize(this.Data) : this.JsonData;
+        }
+
+        protected virtual void GenerateAjaxResponseScript()
         {
             StoreResponseData dataResponse = new StoreResponseData();
-            dataResponse.Data = this.Data != null ? JSON.Serialize(this.Data) : this.JsonData;
+            dataResponse.Data = this.GetAjaxDataJson();
             PageProxy dsp = this.Proxy.Proxy as PageProxy;
 
             if (dsp == null && this.Proxy.Proxy != null)
@@ -656,10 +661,17 @@ namespace Ext.Net
                         {
                             return null;
                         }
-
+                        
                         PropertyInfo p = obj.GetType().GetProperty(mapping[i]);
-                        obj = p.GetValue(obj, null);
-
+                        try
+                        {
+                            obj = p.GetValue(obj, null);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            throw new NullReferenceException(String.Format("Mapped property '{0}' doesn't exist", mapping[i]));
+                        }
+                        
                         if (obj == null)
                         {
                             return null;

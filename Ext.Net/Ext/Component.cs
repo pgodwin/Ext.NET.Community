@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 using Ext.Net.Utilities;
-using System.Web.UI.HtmlControls;
 
 namespace Ext.Net
 {
@@ -55,6 +55,50 @@ namespace Ext.Net
                 return "component";
             }
         }
+
+        private ItemsCollection<Observable> bin;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Meta]
+        [ConfigOption("bin", typeof(ItemCollectionJsonConverter), int.MinValue)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        [Description("")]
+        public virtual ItemsCollection<Observable> Bin
+        {
+            get
+            {
+                this.InitBin();
+                return this.bin;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
+        protected internal void InitBin()
+        {
+            if (this.bin == null)
+            {
+                this.bin = new ItemsCollection<Observable>();
+                this.bin.AfterItemAdd += this.AfterBinItemAdd;
+                this.bin.AfterItemRemove += this.AfterItemRemove;
+                this.bin.SingleItemMode = false;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
+        protected virtual void AfterBinItemAdd(Observable item)
+        {
+            item.LazyMode = LazyMode.Instance;
+            this.AfterItemAdd(item);
+        }
+
 
         /*  IContent
             -----------------------------------------------------------------------------------------------*/
@@ -175,6 +219,28 @@ namespace Ext.Net
             }
         }
 
+        /// <summary>
+        /// An HTML fragment, or a DomHelper specification to use as the layout element content (defaults to ''). The HTML content is added after the component is rendered, so the document will not contain this HTML at the time the render event is fired. This content is inserted into the body before any configured contentEl is appended.
+        /// </summary>
+        [Meta]
+        [DirectEventUpdate(MethodName = "Update")]
+        [ConfigOption("html")]
+        [Category("3. Component")]
+        [DefaultValue("")]
+        [NotifyParentProperty(true)]
+        [Description("An HTML fragment, or a DomHelper specification to use as the layout element content (defaults to '')")]
+        public virtual string Html
+        {
+            get
+            {
+                return (string)this.ViewState["Html"] ?? "";
+            }
+            set
+            {
+                this.ViewState["Html"] = value;
+            }
+        }
+
         /*  End IContent
             -----------------------------------------------------------------------------------------------*/
 
@@ -257,7 +323,7 @@ namespace Ext.Net
 
                 if (ctrl != null && !ctrl.HasLoadPostData)
                 {
-                    ctrl.LoadPostData(this.ClientID, this.Context.Request.Params);
+                    ctrl.LoadPostData(this.ConfigID, this.Context.Request.Params);
                 }
             }
 
@@ -1342,7 +1408,7 @@ namespace Ext.Net
         /// <param name="script"></param>
         public override void AddScript(string script)
         {
-            if (this.IsProxy)
+            if (this.IsProxy && !this.GenerateMethodsCalling)
             {
                 ResourceManager.AddInstanceScript(script);
             }
@@ -1900,6 +1966,57 @@ namespace Ext.Net
         public virtual void SetAnchor(string anchor, bool doLayout)
         {
             this.Call("setAnchor", anchor, doLayout);
+        }
+
+        /// <summary>
+        /// Update the html of the Body, optionally searching for and processing scripts.
+        /// </summary>
+        /// <param name="html">The html string to update the body with. Replaces all content of the body.</param>
+        [Meta]
+        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
+        public virtual void Update(string html)
+        {
+            string template = "if({0}.rendered){{{0}.update({1});}}else{{{0}.html={1};}}";
+            this.AddScript(template, this.ClientID, JSON.Serialize(html));
+        }
+
+        /// <summary>
+        /// Update the html of the Body, optionally searching for and processing scripts.
+        /// </summary>
+        [Meta]
+        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
+        public virtual void Update(string html, bool loadScripts)
+        {
+            this.Call("update", html, loadScripts);
+        }
+
+        /// <summary>
+        /// Update the html of the Body, optionally searching for and processing scripts.
+        /// </summary>
+        [Meta]
+        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
+        public virtual void Update(string html, bool loadScripts, string callback)
+        {
+            this.Update(html, loadScripts, new JFunction(callback));
+        }
+
+        /// <summary>
+        /// Update the html of the Body, optionally searching for and processing scripts.
+        /// </summary>
+        [Meta]
+        [Description("Update the html of the Body, optionally searching for and processing scripts.")]
+        public virtual void Update(string html, bool loadScripts, JFunction callback)
+        {
+            this.Call("update", html, loadScripts, callback);
+        }
+
+        /// <summary>
+        /// Updates the content of the Panel body with the supplied string ('html') value.
+        /// </summary>
+        [Description("Updates the content of the Panel body with the supplied string ('html') value.")]
+        protected virtual void SetHtml(string html)
+        {
+            this.Update(html);
         }
     }
 }

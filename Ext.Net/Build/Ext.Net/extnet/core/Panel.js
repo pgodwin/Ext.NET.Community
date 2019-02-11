@@ -34,6 +34,12 @@ Ext.Panel.override({
                 name  : this.id + "_Collapsed",
                 value : this.collapsed || false
             });
+			
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.collapsedField);	
 
             this.collapsedField.render(this.el.parent() || this.el);
         }
@@ -75,15 +81,15 @@ Ext.Panel.override({
     isIFrame : function (cfg) {
         var frame = false;
 
-        if (typeof cfg == "string" && cfg.indexOf("://") >= 0) {
+        if (typeof cfg === "string" && cfg.indexOf("://") >= 0) {
             frame = true;
         } else if (cfg.mode) {
-            if (cfg.mode == "iframe") {
+            if (cfg.mode === "iframe") {
                 frame = true;
             }
         } else if (cfg.url && cfg.url.indexOf("://") >= 0) {
             frame = true;
-        } else if ((this.getAutoLoad().url && this.autoLoad.url.indexOf("://") >= 0) || (this.getAutoLoad().mode && this.autoLoad.mode == "iframe")) {
+        } else if ((this.getAutoLoad().url && this.autoLoad.url.indexOf("://") >= 0) || (this.getAutoLoad().mode && this.autoLoad.mode === "iframe")) {
             frame = true;
         }
 
@@ -100,9 +106,9 @@ Ext.Panel.override({
 
             var al = this.getAutoLoad(), url;
 
-            if (typeof config == "string") {
+            if (typeof config === "string") {
                 al.url = config;
-            } else if (typeof config == "object") {
+            } else if (typeof config === "object") {
                 Ext.apply(al, config);
             }
 
@@ -117,12 +123,13 @@ Ext.Panel.override({
             url = al.url;
             
             if (al.params) {
-                var params = {};
+                var params = {},
+                    key;
                 
-                for (var key in al.params) {
+                for (key in al.params) {
                     var ov = al.params[key];
 
-                    if (typeof ov == "function") {
+                    if (typeof ov === "function") {
                         params[key] = ov.call(this);
                     } else {
                         params[key] = ov;
@@ -178,7 +185,7 @@ Ext.Panel.override({
             if (this.body.isMasked()) {
                 this.body.unmask();
             }
-        } else {
+        } else if (this.rendered) {
             this.body.dom.innerHTML = "";
         }
     },
@@ -192,11 +199,12 @@ Ext.Panel.override({
         }
 
         if (config.params) {
-            var params = {};
-            for (var key in config.params) {
+            var params = {},
+                key;
+            for (key in config.params) {
                 var ov = config.params[key];
 
-                if (typeof ov == "function") {
+                if (typeof ov === "function") {
                     params[key] = ov.call(this);
                 } else {
                     params[key] = ov;
@@ -235,10 +243,10 @@ Ext.Panel.override({
                     listeners : {
                         render : function () {
                             p.iframe = this.el;
+                            
                             if (config.monitorComplete) {
                                 p.startIframeMonitoring();
-                            }
-                            else {
+                            } else {
                                 this.el.on("load", p.afterLoad, p);
                             }
                             
@@ -260,12 +268,22 @@ Ext.Panel.override({
             this.iframe.dom.src = url;
             this.beforeIFrameLoad(config);
         }
+        
+        if (Ext.isIE6 && !this.destroyIframeOnUnload) {
+            this.destroyIframeOnUnload = true;            
+            
+            if (window.addEventListener) {
+                window.addEventListener("unload", this.destroy.createDelegate(this), false);
+            } else if (window.attachEvent) {
+                window.attachEvent("onunload", this.destroy.createDelegate(this));
+            }
+        }
 
         return this;
     },
     
     iframeCompleteCheck : function () {
-        if (this.iframe.dom.readyState == "complete") {
+        if (this.iframe.dom.readyState === "complete") {
             this.stopIframeMonitoring();
             this.afterLoad();
         }
@@ -295,8 +313,7 @@ Ext.Panel.override({
     beforeIFrameLoad : function (al) {
         try {
             this.iframe.dom.contentWindow.parentAutoLoadControl = this;
-        }
-        catch (e) { }
+        } catch (e) { }
 
         if (al.showMask) {
             /*LOCALIZE*/
@@ -313,8 +330,7 @@ Ext.Panel.override({
         
         try {
             this.iframe.dom.contentWindow.parentAutoLoadControl = this;
-        }
-        catch (e) { }
+        } catch (e) { }
 
         var loadCfg = this.getAutoLoad();
         if (loadCfg.callback) {
@@ -356,7 +372,7 @@ Ext.Panel.override({
     show : function () {
         Ext.Panel.superclass.show.call(this);
 
-        if (Ext.isIE && this.hideMode == "offsets" && this.el) {
+        if (Ext.isIE && this.hideMode === "offsets" && this.el) {
             this.el.repaint();
         }
 
@@ -366,7 +382,9 @@ Ext.Panel.override({
 
 Ext.Panel.prototype.beforeDestroy = Ext.Panel.prototype.beforeDestroy.createInterceptor(function () {
     if (this.iframe) {
-        this.clearContent();
+        try {
+            this.clearContent();
+        } catch (e) { }
     }
     
     if (this.collapsedField) {
@@ -401,8 +419,7 @@ Ext.Panel.prototype.initComponent = Ext.Panel.prototype.initComponent.createSequ
             
         if (Ext.isFunction(triggerControl)) {
             triggerControl = triggerControl.call(window);
-        }
-        else if (Ext.isString(triggerControl)) {
+        } else if (Ext.isString(triggerControl)) {
             triggerCmp = Ext.getCmp(triggerControl);
             
             if (triggerCmp) {
@@ -468,11 +485,11 @@ Ext.Panel.prototype.onExpand = Ext.Panel.prototype.onExpand.createSequence(funct
 });
 
 Ext.Panel.prototype.initComponent = Ext.Panel.prototype.initComponent.createInterceptor(function () {
-    if (this.tbar && (this.tbar.xtype == "paging" || this.tbar.xtype == "ux.paging") && !Ext.isDefined(this.tbar.store) && this.store) {
+    if (this.tbar && (this.tbar.xtype === "paging" || this.tbar.xtype === "ux.paging") && !Ext.isDefined(this.tbar.store) && this.store) {
         this.tbar.store = this.store;
     }
     
-    if (this.bbar && (this.bbar.xtype == "paging" || this.bbar.xtype == "ux.paging") && !Ext.isDefined(this.bbar.store) && this.store) {
+    if (this.bbar && (this.bbar.xtype === "paging" || this.bbar.xtype === "ux.paging") && !Ext.isDefined(this.bbar.store) && this.store) {
         this.bbar.store = this.store;
     }
 });

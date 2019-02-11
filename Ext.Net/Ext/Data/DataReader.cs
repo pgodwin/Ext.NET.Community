@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -59,7 +59,7 @@ namespace Ext.Net
         [PersistenceMode(PersistenceMode.InnerProperty)]
         [NotifyParentProperty(true)]
         [Description("Either a Collection of RecordField definition objects")]
-        public RecordFieldCollection Fields
+        public virtual RecordFieldCollection Fields
         {
             get
             {
@@ -78,7 +78,7 @@ namespace Ext.Net
         [DefaultValue("")]
         [ConfigOption("fields", JsonMode.Raw)]
 		[Description("")]
-        protected string EmptyFields
+        protected virtual string EmptyFields
         {
             get
             {
@@ -97,7 +97,7 @@ namespace Ext.Net
         [DefaultValue("")]
         [ConfigOption]
 		[Description("")]
-        public string MessageProperty
+        public virtual string MessageProperty
         {
             get
             {

@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -78,20 +78,34 @@ namespace Ext.Net
         /// The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'checkbox').
         /// </summary>
         [Meta]
-        [ConfigOption]
         [Category("5. Container")]
-        [DefaultValue("checkbox")]
+        [DefaultValue("Checkbox")]
+        [TypeConverter(typeof(DefaultTypeConverter))]
         [NotifyParentProperty(true)]
         [Description("The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'checkbox').")]
         public virtual string DefaultType
         {
             get
             {
-                return (string)this.ViewState["DefaultType"] ?? "checkbox";
+                return (string)this.ViewState["DefaultType"] ?? "Checkbox";
             }
             set
             {
                 this.ViewState["DefaultType"] = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ConfigOption("defaultType")]
+        [DefaultValue("checkbox")]
+        [Description("")]
+        protected virtual string DefaultTypeProxy
+        {
+            get
+            {
+                return DefaultTypeConverter.GetXType(this.DefaultType);
             }
         }
 

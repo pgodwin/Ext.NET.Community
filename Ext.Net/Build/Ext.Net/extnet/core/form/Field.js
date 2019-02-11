@@ -25,8 +25,9 @@ Ext.form.Field.override({
             showBusy         : true,
             busyIconCls      : "loading-indicator",
             busyTip          : "Validating...",
+            initValueValidation : "valid",
             responseFields   : {
-                success     : "success",
+                success     : "valid",
                 message     : "message",
                 returnValue : "value"
             }            
@@ -34,13 +35,29 @@ Ext.form.Field.override({
         
         var fn = function () {
             this.rvTask = new Ext.util.DelayedTask(this.remoteValidate, this);
-            (this.rvConfig.eventOwner == "element" ? this.el : this).on(this.rvConfig.validationEvent, this.performRemoteValidation, this);
+            (this.rvConfig.eventOwner === "element" ? this.el : this).on(this.rvConfig.validationEvent, this.performRemoteValidation, this);            
         };
         
         if (this.rendered) {
             fn();
         } else {
             this.on("render", fn);
+            
+            this.on("afterrender", function () {
+                if (this.value !== undefined) {
+                    switch (this.rvConfig.initValueValidation) {
+                    case "valid":
+                        this.markAsValid();
+                        break;
+                    case "invalid":
+                        // do nothing
+                        break;
+                    case "validate":
+                        this.remoteValidate();
+                        break;
+                    }
+                }
+            });
         }
     },    
     
@@ -52,10 +69,25 @@ Ext.form.Field.override({
             this.rvTask.cancel();
         }
         
-        (this.rvConfig.eventOwner == "element" ? this.el : this).un(this.rvConfig.validationEvent, this.performRemoteValidation, this);
+        (this.rvConfig.eventOwner === "element" ? this.el : this).un(this.rvConfig.validationEvent, this.performRemoteValidation, this);
         
         delete this.originalIsValid;
         delete this.originalValidate;
+    },
+    
+    // this method is used with remote validation only
+    markAsValid : function (abortRequest) {        
+        if (!this.isRemoteValidation) {
+            return;
+        }
+        
+        this.rvConfig.validating = false;
+        this.rvConfig.remoteValidated = true;
+        this.rvConfig.remoteValid = true;
+        
+        if (this.validationId && abortRequest !== false) {
+            Ext.net.DirectEvent.abort(this.validationId);
+        }    
     },
     
     rv_isValid : function (preventMark) {
@@ -103,17 +135,19 @@ Ext.form.Field.override({
     },   
     
     performRemoteValidation : function (e) {        
-        if (this.value === this.getValue()) {
+        if (this.rvConfig.lastValue === this.getValue()) {
             this.rvTask.cancel();
             this.rvConfig.remoteValid = true;
             return;
         }        
         
         if (!e || !e.isNavKeyPress || (e && e.isNavKeyPress && !e.isNavKeyPress())) {
-            var k = e.normalizeKey(e.keyCode); 
-             
-			if (k >= 16 && k <= 20) {
-                return;
+            if (e && e.normalizeKey) {
+                var k = e.normalizeKey(e.keyCode); 
+                 
+			    if (k >= 16 && k <= 20) {
+                    return;
+                }
             }
 
 			this.rvConfig.remoteValid = false;
@@ -129,7 +163,7 @@ Ext.form.Field.override({
 		if (this.fireEvent("beforeremotevalidation", this, options) !== false) {		    
 		    dc.userSuccess = this.remoteValidationSuccess.createDelegate(this);
             dc.userFailure = this.remoteValidationFailure.createDelegate(this);
-            dc.extraParams = options.params;
+            dc.extraParams = Ext.apply(dc.extraParams || {}, options.params);
             dc.control = this;
             dc.eventType = "postback";
             dc.action = "remotevalidation";
@@ -165,6 +199,7 @@ Ext.form.Field.override({
 		    
             this.rvConfig.remoteValidated = false;
             this.rvConfig.validating = true;
+            this.rvConfig.lastValue = o.value;
 
             if (this.validationId) {
                 Ext.net.DirectEvent.abort(this.validationId);
@@ -206,9 +241,7 @@ Ext.form.Field.override({
 		    
 		    this.fireEvent("remotevalidationinvalid", this, response, responseObj, ex, o);
 			
-		    if (o.cancelWarningFailure !== true && 
-	          (this.remoteValidationOptions || {}).showWarningFailure !== false &&
-	          !this.hasListener("remotevalidationinvalid")) {
+		    if (o.cancelWarningFailure !== true && (this.remoteValidationOptions || {}).showWarningFailure !== false && !this.hasListener("remotevalidationinvalid")) {
 	            Ext.net.DirectEvent.showFailure(response, response.responseText);
 	        }
 			
@@ -216,7 +249,7 @@ Ext.form.Field.override({
 	    }
 	    
 	    if (!isException && result.success !== true) {
-		    this.fireEvent("remotevalidationinvalid", this, response, responseObj, result, o);		    
+		    this.fireEvent("remotevalidationinvalid", this, response, responseObj, result, o);
 	    }
 	    
 	    if (result.success === true) {
@@ -224,7 +257,7 @@ Ext.form.Field.override({
 	    }
 	    
 	    if (result.value !== null && Ext.isDefined(result.value)) {
-	        this.setValue(result.value);		    
+	        this.setValue(result.value);
 	    }
 	
         this.rvConfig.remoteValidated = true;
@@ -250,9 +283,7 @@ Ext.form.Field.override({
 			message : response.responseText
 		};
 		
-		if (o.cancelWarningFailure !== true && 
-		    (this.remoteValidationOptions || {}).showWarningFailure !== false &&
-		    !this.hasListener("remotevalidationfailure")) {
+		if (o.cancelWarningFailure !== true && (this.remoteValidationOptions || {}).showWarningFailure !== false && !this.hasListener("remotevalidationfailure")) {
 		    Ext.net.DirectEvent.showFailure(response, response.responseText);
 		}    
     },
@@ -273,7 +304,7 @@ Ext.form.Field.override({
     },
     
     adjustWidth : function (tag, w) {
-	    if (typeof w == "number" && (Ext.isIE6 || !Ext.isStrict) && /input|textarea/i.test(tag) && !this.inEditor) {
+	    if (typeof w === "number" && (Ext.isIE6 || !Ext.isStrict) && /input|textarea/i.test(tag) && !this.inEditor) {
 		    return w - 3;
 	    }
 	    
@@ -285,7 +316,7 @@ Ext.form.Field.override({
             this.noteEl.addClass("x-hide-" + this.hideMode);
         }
         
-        if (this.noteAlign == "top" && this.label) {
+        if (this.noteAlign === "top" && this.label) {
             this.label.removeClass("x-top-note-label");
         }
     },
@@ -295,7 +326,7 @@ Ext.form.Field.override({
             this.noteEl.removeClass("x-hide-" + this.hideMode);
         }
         
-        if (this.noteAlign == "top" && this.label) {
+        if (this.noteAlign === "top" && this.label) {
             this.label.addClass("x-top-note-label");
         }
     },
@@ -390,7 +421,7 @@ Ext.form.Field.override({
     },
     
     showIndicator : function () {
-        if (this.indicatorEl && !this.indicatorElIsVisible) {        
+        if (this.indicatorEl && !this.indicatorElIsVisible) {
             this.indicatorEl.removeClass("x-hide-display");
             this.indicatorElIsVisible = true;
             this.alignIndicator.defer(10, this);
@@ -402,7 +433,7 @@ Ext.form.Field.override({
     },
     
     hideIndicator : function () {
-        if (this.indicatorEl && this.indicatorElIsVisible) {        
+        if (this.indicatorEl && this.indicatorElIsVisible) {
             this.indicatorEl.addClass("x-hide-display");
             this.indicatorElIsVisible = false;
         }    
@@ -417,7 +448,7 @@ Ext.form.Field.override({
             return this.labelEl;
         }
         
-        return this.el;
+        return this.getResizeEl();
     },
     
     getAlignIndicatorOffset : function () {
@@ -437,17 +468,18 @@ Ext.form.Field.override({
     
     initIndicator : function () {
         if (this.indicatorEl) {
+            this.alignIndicator();
             return;        
         }        
         
         var f = function () {            
             if (!Ext.isEmpty(this.indicatorText, false) || 
-                !Ext.isEmpty(this.indicatorIconCls, false)) {
+                    !Ext.isEmpty(this.indicatorIconCls, false)) {
                 
                 if (!this.indicatorEl) {
-                    var elp = this.getErrorCt();                    
-                    
-                    if (!elp) {                        
+                    var elp = this.getErrorCt();
+                                        
+                    if (!elp) {
                         return;
                     }
                     
@@ -456,18 +488,18 @@ Ext.form.Field.override({
                     });
                     
                     this.on("invalid", function () {
-                        if (this.msgTarget == "side" && this.errorIcon && this.errorIcon.isVisible()) {
+                        if (this.msgTarget === "side" && this.errorIcon && this.errorIcon.isVisible()) {
                             this.hideIndicator();
                         }
                     });
 
                     this.on("show", function () {
-                        this.showIndicator();                           
+                        this.showIndicator();
                     });
                     
                     this.on("valid", function () {
-                        if (this.msgTarget == "side") {
-                            this.showIndicator();                            
+                        if (this.msgTarget === "side") {
+                            this.showIndicator();
                         }
                     });
                     
@@ -501,8 +533,8 @@ Ext.form.Field.override({
 
                 if (this.hidden) {
                     this.hideIndicator();
-                }   
-            }           
+                }
+            }
         };
         
         if (this.rendered) {
@@ -517,7 +549,7 @@ Ext.form.Field.override({
             var r = false;
 
             this.items.each(function (item) {
-                if (item.noteAlign == "top" && item.hidden !== true && (!item.isVisible || item.isVisible())) {
+                if (item.noteAlign === "top" && item.hidden !== true && (!item.isVisible || item.isVisible())) {
                     r = true;
                     
                     return false;
@@ -551,7 +583,7 @@ Ext.form.Field.override({
             if (!Ext.isEmpty(this.note, false)) {
                 var noteWrap = false;
                 if (!this.wrap) {
-                    this.wrap = this.wrap || this.el.wrap();     
+                    this.wrap = this.wrap || this.el.wrap();
                     if (!this.labeler) {
                         this.positionEl = this.wrap;
                         this.resizeEl = this.wrap;
@@ -560,20 +592,20 @@ Ext.form.Field.override({
                     }
                 }
                 
-                if (this.noteAlign == "top") {
+                if (this.noteAlign === "top") {
                     this.wrap.addClass("x-top-note");
                 }
                 
                 this.note = this.noteEncode ? Ext.util.Format.htmlEncode(this.note) : this.note;
                 
-                this.noteEl =  this.wrap[this.noteAlign == "top" ? "insertFirst" : "createChild"]({ 
+                this.noteEl =  this.wrap[this.noteAlign === "top" ? "insertFirst" : "createChild"]({ 
                     cls  : "x-field-note " + (this.noteCls || ""), 
                     html : this.note 
                 }, undefined);
                 
                 this.noteEl.noteWrap = noteWrap;
                 
-                if ((this.noteAlign == "top" || this.childrenHasTopNote()) && this.label) {
+                if ((this.noteAlign === "top" || this.childrenHasTopNote()) && this.label) {
                     this.label.addClass("x-top-note-label");
                 }
                 
@@ -596,14 +628,14 @@ Ext.form.Field.override({
         Ext.form.Field.superclass.onResize.call(this, w, h, rawWidth, rawHeight);
         
         if (this.noteEl && this.noteEl.noteWrap) {
-            if (w && h && w != "auto" && h != "auto") {
+            if (w && h && w !== "auto" && h !== "auto") {
                 this.el.setSize(w - this.getNoteWidthAjustment(), h - this.noteEl.getHeight() - this.el.getMargins("tb"));
             } else {
-                if (w && w != "auto") {
+                if (w && w !== "auto") {
                     this.el.setWidth(w - this.getNoteWidthAjustment());
                 }
                 
-                if (h && h != "auto") {
+                if (h && h !== "auto") {
                     this.el.setHeight(h - this.noteEl.getHeight() - this.el.getMargins("tb"));
                 }
             }
@@ -618,8 +650,8 @@ Ext.form.Field.prototype.initComponent = Ext.form.Field.prototype.initComponent.
     this.addEvents({        
         "remotevalidationfailure"   : true,
         "remotevalidationinvalid"   : true,
-        "remotevalidationvalid"   : true,
-        "beforeremotevalidation"    : true            
+        "remotevalidationvalid"     : true,
+        "beforeremotevalidation"    : true
     });
     
     if (this.isRemoteValidation) {

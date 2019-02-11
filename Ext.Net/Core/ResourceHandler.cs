@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -74,9 +74,9 @@ namespace Ext.Net
         StringBuilder sb;
         HttpContext context;
         string webResource;
-        byte[] image;
         byte[] output;
         int length;
+        bool compress;
 
         [FileIOPermission(SecurityAction.Assert, Unrestricted = true)]
         private static long GetAssemblyTime(Assembly assembly)
@@ -98,6 +98,8 @@ namespace Ext.Net
 
             if (requestIfModifiedSince != DateTime.MinValue && responseLastModified != DateTime.MinValue)
             {
+                requestIfModifiedSince = requestIfModifiedSince.ToUniversalTime();
+
                 if (responseLastModified > requestIfModifiedSince)
                 {
                     TimeSpan diff = responseLastModified - requestIfModifiedSince;
@@ -125,6 +127,7 @@ namespace Ext.Net
             this.context = context;
             
             string file = this.context.Request.RawUrl;
+
             bool isInitScript = file.Contains("extnet/extnet-init-js/ext.axd?");
 
             if (!ResourceHandler.IsSourceModified(context.Request) && !isInitScript)
@@ -158,61 +161,86 @@ namespace Ext.Net
             }
             else
             {
-                this.sm = new ResourceManager();
-
-                this.SetWebResourceName(file);
-
-                if (CompressionUtils.IsGZipSupported && this.sm.GZip)
+                try
                 {
-                    try
-                    {
-                        this.stream = this.GetType().Assembly.GetManifestResourceStream(this.webResource);
+                    this.sm = new ResourceManager();
+                    this.compress = CompressionUtils.IsGZipSupported && this.sm.GZip;
 
-                        switch (this.webResource.RightOfRightmostOf('.'))
-                        {
-                            case "js":
-                                this.WriteFile("text/javascript");
-                                break;
-                            case "css":
-                                this.WriteFile("text/css");
-                                break;
+                    this.SetWebResourceName(file);
 
-                            case "gif":
-                                this.WriteImage("image/gif");
-                                break;
-                            case "png":
-                                this.WriteImage("image/png");
-                                break;
-                            case "jpg":
-                            case "jpeg":
-                                this.WriteImage("image/jpg");
-                                break;
-                        }
-                    }
-                    catch
+                    this.stream = this.GetType().Assembly.GetManifestResourceStream(this.webResource);
+                    string ext = this.webResource.RightOfRightmostOf('.');
+                    this.compress = this.compress && !this.IsImage(ext);
+
+                    switch (ext)
                     {
-                        this.context.Response.Redirect(Page.ClientScript.GetWebResourceUrl(this.sm.GetType(), this.webResource));
-                    }
-                    finally
-                    {
-                        if (this.stream != null)
-                        {
-                            this.stream.Close();
-                        }
+                        case "js":
+                            this.WriteFile("text/javascript");
+                            break;
+                        case "css":
+                            this.WriteFile("text/css");
+                            break;
+
+                        case "gif":
+                            this.WriteImage("image/gif");
+                            break;
+                        case "png":
+                            this.WriteImage("image/png");
+                            break;
+                        case "jpg":
+                        case "jpeg":
+                            this.WriteImage("image/jpg");
+                            break;
                     }
                 }
-                else
+                catch (Exception e)
                 {
+                    string s = this.IsDebugging ? e.ToString() : e.Message;
+                    context.Response.StatusDescription = s.Substring(0, Math.Min(s.Length, 512));
                     this.context.Response.Redirect(Page.ClientScript.GetWebResourceUrl(this.sm.GetType(), this.webResource));
                 }
+                finally
+                {
+                    if (this.stream != null)
+                    {
+                        this.stream.Close();
+                    }
+                }
+            }
+        }
+
+        private bool IsImage(string ext)
+        {
+            return ext == "gif" || ext == "png" || ext == "jpg" || ext == "jpeg";
+        }
+
+        private bool IsDebugging
+        {
+            get
+            {
+                bool result = false;
+
+                if (HttpContext.Current != null)
+                {
+                    result = HttpContext.Current.IsDebuggingEnabled;
+                }
+
+                return result;
             }
         }
 
         private void SetResponseCache(HttpContext context)
         {
             HttpCachePolicy cache = context.Response.Cache;
-            
-            cache.SetLastModified(new DateTime(ResourceHandler.GetAssemblyTime(typeof(ResourceHandler).Assembly)).ToUniversalTime());
+            DateTime modifiedDate = new DateTime(ResourceHandler.GetAssemblyTime(typeof(ResourceHandler).Assembly)).ToUniversalTime();
+            DateTime nowDate = DateTime.Now.ToUniversalTime().AddSeconds(-1);
+
+            if (modifiedDate > nowDate)
+            {
+                modifiedDate = nowDate;
+            }
+
+            cache.SetLastModified(modifiedDate);
             cache.SetOmitVaryStar(true);
             cache.SetVaryByCustom("v");
             cache.SetExpires(DateTime.UtcNow.AddDays(365));
@@ -229,7 +257,8 @@ namespace Ext.Net
 
             if (this.output != null)
             {
-                CompressionUtils.Send(this.output, responseType);
+                this.Send(this.output, responseType);
+                
                 return;
             }
 
@@ -242,20 +271,33 @@ namespace Ext.Net
                 reader.Close();
             }
 
-            byte[] gzip;
+            string data = responseType == "text/css"
+                              ? this.sm.ParseCssWebResourceUrls(this.sb.ToString())
+                              : this.sb.ToString();
 
-            if (responseType == "text/css")
+            byte[] content = this.compress ? CompressionUtils.GZip(data) : Encoding.UTF8.GetBytes(data);
+
+
+            this.SetCache(content);
+
+            this.Send(content, responseType);
+            
+        }
+
+        private void Send(byte[] data, string responseType)
+        {
+            if(this.compress)
             {
-                gzip = CompressionUtils.GZip(this.sm.ParseCssWebResourceUrls(this.sb.ToString()));
+                CompressionUtils.Send(data, responseType);
             }
             else
             {
-                gzip = CompressionUtils.GZip(this.sb.ToString());
+                HttpResponse response = HttpContext.Current.Response;
+
+                response.Charset = "utf-8";
+                response.ContentType = responseType;
+                response.BinaryWrite(data);    
             }
-
-            this.SetCache(gzip);
-
-            CompressionUtils.Send(gzip, responseType);
         }
 
         private void WriteImage(string responseType)
@@ -269,22 +311,19 @@ namespace Ext.Net
                 this.stream.Read(this.output, 0, this.length);
 
                 this.SetCache(this.output);
-            }            
-            
-            HttpResponse response = HttpContext.Current.Response;
-            response.Charset = "utf-8";
-            response.ContentType = responseType;
-            response.BinaryWrite(this.output);
+            }
+
+            this.Send(this.output, responseType);
         }
 
         private byte[] GetCache()
         {
-            return this.context.Cache[this.webResource] as byte[];
+            return this.context.Cache[this.webResource + (this.compress ? "_gzip" : "_nonegzip")] as byte[];
         }
 
-        private void SetCache(byte[] output)
+        private void SetCache(byte[] content)
         {
-            this.context.Cache.Insert(this.webResource, output, null, System.Web.Caching.Cache.NoAbsoluteExpiration, TimeSpan.FromDays(30));
+            this.context.Cache.Insert(this.webResource + (this.compress ? "_gzip" : "_nonegzip"), content, null, System.Web.Caching.Cache.NoAbsoluteExpiration, TimeSpan.FromDays(30));
         }     
         
         private void SetWebResourceName(string filePath)
@@ -429,8 +468,6 @@ namespace Ext.Net
                 handlers.Handlers.Add(action);
                 config.Save();
             }
-
-
 
             HttpModulesSection modules = (HttpModulesSection)config.GetSection("system.web/httpModules");
 

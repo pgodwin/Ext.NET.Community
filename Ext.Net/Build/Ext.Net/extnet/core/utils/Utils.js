@@ -7,11 +7,13 @@
  * @return {Boolean} Returns true|false
  */
 Ext.isEmptyObj = function (obj) {
-    if (!(!Ext.isEmpty(obj) && typeof obj == "object")) {
+    if (!(!Ext.isEmpty(obj) && typeof obj === "object")) {
         return false;
     }
 
-    for (var p in obj) {
+    var p;
+
+    for (p in obj) {
         return false;
     }
     
@@ -40,12 +42,12 @@ Ext.net.clone = function (o) {
 Ext.net.on = function (target, eventName, handler, scope, mode, cfg) {
     var el = target;
     
-    if (typeof target == "string") {
+    if (typeof target === "string") {
         el = Ext.get(target);
     }
 
     if (!Ext.isEmpty(el)) {
-        if (mode && mode == "client") {
+        if (mode && mode === "client") {
             el.on(eventName, handler.fn, scope, handler);
         } else {
             el.on(eventName, handler, scope, cfg);
@@ -173,7 +175,7 @@ Ext.net.append = function (elTo, html) {
             
         while ((match = reStyle.exec(html))) {
             if (match[2] && match[2].length > 0) {
-                Ext.util.CSS.createStyleSheet(match[2], Ext.id());
+				Ext.net.ResourceMgr.registerCssClass("", match[2], false);        
             }
         }
 
@@ -195,9 +197,7 @@ Ext.net.append = function (elTo, html) {
                 if (window.execScript) {
                     window.execScript(match[2]);
                 } else {
-//                    with (window) {
-//                        window.eval(match[2]);
-//                    }
+                    eval(match[2]);
                 }
             }
         }
@@ -211,7 +211,7 @@ Ext.net.append = function (elTo, html) {
     var createdEl = Ext.DomHelper.append(elTo, html.replace(/(?:<script.*?>)((\n|\r|.)*?)(?:<\/script>)/ig, "")
                                                    .replace(/(?:<style.*?>)((\n|\r|.)*?)(?:<\/style>)/ig, "")
                                                    .replace(/(?:<link([^>]*)?\/>)/ig, ""), true);
-    if (createdEl.id == id) {
+    if (createdEl.id === id) {
         createdEl = createdEl.prev();
     }
     

@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -59,17 +59,17 @@ namespace Ext.Net
         }
 
         /// <summary>
-        /// A formatting string as used by Date.format to format a Date for this Column (defaults to 'd').
+        /// A formatting string as used by Date.format to format a Date for this Column.
         /// </summary>
         [Meta]
         [Category("3. DateColumn")]
-        [DefaultValue("d")]
-        [Description("A formatting string as used by Date.format to format a Date for this Column (defaults to 'd').")]
+        [DefaultValue("")]
+        [Description("A formatting string as used by Date.format to format a Date for this Column.")]
         public virtual string Format
         {
             get
             {
-                return (string)this.ViewState["Format"] ?? "d";
+                return (string)this.ViewState["Format"] ?? "";
             }
             set
             {
@@ -87,7 +87,7 @@ namespace Ext.Net
         {
             get
             {
-                return DateTimeUtils.ConvertNetToPHP(this.Format);
+                return this.Format.IsEmpty() ? "" : DateTimeUtils.ConvertNetToPHP(this.Format);
             }
         }
     }

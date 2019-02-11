@@ -133,7 +133,7 @@ Ext.calendar.DropZone = Ext.extend(Ext.dd.DropZone, {
             shim,
             box,
             cnt = Ext.calendar.Date.diffDays(dt, end) + 1;
-
+		dt.setHours(1);
         Ext.each(this.shims,
             function(shim) {
                 if (shim) {

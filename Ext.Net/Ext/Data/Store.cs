@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -160,7 +160,7 @@ namespace Ext.Net
 
         internal override void ForcePreRender()
         {
-            if (!RequestManager.IsAjaxRequest)
+            if (!RequestManager.IsAjaxRequest && !this.IsLazy)
             {
                 this.EnsureDataBound();
                 base.ForcePreRender();    
@@ -232,9 +232,15 @@ namespace Ext.Net
             }
         }
 
-        private bool MemoryDataPresent
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool MemoryDataPresent
         {
-            get { return this.Reader != null && this.Reader.Reader != null && (this.Data != null || this.JsonData.IsNotEmpty()); }
+            get 
+            { 
+                return this.Reader != null && this.Reader.Reader != null && (this.Data != null || this.JsonData.IsNotEmpty()); 
+            }
         }
 
         private string BuildParams(ParameterCollection parameters)
@@ -1293,7 +1299,7 @@ namespace Ext.Net
                     this.DataBind(); 
                 }
 
-                response.Data = this.Data != null ? JSON.Serialize(this.Data) : this.JsonData;
+                response.Data = this.GetAjaxDataJson();
                 PageProxy dsp = this.Proxy.Proxy as PageProxy;
                 response.Total = dsp != null ? dsp.Total : 0;
             }

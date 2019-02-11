@@ -45,7 +45,8 @@ namespace Ext.Net.Examples.SimpleTasks
             this.Loader.Add(new PageTreeLoader
             {
                 PreloadChildren = true,
-                RequestMethod = HttpMethod.GET
+                RequestMethod = HttpMethod.GET,
+                Type=DirectEventType.Load
             });
 
             this.Root.Add(new AsyncTreeNode

@@ -70,7 +70,7 @@
         }
         
         if (this.activeTab != item) {
-            if (item.actionItem) {
+            if (item && item.actionItem) {
                 var cmp = Ext.getCmp(item.actionItem),
                     hideCmp,
                     hideEl,

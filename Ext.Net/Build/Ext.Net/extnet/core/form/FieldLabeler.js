@@ -14,7 +14,7 @@ Ext.ns("Ext.ux");
  * round the Field at render time regardless of the layout of the Container.</p>
  * <p>Usage:</p>
  * <pre><code>
-    {
+   {
         xtype: "combo",
         plugins: [ Ext.ux.FieldLabeler ],
         triggerAction: "all",
@@ -27,7 +27,9 @@ Ext.ux.FieldLabeler = (function () {
 
     // Pulls a named property down from the first ancestor Container it's found in
     var getParentProperty = function (propName) {
-        for (var p = this.ownerCt; p; p = p.ownerCt) {
+        var p;
+        
+        for (p = this.ownerCt; p; p = p.ownerCt) {
             if (p[propName]) {
                 return p[propName];
             }
@@ -100,7 +102,7 @@ Ext.ux.FieldLabeler = (function () {
             
             this.itemCt.addClass("x-form-label-" + this.labelAlign);
 
-            if (this.labelAlign == "top") {
+            if (this.labelAlign === "top") {
                 if (!this.labelWidth) {
                     this.labelWidth = "auto";
                 }
@@ -146,10 +148,10 @@ Ext.ux.FieldLabeler = (function () {
                 }
             }            
             
-            if (h && (this.el.dom.tagName.toLowerCase() == "textarea" || Ext.isIE6 || Ext.isIE7)) {
+            if (h && (this.el.dom.tagName.toLowerCase() === "textarea" || Ext.isIE6 || Ext.isIE7)) {
                 h = this.resizeEl.getHeight(true);
             
-                if (!this.hideLabels && (this.labelAlign == "top")) {
+                if (!this.hideLabels && (this.labelAlign === "top")) {
                     h -= this.label.getHeight();
                 }
             

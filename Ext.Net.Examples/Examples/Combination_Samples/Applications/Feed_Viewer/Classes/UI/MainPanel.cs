@@ -136,7 +136,6 @@ namespace Ext.Net.Examples.FeedViewer
             get
             {
                 ConfigOptionsCollection list = base.ConfigOptions;
-                list.Add("margins", new ConfigOption("margins", null, "", this.Margins));
                 list.Add("template", new ConfigOption("template", new SerializationOptions("tpl", typeof(LazyControlJsonConverter)), null, this.Template));
 
                 return list;
@@ -316,11 +315,11 @@ namespace Ext.Net.Examples.FeedViewer
             sm.Listeners.RowSelect.Fn = MainPanel.SCOPE + ".onRowSelect";
             sm.Listeners.RowSelect.Buffer = 250;
 
-            this.grid.Store.Listeners.BeforeLoad.Fn = MainPanel.SCOPE + ".clear";
-            this.grid.Store.Listeners.BeforeLoad.Scope = MainPanel.SCOPE;
+            this.grid.Store.Primary.Listeners.BeforeLoad.Fn = MainPanel.SCOPE + ".clear";
+            this.grid.Store.Primary.Listeners.BeforeLoad.Scope = MainPanel.SCOPE;
 
-            this.grid.Store.Listeners.Load.Fn = MainPanel.SCOPE + ".onStoreLoad";
-            this.grid.Store.Listeners.Load.Scope = MainPanel.SCOPE;
+            this.grid.Store.Primary.Listeners.Load.Fn = MainPanel.SCOPE + ".onStoreLoad";
+            this.grid.Store.Primary.Listeners.Load.Scope = MainPanel.SCOPE;
 
             this.grid.Listeners.RowDblClick.Fn = MainPanel.SCOPE + ".openTab";
             this.grid.Listeners.RowDblClick.Scope = MainPanel.SCOPE;

@@ -113,10 +113,6 @@
                                 <Reader>
                                     <ext:JsonReader Root="d" />
                                 </Reader>
-                                <BaseParams>
-                                    <ext:Parameter Name="start" Value="" Mode="Value" />
-                                    <ext:Parameter Name="end" Value="" Mode="Value" />
-                                </BaseParams>
                             </EventStore>
                             <MonthView 
                                 runat="server" 

@@ -35,46 +35,42 @@ Ext.ux.GMapPanel = Ext.extend(Ext.Panel, {
         Ext.ux.GMapPanel.superclass.initComponent.call(this);        
 
     },
-    afterRender : function(){
-        
+    afterRender: function () {
         var wh = this.ownerCt.getSize();
         Ext.applyIf(this, wh);
-        
-        Ext.ux.GMapPanel.superclass.afterRender.call(this);    
-        
-        if (this.gmapType === 'map'){
+        Ext.ux.GMapPanel.superclass.afterRender.call(this);
+        if (this.gmapType === 'map') {
             this.gmap = new GMap2(this.body.dom);
         }
-        
-        if (this.gmapType === 'panorama'){
+        if (this.gmapType === 'panorama') {
             this.gmap = new GStreetviewPanorama(this.body.dom);
         }
-        
         if (typeof this.addControl == 'object' && this.gmapType === 'map') {
             this.gmap.addControl(this.addControl);
-        }
-        
-        if (typeof this.setCenter === 'object') {
-            if (typeof this.setCenter.geoCodeAddr === 'string'){
-                this.geoCodeLookup(this.setCenter.geoCodeAddr);
-            }else{
-                if (this.gmapType === 'map'){
-                    var point = new GLatLng(this.setCenter.lat,this.setCenter.lng);
-                    this.gmap.setCenter(point, this.zoomLevel);    
-                }
-                if (typeof this.setCenter.marker === 'object' && typeof point === 'object'){
-                    this.addMarker(point,this.setCenter.marker,this.setCenter.marker.clear);
-                }
-            }
-            if (this.gmapType === 'panorama'){
-                this.gmap.setLocationAndPOV(new GLatLng(this.setCenter.lat,this.setCenter.lng), {yaw: this.yaw, pitch: this.pitch, zoom: this.zoom});
-            }
-        }
-
-        GEvent.bind(this.gmap, 'load', this, function(){
+        }        
+        GEvent.bind(this.gmap, 'load', this, function () {
             this.onMapReady();
         });
-
+        if (typeof this.setCenter === 'object') {
+            if (typeof this.setCenter.geoCodeAddr === 'string') {
+                this.geoCodeLookup(this.setCenter.geoCodeAddr);
+            } else {
+                if (this.gmapType === 'map') {
+                    var point = new GLatLng(this.setCenter.lat, this.setCenter.lng);
+                    this.gmap.setCenter(point, this.zoomLevel);
+                }
+                if (typeof this.setCenter.marker === 'object' && typeof point === 'object') {
+                    this.addMarker(point, this.setCenter.marker, this.setCenter.marker.clear);
+                }
+            }
+            if (this.gmapType === 'panorama') {
+                this.gmap.setLocationAndPOV(new GLatLng(this.setCenter.lat, this.setCenter.lng), {
+                    yaw: this.yaw,
+                    pitch: this.pitch,
+                    zoom: this.zoom
+                });
+            }
+        }
     },
     onMapReady : function(){
         this.addMarkers(this.markers);
@@ -145,20 +141,21 @@ Ext.ux.GMapPanel = Ext.extend(Ext.Panel, {
         this.getMap().addOverlay(mark);
 
     },
-    addMapControls : function(){
-        
+    addMapControls: function () {
         if (this.gmapType === 'map') {
             if (Ext.isArray(this.mapControls)) {
-                for(i=0;i<this.mapControls.length;i++){
+                if (this.mapControls.length == 0) {
+                    this.gmap.setUIToDefault();
+                }
+                for (i = 0; i < this.mapControls.length; i++) {
                     this.addMapControl(this.mapControls[i]);
                 }
-            }else if (typeof this.mapControls === 'string'){
+            } else if (typeof this.mapControls === 'string') {
                 this.addMapControl(this.mapControls);
-            }else if (typeof this.mapControls === 'object'){
+            } else if (typeof this.mapControls === 'object') {
                 this.getMap().addControl(this.mapControls);
             }
         }
-        
     },
     addMapControl : function(mc){
         

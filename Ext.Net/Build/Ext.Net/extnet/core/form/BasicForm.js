@@ -55,7 +55,7 @@ Ext.form.BasicForm.override({
             //searches for the field corresponding to the given id. Used recursively for composite fields
             var findMatchingField = function (f) {
                 if (f.isFormField) {
-                    if (f.dataIndex == id || f.id == id || f.getName() == id || f.name == id) {
+                    if (f.dataIndex === id || f.id === id || f.getName() === id || f.name === id) {
                         field = f;
                         return false;
                     } else if ((f.isComposite && f.rendered) || (f instanceof Ext.form.CheckboxGroup && f.items)) {

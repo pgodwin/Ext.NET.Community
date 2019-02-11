@@ -41,7 +41,7 @@ Ext.tree.TreeLoader.override({
             attr.loader = this;
         }
         
-        if (typeof attr.uiProvider == "string") {
+        if (typeof attr.uiProvider === "string") {
             attr.uiProvider = this.uiProviders[attr.uiProvider] || eval(attr.uiProvider);
         }
 
@@ -51,8 +51,8 @@ Ext.tree.TreeLoader.override({
             node = new Ext.tree.TreePanel.nodeTypes[attr.nodeType](attr);
         } else {
             node = attr.leaf ?
-                        new Ext.tree.TreeNode(attr) :
-                        new Ext.tree.AsyncTreeNode(attr);
+                new Ext.tree.TreeNode(attr) :
+                new Ext.tree.AsyncTreeNode(attr);
         }
 
         if (this.preloadChildren) {

@@ -70,7 +70,10 @@
                 </ext:ArrayReader>
             </Reader>
             <Listeners>
-                <DataChanged Handler="var record = this.getAt(0) || {};#{FormPanel1}.getForm().loadRecord(record);" />
+                <DataChanged 
+                    Handler="var record = this.getAt(0) || {};#{FormPanel1}.getForm().loadRecord(record);" 
+                    Delay="10" 
+                    />
             </Listeners>
         </ext:Store>
         

@@ -5,8 +5,7 @@
 <script runat="server">
     protected void ActivateClick(object sender, DirectEventArgs e)
     {
-        Debug.Activate(DebugConsole.Firebug, new JFunction(X.Msg.Alert("Debug Console", "Activated").ToScript()));
-        //X.Js.Alert("Firebug Lite Debug Console Activated");
+        Debug.Activate(DebugConsole.Firebug, new JFunction("Ext.net.Debug.show();"));
     }
 </script>
 

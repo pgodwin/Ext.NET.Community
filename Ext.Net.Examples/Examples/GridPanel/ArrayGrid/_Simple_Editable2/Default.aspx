@@ -5,10 +5,6 @@
 <%@ Register Assembly="Ext.Net" Namespace="Ext.Net" TagPrefix="ext" %>
 
 <script runat="server">
-    protected void Page_Load(object sender, EventArgs e)
-    {
-    }
-    
     private object[] TestData
     {
         get
@@ -52,8 +48,10 @@
     
     protected void Store1_RefreshData(object sender, StoreRefreshDataEventArgs e)
     {
-        this.Store1.DataSource = this.TestData;
-        this.Store1.DataBind();
+        var store = this.GridPanel1.GetStore();
+        
+        store.DataSource = this.TestData;
+        store.DataBind();
     }
 
     protected void Store1_RecordUpdated(object sender, AfterRecordUpdatedEventArgs e)
@@ -67,13 +65,8 @@
         };
 
         string tpl = "Name: {0}, Price: {1}, LastChange: {2}<br />";
+        
         this.Label1.Html += string.Format(tpl, company.Name, company.Price, company.LastChange);
-    }
-
-    protected void Button1_Click(object sender, DirectEventArgs e)
-    {
-        string tpl = "Ext.getDom('{0}').value = '{1}';";
-        this.Button1.AddScript(string.Format(tpl, this.HiddenField1.ClientID, "SomeValue"));
     }
 </script>
 
@@ -90,52 +83,51 @@
 
         var change = function (value) {
             return String.format(template, (value > 0) ? "green" : "red", value);
-        }
+        };
 
         var pctChange = function (value) {
             return String.format(template, (value > 0) ? "green" : "red", value + "%");
-        }
+        };
     </script>
 
 </head>
 <body>
     <form runat="server">
-        <ext:ResourceManager ID="ResourceManager1" runat="server" />
+        <ext:ResourceManager runat="server" />
         
         <h1>GridPanel with editable rows and server save</h1>
-        
-        <ext:Store 
-            ID="Store1" 
-            runat="server" 
-            OnAfterRecordUpdated="Store1_RecordUpdated" 
-            OnRefreshData="Store1_RefreshData"
-            RemoteSort="true">
-            <Proxy>
-                <ext:PageProxy />
-            </Proxy>
-            <Reader>
-                <ext:ArrayReader>
-                    <Fields>
-                        <ext:RecordField Name="company" />
-                        <ext:RecordField Name="price" Type="Float" />
-                        <ext:RecordField Name="change" Type="Float" />
-                        <ext:RecordField Name="pctChange" Type="Float" />
-                        <ext:RecordField Name="lastChange" Type="Date" />
-                    </Fields>
-                </ext:ArrayReader>
-            </Reader>
-        </ext:Store>
         
         <ext:GridPanel 
             ID="GridPanel1" 
             runat="server" 
-            StoreID="Store1" 
             StripeRows="true"
             Title="Array Grid" 
             Width="600" 
             Height="290"
             Icon="ControlAddBlue"
             AutoExpandColumn="Company">
+            <Store>
+                <ext:Store 
+                    runat="server" 
+                    OnAfterRecordUpdated="Store1_RecordUpdated" 
+                    OnRefreshData="Store1_RefreshData"
+                    RemoteSort="true">
+                    <Proxy>
+                        <ext:PageProxy />
+                    </Proxy>
+                    <Reader>
+                        <ext:ArrayReader>
+                            <Fields>
+                                <ext:RecordField Name="company" />
+                                <ext:RecordField Name="price" Type="Float" />
+                                <ext:RecordField Name="change" Type="Float" />
+                                <ext:RecordField Name="pctChange" Type="Float" />
+                                <ext:RecordField Name="lastChange" Type="Date" />
+                            </Fields>
+                        </ext:ArrayReader>
+                    </Reader>
+                </ext:Store>
+            </Store>
             <TopBar>
                 <ext:Toolbar ID="ToolBar1" runat="server">
                     <Items>
@@ -188,17 +180,9 @@
             </SelectionModel>
             <LoadMask ShowMask="true" />
             <BottomBar>
-                <ext:PagingToolbar ID="PagingToolBar1" runat="server" PageSize="10" StoreID="Store1" />
+                <ext:PagingToolbar ID="PagingToolBar1" runat="server" PageSize="10" />
             </BottomBar>
         </ext:GridPanel>
-        
-        <ext:Button ID="Button1" runat="server" Text="Submit">
-            <DirectEvents>
-                <Click OnEvent="Button1_Click" />
-            </DirectEvents>
-        </ext:Button>
-        
-        <asp:HiddenField ID="HiddenField1" runat="server" />
         
         <ext:Label ID="Label1" runat="server" />
     </form>

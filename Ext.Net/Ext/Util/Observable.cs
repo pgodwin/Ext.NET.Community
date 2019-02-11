@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -202,7 +202,7 @@ namespace Ext.Net
                 else if (DateTime.TryParse(value, System.Globalization.CultureInfo.CurrentCulture, DateTimeStyles.None, out dateTest))
                 {
                     item.Mode = ParameterMode.Raw;
-                    value = Ext.Net.Utilities.DateTimeUtils.DateNetToJs(dateTest);
+                    value = DateTimeUtils.DateNetToJs(dateTest);
                 }
             }
 
@@ -229,6 +229,23 @@ namespace Ext.Net
                 return "";
             }
         }
+
+        private bool renderXType = true;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal protected virtual bool RenderXType
+        {
+            get
+            {
+                return this.renderXType;
+            }
+            set
+            {
+                this.renderXType = value;
+            }
+        }
         
         /// <summary>
         /// The registered xtype to create. This config option is not used when passing a config object into a constructor. This config option is used only when lazy instantiation is being used, and a child items of a Container is being specified not as a fully instantiated Component, but as a Component config object. The xtype will be looked up at render time up to determine what type of child Component to create.
@@ -241,7 +258,7 @@ namespace Ext.Net
         {
             get
             {
-                if (this.IsLazy || this.IsDynamicLazy || this.DesignMode)
+                if ((this.IsLazy || this.IsDynamicLazy || this.DesignMode) && this.RenderXType)
                 {
                     string defaultType = "";
 
@@ -253,7 +270,7 @@ namespace Ext.Net
 
                         if (ownerCt != null)
                         {
-                            defaultType = ownerCt.DefaultType;
+                            defaultType = DefaultTypeConverter.GetXType(ownerCt.DefaultType);
                         }
                     }
 
@@ -649,11 +666,11 @@ namespace Ext.Net
             base.PreRenderAction();
         }
 
-		/// <summary>
+        /// <summary>
 		/// 
 		/// </summary>
 		[Description("")]
-        protected virtual void AfterItemAdd(Component item)
+        protected virtual void AfterItemAdd(Observable item)
         {
             if (!this.Controls.Contains(item))
             {
@@ -670,7 +687,7 @@ namespace Ext.Net
 		/// 
 		/// </summary>
 		[Description("")]
-        protected virtual void AfterItemRemove(Component item)
+        protected virtual void AfterItemRemove(Observable item)
         {
             if (this.Controls.Contains(item))
             {

@@ -17,14 +17,15 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
  ********/
 
 using System.ComponentModel;
+using System.Web.UI;
 
 namespace Ext.Net
 {
@@ -38,10 +39,11 @@ namespace Ext.Net
 		/// 
 		/// </summary>
 		[Description("")]
-        public TableLayoutConfig(int columns, bool renderHidden, string extraCls)
+        public TableLayoutConfig(int columns, DomObject tableAttrs, bool renderHidden, string extraCls)
             : base(renderHidden, extraCls)
         {
             this.Columns = columns;
+            this.tableAttrs = tableAttrs;
         }
 
 		/// <summary>
@@ -66,6 +68,27 @@ namespace Ext.Net
             set
             {
                 this.ViewState["Columns"] = value;
+            }
+        }
+
+        private DomObject tableAttrs;
+
+        /// <summary>
+        /// An object containing properties which are added to the DomHelper specification used to create the layout's <table> element.
+        /// </summary>
+        [ConfigOption(JsonMode.Object)]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        [Description("An object containing properties which are added to the DomHelper specification used to create the layout's <table> element.")]
+        public virtual DomObject TableAttrs
+        {
+            get
+            {
+                if (this.tableAttrs == null)
+                {
+                    this.tableAttrs = new DomObject();
+                }
+
+                return this.tableAttrs;
             }
         }
     }

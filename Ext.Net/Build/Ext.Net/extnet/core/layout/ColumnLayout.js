@@ -28,6 +28,27 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         Ext.net.ColumnLayout.superclass.renderAll.apply(this, arguments);
     },
+    
+    getLayoutTargetSize : function () {
+        var target = this.container.getLayoutTarget(), 
+            ret;
+
+        if (target) {
+            ret = target.getViewSize();
+
+            // IE in strict mode will return a width of 0 on the 1st pass of getViewSize.
+            // Use getStyleSize to verify the 0 width, the adjustment pass will then work properly
+            // with getViewSize
+            if (Ext.isIE && Ext.isStrict && ret.width === 0) {
+                ret =  target.getStyleSize();
+            }
+
+            ret.width -= (target.getPadding("lr") +  this.scrollOffset);
+            ret.height -= target.getPadding("tb");
+        }
+
+        return ret;
+    },
 
     // private
     onLayout : function (ct, target) {
@@ -46,21 +67,22 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
         
         this.renderAll(ct, this.innerCt);
 
-        var size = Ext.isIE && ((target.dom != Ext.getBody().dom) && (target.dom != (Ext.net.ResourceMgr.getAspForm() || {}).dom)) ? target.getStyleSize() : target.getViewSize();
+        //var size = Ext.isIE && ((target.dom != Ext.getBody().dom) && (target.dom != (Ext.net.ResourceMgr.getAspForm() || {}).dom)) ? target.getStyleSize() : target.getViewSize();
+        var size = this.getLayoutTargetSize();
 
         if (size.width < 1 && size.height < 1) { // display none?
             return;
         }
 
-        var w = size.width - target.getPadding("lr") - this.scrollOffset,
-            h = size.height - target.getPadding("tb");
+        var w = size.width,
+            h = size.height;
         
         this.availableWidth = w;
         
-        var pw = this.availableWidth, lastProportionedColumn;
+        var pw = this.availableWidth, 
+            lastProportionedColumn;
 
         if (this.split) {
-            this.minWidth = Math.min(pw / len, 100);
             this.maxWidth = pw - ((this.minWidth + 5) * (len ? (len - 1) : 1));
         }
 
@@ -72,7 +94,7 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
         for (i = 0; i < len; i++) {
             c = cs[i];
-            cel = c.getEl();
+            cel = c.getPositionEl();
 
             if (this.margin && (i < (len - 1))) {
                 cel.setStyle("margin-right", this.margin + "px");
@@ -90,14 +112,16 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
         }
 
         var remaining = (pw = pw < 0 ? 0 : pw),
-            splitterPos = 0, cw, cmargin;
+            splitterPos = 0, 
+            cw, 
+            cmargin;
         
         for (i = 0; i < len; i++) {
             c = cs[i];
-            cel = c.getEl();
+            cel = c.getPositionEl();
             
             if (c.columnWidth) {
-                cw = (i == lastProportionedColumn) ? remaining : Math.floor(c.columnWidth * pw);
+                cw = (i === lastProportionedColumn) ? remaining : Math.floor(c.columnWidth * pw);
                 
                 cmargin = cel.getMargins("lr");
 
@@ -138,7 +162,7 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
                         this.splitBars[i].index = i;
                         this.splitBars[i].leftComponent = c;
                         this.splitBars[i].addListener("resize", this.onColumnResize, this);
-                        this.splitBars[i].minSize = this.minWidth;
+                        this.splitBars[i].minSize = Math.max(c.boxMinWidth || 5, 5);
                     }
 
                     splitterPos += this.splitBars[i].el.getWidth();
@@ -151,6 +175,19 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
         if (this.split) {
             this.setMaxWidths();
         }
+        
+        if (Ext.isIE) {
+            if (i = target.getStyle("overflow") && i !== "hidden" && !this.adjustmentPass) {
+                var ts = this.getLayoutTargetSize();
+
+                if (ts.width !== size.width) {
+                    this.adjustmentPass = true;
+                    this.onLayout(ct, target);
+                }
+            }
+        }
+
+        delete this.adjustmentPass;
     },
 
     //  On column resize, explicitly size the Components to the left and right of the SplitBar
@@ -187,16 +224,19 @@ Ext.net.ColumnLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
     setMaxWidths : function () {
         var items = this.container.items.items,
-            spare = items[items.length - 1].el.dom.offsetWidth - 100;
+            spare = items[items.length - 1].el.dom.offsetWidth - 100,
+            i = items.length - 2;
 
-        for (var i = items.length - 2; i > -1; i--) {
+        for (i; i > -1; i--) {
             var sb = this.splitBars[i], 
                 sbel = sb.el, 
                 c = items[i], 
                 cel = c.el,
                 itemWidth = cel.dom.offsetWidth;
+
             sbel.setStyle("left", (cel.getX() - Ext.fly(cel.dom.parentNode).getX() + itemWidth) + "px");
             sb.maxSize = itemWidth + spare;
+            sb.setCurrentSize(itemWidth);
             spare = itemWidth - 100;
         }
     },

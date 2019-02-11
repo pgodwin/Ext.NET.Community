@@ -16,21 +16,17 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                 return;
             }
 
-            Ext.Msg.confirm(
-                directEventConfig.confirmation.title || this.confirmTitle,
-                directEventConfig.confirmation.message || this.confirmMessage,
-                this.confirmAnswer.createDelegate(this, [directEventConfig], true),
-                this);
+            Ext.Msg.confirm(directEventConfig.confirmation.title || this.confirmTitle, directEventConfig.confirmation.message || this.confirmMessage, this.confirmAnswer.createDelegate(this, [directEventConfig], true), this);
         } else {
             Ext.net.DirectEvent.request(directEventConfig);
         }
     },
 
     confirmAnswer : function (btn, text, buttonConfig, directEventConfig) {
-        if (btn == "yes") {
+        if (btn === "yes") {
             Ext.net.DirectEvent.request(directEventConfig);
         }
-        if (btn == "no" && directEventConfig.confirmation.cancel) {
+        if (btn === "no" && directEventConfig.confirmation.cancel) {
             directEventConfig.confirmation.cancel(directEventConfig);
         }
     },
@@ -81,7 +77,13 @@ Ext.net.DirectEvent = new Ext.data.Connection({
             errorMsg = response.responseText;
         }
 
-        win = new Ext.Window({ modal: true, width: width, height: height, title: "Request Failure", layout: "fit", maximizable: true,
+        win = new Ext.Window({ 
+            modal  : true, 
+            width  : width, 
+            height : height, 
+            title  : "Request Failure", 
+            layout : "fit", 
+            maximizable : true,
             listeners : {
                 "maximize" : {
                     fn : function (el) {
@@ -93,14 +95,13 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
                 "resize" : {
                     fn : function (wnd) {
-                        var editor = Ext.getCmp("__ErrorMessageEditor");
+                        var editor = wnd.getComponent(0).getComponent("__ErrorMessageEditor");
                         var sz = wnd.body.getViewSize();
                         editor.setSize(sz.width, sz.height - 42);
                     }
                 }
             },
-            items : new Ext.form.FormPanel({
-                baseCls : "x-plain",
+            items : new Ext.Container({
                 layout  : "absolute",
                 defaultType : "label",
                 items : [
@@ -108,34 +109,30 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                         x    : 5,
                         y    : 5,
                         html : '<div class="x-window-dlg"><div class="ext-mb-error" style="width:32px;height:32px"></div></div>'
-                    },
-                    {
+                    }, {
                         x    : 42,
                         y    : 6,
                         html : "<b>Status Code: </b>"
-                    },
-                    {
+                    }, {
                         x    : 125,
                         y    : 6,
                         text : response.status
-                    },
-                    {
+                    }, {
                         x    : 42,
                         y    : 25,
                         html : "<b>Status Text: </b>"
-                    },
-                    {
+                    }, {
                         x    : 125,
                         y    : 25,
                         text : response.statusText
-                    },
-                    {
+                    }, {
                         x  : 0,
                         y  : 42,
-                        id : "__ErrorMessageEditor",
+                        itemId   : "__ErrorMessageEditor",
                         xtype    : "htmleditor",
                         value    : errorMsg,
                         readOnly : true,
+                        submitValue      : false,
                         enableAlignments : false,
                         enableColors     : false,
                         enableFont       : false,
@@ -144,30 +141,28 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                         enableLinks      : false,
                         enableLists      : false,
                         enableSourceEdit : false
-                    }
-                ]
+                    }]
             })
         });
         
         win.show();
     },
 
-    parseResponse : function (response) {
+    parseResponse : function (response, options) {
         var text = response.responseText,
-            xmlTpl = "<?xml",
             result = {},
             exception = false;
 
         result.success = true;
 
         try {
-            if (response.responseText.match(/^<\?xml/) == xmlTpl) {
+            if (/^<\?xml/.test(response.responseText)) {
                 //xml parsing      
                 var xmlData = response.responseXML,
                     root = xmlData.documentElement || xmlData,
                     q = Ext.DomQuery;
 
-                if (root.nodeName == "DirectResponse") {
+                if (root.nodeName === "DirectResponse") {
                     //root = q.select("DirectResponse", root);
                     //success
                     var sv = q.selectValue("Success", root, true),
@@ -246,6 +241,14 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
             response.statusText = result.errorMessage;
         }
+        
+        if (result && result.d) {
+            result = result.d;
+
+            if (Ext.isString(result) && options.isDirectMethod !== true) {
+                result = Ext.decode(result);
+            }
+        }
 
         return { 
             result    : result, 
@@ -279,7 +282,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
                 o.eventType = o.eventType || "event";
 
-                var isInstance = o.eventType == "public",
+                var isInstance = (o.eventType === "public"),
                     submitConfig = {},
                     forms,
                     aspForm;
@@ -302,7 +305,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                     o.action = o.action || "Click";
                     o.headers = Ext.apply(o.headers || {}, { "X-Ext.Net" : "delta=true" });
 
-                    if (o.type == "submit") {
+                    if (o.type === "submit") {
                         o.form = Ext.get(o.formProxyArg);
 
                         if (!Ext.isEmpty(o.form) && !Ext.isEmpty(o.form.id)) {
@@ -336,7 +339,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                         if (Ext.isEmpty(o.form) && Ext.isEmpty(o.url) && !Ext.isEmpty(Ext.net.ResourceMgr.aspForm)) {
                             o.form = Ext.get(Ext.net.ResourceMgr.aspForm);
                         }                       
-                    } else if (o.type == "load" && Ext.isEmpty(o.method)) {
+                    } else if (o.type === "load" && Ext.isEmpty(o.method)) {
                         o.method = "GET";
                     }                    
                     
@@ -346,7 +349,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                         }                     
 
                         if (aspForm) {
-                            if (o.type == "submit") {
+                            if (o.type === "submit") {
                                 o.form = aspForm;
                             } else {
                                 o.url = aspForm.action;
@@ -368,7 +371,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                         });
                     }
 
-                    if (o.viewStateMode != "default") {
+                    if (o.viewStateMode !== "default") {
                         Ext.apply(submitConfig, { 
                             viewStateMode : o.viewStateMode                             
                         });
@@ -407,7 +410,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                     if (!Ext.isEmpty(o.form)) {
                         var enctype = Ext.getDom(o.form).getAttribute("enctype");
 
-                        if ((enctype && enctype.toLowerCase() == "multipart/form-data") || o.isUpload) {
+                        if ((enctype && enctype.toLowerCase() === "multipart/form-data") || o.isUpload) {
                             Ext.apply(o.params, { "__ExtNetDirectEventMarker" : "delta=true" });
                         }
                     }
@@ -419,12 +422,13 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                             o.jsonData = o.params;
                             o.params = "";
                         } else {
-							var ov;
+							var ov,
+                                key;
 
-                            for (var key in o.params) {
+                            for (key in o.params) {
                                 ov = o.params[key];
 
-                                if (typeof ov == "object") {
+                                if (typeof ov === "object") {
                                     o.params[key] = Ext.encode(ov);
                                 }
                             }
@@ -443,7 +447,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
                     if (Ext.isEmpty(o.form) && Ext.isEmpty(o.url)) {
                         forms = Ext.select("form").elements;
-                        o.url = (forms.length == 1 && !Ext.isEmpty(forms[0].action)) ? forms[0].action : Ext.net.ResourceMgr.url || window.location.href;
+                        o.url = (forms.length === 1 && !Ext.isEmpty(forms[0].action)) ? forms[0].action : Ext.net.ResourceMgr.url || window.location.href;
                     }
 
                     if (o.before) {
@@ -536,7 +540,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                             delay = em.minDelay;
                         }
 
-                        var remove = (em.target || "page") == "page";
+                        var remove = (em.target || "page") === "page";
 
                         task = new Ext.util.DelayedTask(function (o, remove) {
                             o.scope.delayedF(o.maskEl, remove);
@@ -570,7 +574,9 @@ Ext.net.DirectEvent = new Ext.data.Connection({
                                 o.userComplete.call(o.control || window, true, response, result, o.control, o.eventType, o.action, o.extraParams, o);
                             }
                         },
-                        o.scope, [o, result, response]).delay(delay);
+                        o.scope, 
+                        [o, result, response]
+                    ).delay(delay);
                 };
 
 
@@ -598,7 +604,7 @@ Ext.net.DirectEvent = new Ext.data.Connection({
 
                     removeMask(o);
 
-                    var parsedResponse = o.scope.parseResponse(response);
+                    var parsedResponse = o.scope.parseResponse(response, options);
 
                     if (!Ext.isEmpty(parsedResponse.result.documentElement)) {
                         executeScript(o, parsedResponse.result, response);

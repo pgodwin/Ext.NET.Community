@@ -3,8 +3,10 @@
 
 Ext.dd.DragSource.override({
     getDropTarget : function (id) {
-        var dd = null;
-        for (var i in Ext.dd.DragDropMgr.ids) {
+        var dd = null,
+            i;
+        
+        for (i in Ext.dd.DragDropMgr.ids) {
             if (Ext.dd.DragDropMgr.ids[i][id]) {
                 dd = Ext.dd.DragDropMgr.ids[i][id];
                 

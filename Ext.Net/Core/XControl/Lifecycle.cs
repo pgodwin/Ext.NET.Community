@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -29,12 +29,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 using Ext.Net.Utilities;
-using System.Web;
 
 namespace Ext.Net
 {
@@ -240,6 +239,17 @@ namespace Ext.Net
             this.before += script;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string BeforeScript
+        {
+            get
+            {
+                return this.before;
+            }
+        }
+
         string after = "";
 
         /// <summary>
@@ -251,6 +261,16 @@ namespace Ext.Net
             this.after += script;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string AfterScript
+        {
+            get
+            {
+                return this.after;
+            }
+        }
 
         /*  Lifecycle
             -----------------------------------------------------------------------------------------------*/
@@ -358,6 +378,27 @@ namespace Ext.Net
         /// <summary>
         /// 
         /// </summary>
+        public virtual Component ParentComponentNotLazyOrDynamic
+        {
+            get
+            {
+                Component parent = this.ParentComponent;
+
+                if (this.IsLazy && !parent.TopDynamicControl)
+                {
+                    while (parent != null && parent.IsLazy && !parent.TopDynamicControl)
+                    {
+                        parent = parent.ParentComponent;
+                    }
+                }
+
+                return parent;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         [Description("")]
@@ -367,7 +408,7 @@ namespace Ext.Net
         {
             if (this.IsLazy && !this.DeferInitScriptGeneration)
             {
-                Component parent = this.ParentComponentNotLazy;
+                Component parent = this.ParentComponentNotLazyOrDynamic;
 
                 if (parent != null)
                 {
@@ -553,6 +594,8 @@ namespace Ext.Net
 
             if (!this.AlreadyRendered)
             {
+                this.Visible = true;
+
                 this.RenderScript(this.ToScript(selfRendering));
             }
         }
@@ -628,6 +671,8 @@ namespace Ext.Net
         {
             if (!this.AlreadyRendered)
             {
+                this.Visible = true;
+
                 this.RenderScript(this.ToScript(mode, element, selfRendering));
             }
         }
@@ -640,6 +685,8 @@ namespace Ext.Net
         {
             if (!this.AlreadyRendered)
             {
+                this.Visible = true;
+
                 this.RenderScript(this.ToScript(mode, element, index, selfRendering));
             }
         }
@@ -689,6 +736,8 @@ namespace Ext.Net
         {
             if (!this.AlreadyRendered)
             {
+                this.Visible = true;
+
                 this.RenderScript(this.ToScript(RenderMode.AddTo, element, selfRendering));
             }
         }
@@ -729,6 +778,8 @@ namespace Ext.Net
         {
             if (!this.AlreadyRendered)
             {
+                this.Visible = true;
+
                 this.RenderScript(this.ToScript(RenderMode.InsertTo, element, index, selfRendering));
             }
         }
@@ -755,6 +806,8 @@ namespace Ext.Net
 
             if (!this.AlreadyRendered)
             {
+                this.Visible = true;
+
                 this.RenderScript(this.ToScript());
             }
         }

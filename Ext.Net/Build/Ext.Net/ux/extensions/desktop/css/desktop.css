@@ -601,3 +601,6 @@ td.ux-taskButtons-edge {
 #x-shortcuts dt a:hover {
     text-decoration:underline;
 }
+.x-desktop-body .x-tip{
+	z-index: 26000 !important;
+}

@@ -10,7 +10,7 @@
                 var ns = this.ns || Ext.net.ResourceMgr.ns;
                 
                 if (ns) {                    
-                    Ext.ns(ns)[this.initialConfig.itemId || id] = this;
+                    (Ext.isObject(ns) ? ns : Ext.ns(ns))[this.initialConfig.itemId || id] = this;
                 } else {
                     window[id] = this;
                 }
@@ -20,12 +20,14 @@
 
     Ext.util.Observable.prototype.constructor.prototype = Ext.util.Observable.prototype;
 
-    var fns = {}, v;
+    var fns = {}, 
+        v,
+        i;
 
-    for (var i in Ext.util.Observable) {
+    for (i in Ext.util.Observable) {
         v = Ext.util.Observable[i];
         
-        if (typeof v == "function") {
+        if (typeof v === "function") {
             fns[i] = v;
         }
     }
@@ -41,12 +43,26 @@ Ext.util.Observable.prototype.purgeListeners = Ext.util.Observable.prototype.pur
 Ext.override(Ext.util.Observable, {
     cleanId : function () {        
         if (this.forbidIdScoping !== true) {
-            var ns = this.ns || Ext.net.ResourceMgr.ns;
+            var ns = this.ns || Ext.net.ResourceMgr.ns,
+                id = this.itemId || this.proxyId || this.storeId || this.id,
+                nsObj;
             
-            if (ns && window[ns + "." + (this.itemId || this.proxyId || this.id)]) {
-                Ext.ns(ns)[this.itemId || this.proxyId || this.id] = undefined;
-            } else if (window[this.proxyId || this.id]) {
-                window[this.proxyId || this.id] = null;
+            if (ns && id) {                
+                if (Ext.isObject(ns) && ns[id]) {
+                    try {
+                        delete ns[id];
+                    } catch (e) {
+                        ns[id] = undefined;
+                    }
+                } else if (Ext.net.ResourceMgr.getCmp(ns + "." + id)) {
+                    try {
+                        delete Ext.ns(ns)[id];
+                    } catch (f) {
+                        Ext.ns(ns)[id] = undefined;
+                    }
+                }
+            } else if (window[this.proxyId || this.storeId || this.id]) {
+                window[this.proxyId || this.storeId || this.id] = null;
             }
         }
     },

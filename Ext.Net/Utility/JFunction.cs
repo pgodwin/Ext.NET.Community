@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -87,20 +87,22 @@ namespace Ext.Net
                 return this.NamePrefix + this.Fn;
             }
 
+            string handler = TokenUtils.ReplaceRawToken(TokenUtils.ParseTokens(this.Handler, this.Owner));
+
             if (this.Args != null && this.Args.Length > 0)
             {
                 if (this.FormatHandler)
                 {
-                    return this.NamePrefix + "function(".ConcatWith(this.Args.Join(","), "){", this.Handler.FormatWith(this.Args), "}");
+                    return this.NamePrefix + "function(".ConcatWith(this.Args.Join(","), "){", handler.FormatWith(this.Args), "}");
                 }
                 else
                 {
-                    return this.NamePrefix + "function(".ConcatWith(this.Args.Join(","), "){", this.Handler, "}");
+                    return this.NamePrefix + "function(".ConcatWith(this.Args.Join(","), "){", handler, "}");
                 }
             }
             else
             {
-                return this.NamePrefix + "function(){".ConcatWith(this.Handler).ConcatWith("}");
+                return this.NamePrefix + "function(){".ConcatWith(handler).ConcatWith("}");
             }
         }
 

@@ -43,7 +43,6 @@ namespace Ext.Net.Examples.FeedViewer
             });
 
             this.BuildStore();
-            this.StoreID = this.store.ID;
 
             this.ColumnModel.Columns.Add(new Column
             {
@@ -87,16 +86,6 @@ namespace Ext.Net.Examples.FeedViewer
             }
         }
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        [DefaultValue(null)]
-        public Store Store
-        {
-            get
-            {
-                return this.store;
-            }
-        }
-
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -115,7 +104,7 @@ namespace Ext.Net.Examples.FeedViewer
 
         private void BuildStore()
         {
-            this.store = new Store
+            var store = new Store
             {
                 ID = "TopicStore",
                 AutoLoad = false,
@@ -151,7 +140,7 @@ namespace Ext.Net.Examples.FeedViewer
                 }
             };
 
-            this.Controls.Add(this.store);
+            this.Store.Add(store);
         }
 
         private void BuildContextMenu()

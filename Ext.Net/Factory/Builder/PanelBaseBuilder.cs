@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -297,15 +297,6 @@ namespace Ext.Net
             public virtual TBuilder HideCollapseTool(bool hideCollapseTool)
             {
                 this.ToComponent().HideCollapseTool = hideCollapseTool;
-                return this as TBuilder;
-            }
-             
- 			/// <summary>
-			/// An HTML fragment, or a DomHelper specification to use as the panel's body content (defaults to '').
-			/// </summary>
-            public virtual TBuilder Html(string html)
-            {
-                this.ToComponent().Html = html;
                 return this as TBuilder;
             }
              
@@ -616,42 +607,6 @@ namespace Ext.Net
             public virtual TBuilder ToggleCollapse(bool animate)
             {
                 this.ToComponent().ToggleCollapse(animate);
-                return this as TBuilder;
-            }
-            
- 			/// <summary>
-			/// Update the html of the Body, optionally searching for and processing scripts.
-			/// </summary>
-            public virtual TBuilder Update(string html)
-            {
-                this.ToComponent().Update(html);
-                return this as TBuilder;
-            }
-            
- 			/// <summary>
-			/// Update the html of the Body, optionally searching for and processing scripts.
-			/// </summary>
-            public virtual TBuilder Update(string html, bool loadScripts)
-            {
-                this.ToComponent().Update(html, loadScripts);
-                return this as TBuilder;
-            }
-            
- 			/// <summary>
-			/// Update the html of the Body, optionally searching for and processing scripts.
-			/// </summary>
-            public virtual TBuilder Update(string html, bool loadScripts, string callback)
-            {
-                this.ToComponent().Update(html, loadScripts, callback);
-                return this as TBuilder;
-            }
-            
- 			/// <summary>
-			/// Update the html of the Body, optionally searching for and processing scripts.
-			/// </summary>
-            public virtual TBuilder Update(string html, bool loadScripts, JFunction callback)
-            {
-                this.ToComponent().Update(html, loadScripts, callback);
                 return this as TBuilder;
             }
             

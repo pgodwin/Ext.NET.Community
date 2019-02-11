@@ -6,9 +6,9 @@ Ext.net.Mask = function () {
         bmask, 
         init = function () {
             bmask = Ext.getBody().createChild({ 
-                    cls   : "x-page-mask",
-                    style : "top:0;left:0;z-index:20000;position:absolute;background-color:transparent,width:100%,height:100%,zoom:1;"
-                })
+                cls   : "x-page-mask",
+                style : "top:0;left:0;z-index:20000;position:absolute;background-color:transparent,width:100%,height:100%,zoom:1;"
+            })
                 .enableDisplayMode("block")
                 .hide();
                     
@@ -27,7 +27,7 @@ Ext.net.Mask = function () {
                 el     : Ext.getBody()
             }, cfg || {});
 
-            if (cfg.el == Ext.getBody()) {
+            if (cfg.el === Ext.getBody()) {
                 if (Ext.isEmpty(bmask)) {
                     init();
                 }
@@ -50,6 +50,10 @@ Ext.net.Mask = function () {
             
             if (bmask) {
                 bmask.hide();
+            }
+
+            if (Ext.getBody().isMasked() === true) {
+                Ext.getBody().unmask();
             }
         }
     };

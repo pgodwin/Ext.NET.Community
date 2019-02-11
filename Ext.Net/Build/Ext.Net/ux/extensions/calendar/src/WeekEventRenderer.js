@@ -35,6 +35,8 @@ Ext.calendar.WeekEventRenderer = function() {
                 weekCount = o.weekCount < 1 ? 6: o.weekCount,
                 dayCount = o.weekCount == 1 ? o.dayCount: 7,
                 cellCfg;
+				
+			dt.setHours(1);
 
             for (; w < weekCount; w++) {
                 if (!grid[w] || grid[w].length == 0) {

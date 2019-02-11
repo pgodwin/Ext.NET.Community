@@ -87,7 +87,7 @@ Ext.extend(Ext.net.HttpWriteProxy, Ext.data.HttpProxy, {
                 
                 result = { 
                     success : success, 
-                    msg     : q.selectValue("Msg", root, ""),
+                    msg     : q.selectValue("Message", root, ""),
                     data    : data
                 };
             }
@@ -99,7 +99,12 @@ Ext.extend(Ext.net.HttpWriteProxy, Ext.data.HttpProxy, {
             return;
         }
         
-        this.fireEvent("save", this, o, o.request.arg);
-        o.request.callback.call(o.request.scope, result, o.request.arg, true);
+        if (result.success) {
+            this.fireEvent("save", this, o, o.request.arg);
+        } else {
+            this.fireEvent("saveexception", this, o, response, { message : result.msg });
+        }
+        
+        o.request.callback.call(o.request.scope, result, o.request.arg, result.success);
     }
 });

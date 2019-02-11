@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -40,6 +40,9 @@ namespace Ext.Net
         /// <summary>
         /// Fires when a column is moved.
         /// </summary>
+        [ListenerArgument(0, "item", typeof(ColumnModel), "this")]
+        [ListenerArgument(1, "oldIndex", typeof(int), "")]
+        [ListenerArgument(2, "newIndex", typeof(int), "")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [ConfigOption("columnmoved", typeof(ListenerJsonConverter))]
         [PersistenceMode(PersistenceMode.InnerProperty)]
@@ -63,6 +66,7 @@ namespace Ext.Net
         /// <summary>
         /// Fires when the configuration is changed
         /// </summary>
+        [ListenerArgument(0, "item", typeof(ColumnModel), "this")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [ConfigOption("configchanged", typeof(ListenerJsonConverter))]
         [PersistenceMode(PersistenceMode.InnerProperty)]
@@ -86,6 +90,9 @@ namespace Ext.Net
         /// <summary>
         /// Fires when the text of a header changes.
         /// </summary>
+        [ListenerArgument(0, "item", typeof(ColumnModel), "this")]
+        [ListenerArgument(1, "columnIndex", typeof(int), "")]
+        [ListenerArgument(2, "newText", typeof(string), "")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [ConfigOption("headerchange", typeof(ListenerJsonConverter))]
         [PersistenceMode(PersistenceMode.InnerProperty)]
@@ -109,6 +116,9 @@ namespace Ext.Net
         /// <summary>
         /// Fires when a column is hidden or "unhidden".
         /// </summary>
+        [ListenerArgument(0, "item", typeof(ColumnModel), "this")]
+        [ListenerArgument(1, "columnIndex", typeof(int), "")]
+        [ListenerArgument(2, "hidden", typeof(bool), "")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [ConfigOption("hiddenchange", typeof(ListenerJsonConverter))]
         [PersistenceMode(PersistenceMode.InnerProperty)]
@@ -132,6 +142,9 @@ namespace Ext.Net
         /// <summary>
         /// Fires when the width of a column is programmaticially changed using setColumnWidth. Note internal resizing suppresses the event from firing. 
         /// </summary>
+        [ListenerArgument(0, "item", typeof(ColumnModel), "this")]
+        [ListenerArgument(1, "columnIndex", typeof(int), "")]
+        [ListenerArgument(2, "newWidth", typeof(int), "")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [ConfigOption("widthchange", typeof(ListenerJsonConverter))]
         [PersistenceMode(PersistenceMode.InnerProperty)]

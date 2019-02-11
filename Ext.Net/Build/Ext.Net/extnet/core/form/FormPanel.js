@@ -38,7 +38,7 @@ Ext.form.FormPanel.override({
     },
     
     createElement : function (name, pnode) {
-        if ((name === "body" || this.elements.indexOf(name) != -1) && this[name + "Cfg"]) {
+        if ((name === "body" || this.elements.indexOf(name) !== -1) && this[name + "Cfg"]) {
             if (this[name + "Cfg"].tag === "form" && Ext.fly(pnode).up("form")) {
                 this[name + "Cfg"].tag = "div";
             }
@@ -64,9 +64,11 @@ Ext.form.FormPanel.override({
         });
 
         if (this.fbar) {
-            var fitems = this.fbar.items.items;
+            var fitems = this.fbar.items.items,
+                i = 0,
+                len;
             
-            for (var i = 0, len = fitems.length; i < len; i++) {
+            for (i, len = fitems.length; i < len; i++) {
                 var btn = fitems[i];
 
                 if (btn.formBind === true && btn.disabled === valid) {

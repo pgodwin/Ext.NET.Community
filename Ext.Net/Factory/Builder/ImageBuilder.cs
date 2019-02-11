@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -41,7 +41,7 @@ namespace Ext.Net
         /// <summary>
         /// 
         /// </summary>
-        public partial class Builder : BoxComponentBase.Builder<Image, Image.Builder>
+        public partial class Builder : ImageBase.Builder<Image, Image.Builder>
         {
             /*  Ctor
                 -----------------------------------------------------------------------------------------------*/
@@ -77,123 +77,6 @@ namespace Ext.Net
 			/*  ConfigOptions
 				-----------------------------------------------------------------------------------------------*/
 			 
- 			/// <summary>
-			/// The height of this component in pixels (defaults to auto).
-			/// </summary>
-            public virtual Image.Builder Height(Unit height)
-            {
-                this.ToComponent().Height = height;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// The width of this component in pixels (defaults to auto).
-			/// </summary>
-            public virtual Image.Builder Width(Unit width)
-            {
-                this.ToComponent().Width = width;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// 
-			/// </summary>
-            public virtual Image.Builder ImageUrl(string imageUrl)
-            {
-                this.ToComponent().ImageUrl = imageUrl;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// 
-			/// </summary>
-            public virtual Image.Builder AlternateText(string alternateText)
-            {
-                this.ToComponent().AlternateText = alternateText;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// 
-			/// </summary>
-            public virtual Image.Builder Align(ImageAlign align)
-            {
-                this.ToComponent().Align = align;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// true to load image after rendering only
-			/// </summary>
-            public virtual Image.Builder LazyLoad(bool lazyLoad)
-            {
-                this.ToComponent().LazyLoad = lazyLoad;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// true to monitor complete state and fire Complete event
-			/// </summary>
-            public virtual Image.Builder MonitorComplete(bool monitorComplete)
-            {
-                this.ToComponent().MonitorComplete = monitorComplete;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// true to allow scroll the image by mouse dragging
-			/// </summary>
-            public virtual Image.Builder AllowPan(bool allowPan)
-            {
-                this.ToComponent().AllowPan = allowPan;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// true to allow resize the image
-			/// </summary>
-            public virtual Image.Builder Resizable(bool resizable)
-            {
-                this.ToComponent().Resizable = resizable;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// The milliseconds to poll complete state, ignored if MonitorComplete is not true (defaults to 200)
-			/// </summary>
-            public virtual Image.Builder MonitorPoll(int monitorPoll)
-            {
-                this.ToComponent().MonitorPoll = monitorPoll;
-                return this as Image.Builder;
-            }
-             
- 			// /// <summary>
-			// /// Resize object config
-			// /// </summary>
-            // public virtual TBuilder ResizeConfig(Resizable resizeConfig)
-            // {
-            //    this.ToComponent().ResizeConfig = resizeConfig;
-            //    return this as TBuilder;
-            // }
-             
- 			/// <summary>
-			/// X offset
-			/// </summary>
-            public virtual Image.Builder XDelta(int xDelta)
-            {
-                this.ToComponent().XDelta = xDelta;
-                return this as Image.Builder;
-            }
-             
- 			/// <summary>
-			/// Y offset
-			/// </summary>
-            public virtual Image.Builder YDelta(int yDelta)
-            {
-                this.ToComponent().YDelta = yDelta;
-                return this as Image.Builder;
-            }
-             
  			// /// <summary>
 			// /// Client-side JavaScript Event Handlers
 			// /// </summary>
@@ -209,15 +92,6 @@ namespace Ext.Net
             // public virtual TBuilder DirectEvents(ImageDirectEvents directEvents)
             // {
             //    this.ToComponent().DirectEvents = directEvents;
-            //    return this as TBuilder;
-            // }
-             
- 			// /// <summary>
-			// /// 
-			// /// </summary>
-            // public virtual TBuilder LoadMask(LoadMask loadMask)
-            // {
-            //    this.ToComponent().LoadMask = loadMask;
             //    return this as TBuilder;
             // }
             

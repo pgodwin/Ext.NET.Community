@@ -23,7 +23,7 @@
 
 10.  Renamed Coolite.Ext.UX Namespace to Ext.Net.UX
 
-11.  Renamed root singleton "Ext" class to "X". 
+11.  Renamed server-side root singleton "Ext" class to "X". 
 
 	 Example (Old)
 	 
@@ -37,6 +37,9 @@
 	 if (!X.IsAjaxRequest) { }
 	 
 	 X.Msg.Alert("Title", "Message").Show();
+	 
+	 NOTE: The renaming to "X" only applies to the server-side instance. 
+	 The client-side JavaScript root class remains as "Ext". 
 
 12.  Added new feature to get server-side Property values from client id 
      Token strings.
@@ -386,4 +389,25 @@
 	
 77.  LowerCase of RendererFormat enum is renamed to Lowercase (to correct name serialization)
 
+78.  Renamed the ResourceManager property .RemoveViewState to .DisableViewState. 
+
+     Example (old)
+	 
+	 <ext:ResourceManager runat="server" RemoveViewState="true" />
+	 
+	 Example (new)
+	 
+	 <ext:ResourceManager runat="server" DisableViewState="true" />
+	 
+79.  In prior releases, the Store .Load Listener was previously delayed by
+     10 milliseconds. This delay was removed as of v1.0 RC2.
+
+	 Projects configured to use the .Load Listener may require setting a
+	 10 millisecond delay. 
+
+	 Example
+
+	 <Load Handler="..." Delay="10" />
+
+      
 --------------------------------------------------------------------------

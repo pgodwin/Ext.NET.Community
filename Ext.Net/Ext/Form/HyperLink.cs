@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -27,6 +27,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace Ext.Net
 {
@@ -136,7 +137,8 @@ namespace Ext.Net
 		[Description("")]
         protected virtual string NavigateUrlProxy
         {
-            get {
+            get 
+            {
                 return this.ResolveUrlLink(this.NavigateUrl);
             }
         }
@@ -146,6 +148,7 @@ namespace Ext.Net
         /// </summary>
         [Meta]
         [ConfigOption]
+        [TypeConverter(typeof(TargetConverter))]
         [Category("6. Hyperlink")]
         [DefaultValue("")]
         [DirectEventUpdate(MethodName = "SetTarget")]

@@ -35,8 +35,17 @@ Ext.PagingToolbar.prototype.onRender = Ext.PagingToolbar.prototype.onRender.crea
     }
 });
 
+Ext.PagingToolbar.prototype.initComponent = Ext.PagingToolbar.prototype.initComponent.createSequence(function () {
+    if (this.ownerCt instanceof Ext.net.GridPanel) {
+        this.ownerCt.on("viewready", this.fixFirstLayout, this, {single : true});
+    } else {
+        this.on("afterlayout", this.fixFirstLayout, this, {single : true});
+    }
+});
+
 Ext.PagingToolbar.override({
     hideRefresh: false,
+    onFirstLayout : Ext.emptyFn,
     
     getActivePageField : function () {
         if (!this.activePageField) {
@@ -44,8 +53,20 @@ Ext.PagingToolbar.override({
                 id   : this.id + "_ActivePage", 
                 name : this.id + "_ActivePage" 
             });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.activePageField);
         }
         
         return this.activePageField;
-    }    
+    },
+    
+    fixFirstLayout : function () {
+        if (this.dsLoaded) {
+            this.onLoad.apply(this, this.dsLoaded);
+        }
+    }   
 });

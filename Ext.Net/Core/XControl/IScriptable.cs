@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -49,6 +49,13 @@ namespace Ext.Net
         {
             get { return this.isProxy; }
             set { this.isProxy = value; }
+        }
+
+        private bool generateMethodsCalling;
+        internal virtual bool GenerateMethodsCalling
+        {
+            get { return this.generateMethodsCalling; }
+            set { this.generateMethodsCalling = value; }
         }
 
         /// <summary>
@@ -186,7 +193,7 @@ namespace Ext.Net
         {
             if (script.IsNotEmpty() && !this.IsParentDeferredRender && this.Visible)
             {
-                if (this.AlreadyRendered)
+                if (this.AlreadyRendered && this.HasResourceManager)
                 {
                     this.ResourceManager.RegisterOnReadyScript(ResourceManager.ScriptOrderNumber, TokenUtils.ReplaceRawToken(TokenUtils.ParseTokens(script, this)));
                 }
@@ -308,7 +315,7 @@ namespace Ext.Net
                 {
                     if (arg is string)
                     {
-                        sb.AppendFormat("{0},", TokenUtils.ParseAndNormalize(arg.ToString(), this.ResourceManager));
+                        sb.AppendFormat("{0},", TokenUtils.ParseAndNormalize(arg.ToString(), this.SafeResourceManager  ));
                     }
                     else
                     {
@@ -317,7 +324,7 @@ namespace Ext.Net
                 }
             }
 
-            string script = template.FormatWith(this.ClientID, name, sb.ToString().LeftOfRightmostOf(','));
+            string script = template.FormatWith(this.CallID, name, sb.ToString().LeftOfRightmostOf(','));
 
             switch (position)
             {
@@ -330,6 +337,17 @@ namespace Ext.Net
                 default:
                     this.AddScript(script);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual string CallID
+        {
+            get
+            {
+                return this.ClientID;
             }
         }
     }

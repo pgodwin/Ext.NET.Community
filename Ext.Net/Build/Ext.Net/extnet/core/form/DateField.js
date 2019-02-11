@@ -18,6 +18,15 @@ Ext.DatePicker.prototype.initComponent = Ext.DatePicker.prototype.initComponent.
 });
 
 Ext.form.DateField.override({
+    setDisabledDates : function (dd) {
+        this.disabledDates = dd;
+        this.disabledDatesRE = null;
+        this.initDisabledDays();
+        if (this.menu) {
+            this.menu.picker.setDisabledDates(this.disabledDatesRE);
+        }
+    },
+    
     onTriggerClick : function () {
         if (this.disabled) {
             return;
@@ -25,7 +34,8 @@ Ext.form.DateField.override({
         
         if (Ext.isEmpty(this.menu)) {
             this.menu = new Ext.menu.DateMenu({
-                hideOnClick: false
+                hideOnClick   : false,
+                focusOnSelect : false 
             });
         }
         this.onFocus();

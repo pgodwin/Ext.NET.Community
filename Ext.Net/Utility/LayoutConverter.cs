@@ -17,121 +17,72 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
  ********/
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 
 namespace Ext.Net
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	[Description("")]
+    /// <summary>
+    /// 
+    /// </summary>
+    [Description("")]
     public partial class LayoutConverter : StringConverter
     {
-        private static List<string> layoutNames;
-        private static Dictionary<string, string> xtypes;
+        private TypeConverter.StandardValuesCollection values;
 
-        private static List<Type> layoutTypes;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public static List<Type> LayoutTypes
-        {
-            get
-            {
-                if (layoutTypes == null)
-                {
-                    layoutTypes = new List<Type>();
-
-                    foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
-                    {
-                        if (type.IsSubclassOf(typeof(Layout)))
-                        {
-                            layoutTypes.Add(type);
-                        }
-                    }
-
-                    if (layoutTypes.Count > 0)
-                    {
-                        layoutNames = layoutTypes.ConvertAll(delegate(Type input) { 
-                            return input.Name.Replace("Layout", ""); 
-                        });
-                    }
-                }
-
-                return layoutTypes;
-            }
-        }
-
-        internal static Dictionary<string, string> XTypes
-        {
-            get
-            {
-                if (xtypes == null)
-                {
-                    xtypes = new Dictionary<string, string>();
-
-                    foreach (Type type in LayoutConverter.LayoutTypes)
-                    {
-                        xtypes.Add(type.Name.Replace("Layout", ""), type.GetProperty("LayoutType").GetValue(Activator.CreateInstance(type),null).ToString());
-                    }
-                }
-
-                return xtypes;
-            }
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public LayoutConverter() { }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            if ((context == null) || (context.Container == null))
+            if (this.values == null)
             {
-                return null;
+                this.values = new TypeConverter.StandardValuesCollection(new string[] { 
+                    "AbsoluteLayout", 
+                    "AccordionLayout", 
+                    "AnchorLayout", 
+                    "BorderLayout", 
+                    "BoxLayout", 
+                    "CardLayout", 
+                    "ColumnLayout", 
+                    "ContainerLayout", 
+                    "FitLayout", 
+                    "FormLayout", 
+                    "HBoxLayout", 
+                    "MenuLayout",
+                    "RowLayout",
+                    "TableLayout", 
+                    "ToolbarLayout", 
+                    "VBoxLayout" 
+                });
             }
 
-            if (LayoutConverter.LayoutTypes.Count > 0)
-            {
-                LayoutConverter.layoutNames.Sort();
-
-                return new TypeConverter.StandardValuesCollection(LayoutConverter.layoutNames);
-            }
-
-            return null;
+            return this.values;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return false;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;

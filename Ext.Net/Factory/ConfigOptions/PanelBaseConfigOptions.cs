@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -83,7 +83,6 @@ namespace Ext.Net
                 list.Add("header", new ConfigOption("header", null, true, this.Header ));
                 list.Add("headerAsText", new ConfigOption("headerAsText", null, true, this.HeaderAsText ));
                 list.Add("hideCollapseTool", new ConfigOption("hideCollapseTool", null, false, this.HideCollapseTool ));
-                list.Add("html", new ConfigOption("html", new SerializationOptions("html"), "", this.Html ));
                 list.Add("iconClsProxy", new ConfigOption("iconClsProxy", new SerializationOptions("iconCls"), "", this.IconClsProxy ));
                 list.Add("keyMap", new ConfigOption("keyMap", new SerializationOptions("keys", JsonMode.Array), null, this.KeyMap ));
                 list.Add("maskDisabled", new ConfigOption("maskDisabled", null, true, this.MaskDisabled ));

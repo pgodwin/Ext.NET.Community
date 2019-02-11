@@ -121,6 +121,13 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         grid.getSelectionModel().onEditorKey = Ext.emptyFn;
         grid.onCellDblClick = Ext.emptyFn;
         grid.onAutoEditClick = Ext.emptyFn;
+        
+        //http://forums.ext.net/showthread.php?11016
+        if ((grid.getSelectionModel().id === "checker") && !grid.getSelectionModel().getEditor) {
+            grid.getSelectionModel().getEditor = function() {
+                return false;
+            }
+        };
     },
 
     beforedestroy: function () {
@@ -619,3 +626,5 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
         }
     });
 Ext.preg('roweditor', Ext.ux.grid.RowEditor);
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

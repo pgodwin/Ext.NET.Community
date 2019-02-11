@@ -19,6 +19,7 @@ Ext.net.TriggerField = Ext.extend(Ext.form.TriggerField, {
             t.show = function () {
                 var w = triggerField.wrap.getWidth();
                 this.dom.style.display = "";
+                this.dom.removeAttribute("hidden");
                 triggerField.el.setWidth(w - triggerField.trigger.getWidth());
             };
 

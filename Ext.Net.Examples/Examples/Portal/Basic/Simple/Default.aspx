@@ -149,7 +149,6 @@
                                                     ColumnWidth=".33"
                                                     Layout="Anchor">
                                                     <Items>
-                                                        <ext:Portlet ID="Portlet6" Title="Panel 3" runat="server" />
                                                         <ext:Portlet ID="Portlet7" Title="Another Panel 3" runat="server" />
                                                     </Items>
                                                 </ext:PortalColumn>

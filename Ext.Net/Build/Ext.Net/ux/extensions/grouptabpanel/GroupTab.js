@@ -28,6 +28,12 @@ Ext.ux.GroupTab = Ext.extend(Ext.Container, {
                 name  : this.id + "_ActiveTab", 
                 value : this.id + ":" + (this.activeTab || 0)
             });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.activeTabField);
         }
 
         return this.activeTabField;

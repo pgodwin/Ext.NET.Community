@@ -35,8 +35,6 @@
 
     protected void AddPropertyClick(object sender, DirectEventArgs e)
     {
-        TriggerFieldBase.RegisterTriggerIcon(TriggerIcon.SimpleEllipsis);
-
         PropertyGrid1.AddProperty(new PropertyGridParameter
         {
             Name = "dynProp1",
@@ -54,9 +52,17 @@
                    {
                       new FieldTrigger
                       {
-                         Icon = TriggerIcon.SimpleEllipsis   
+                         Icon = TriggerIcon.SimpleEllipsis,
+                         Tag = "ellipsis"   
                       }
-                   } 
+                   }, 
+                   
+                   Listeners = 
+                   {
+                      TriggerClick = {
+                          Handler = PropertyGrid1.ClientID + ".stopEditing(); Ext.Msg.alert('Trigger click', tag + ' trigger click');"   
+                      }    
+                   }
                 }
             }
         });
@@ -84,6 +90,10 @@
         
         .red-label{
             color:Red;
+        }
+        
+        .blue-label{
+            color:Blue;
         }
     </style>
 </head>
@@ -117,6 +127,20 @@
                         <ext:SpinnerField runat="server" />
                     </Editor>
                 </ext:PropertyGridParameter>
+                <ext:PropertyGridParameter Name="trigger" Value="TriggerField" DisplayName="Trigger Field">
+                    <Renderer Handler="metadata.css = 'blue-label'; return value;" />
+                    <Editor>
+                        <ext:TriggerField runat="server">
+                            <Triggers>
+                                <ext:FieldTrigger Icon="SimpleEllipsis" Tag="ellipsis" />
+                            </Triggers>
+                            <Listeners>
+                                <TriggerClick Handler="#{PropertyGrid1}.stopEditing(); Ext.Msg.alert('Trigger click', tag + ' trigger click');" />
+                            </Listeners>
+                        </ext:TriggerField>
+                    </Editor>
+                </ext:PropertyGridParameter>
+
             </Source>
             <View>
                 <ext:GridView ForceFit="true" ScrollOffset="2" runat="server" />

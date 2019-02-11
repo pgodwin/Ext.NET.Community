@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -845,16 +845,17 @@ namespace Ext.Net
                 foreach (HeaderColumn column in item.Columns)
                 {
                     this.ParentGrid.EnsureHeaderColumn(this,column);
-                }
-                item.Columns.AfterItemAdd += Columns_AfterItemAdd;
+                }                
             }
+            
+            item.Columns.AfterItemAdd += Columns_AfterItemAdd;
             this.Templates.BuildHeaderTemplate();
             this.Templates.Header.Visible = true;
         }
 
         void Columns_AfterItemAdd(HeaderColumn item)
         {
-            if (item.Component.Count > 0)
+            if (item.Component.Count > 0 && this.ParentGrid != null)
             {
                 this.ParentGrid.EnsureHeaderColumn(this, item);
             }
@@ -864,7 +865,10 @@ namespace Ext.Net
 
         void Component_AfterItemAdd(Component item)
         {
-            this.ParentGrid.EnsureHeaderControl(this, item);
+            if (this.ParentGrid != null)
+            {
+                this.ParentGrid.EnsureHeaderControl(this, item);
+            }
         }
 
         /// <summary>

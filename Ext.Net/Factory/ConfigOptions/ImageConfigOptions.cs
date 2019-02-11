@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -55,23 +55,8 @@ namespace Ext.Net
             {
                 ConfigOptionsCollection list = base.ConfigOptions;
                 
-                list.Add("height", new ConfigOption("height", null, Unit.Empty, this.Height ));
-                list.Add("width", new ConfigOption("width", null, Unit.Empty, this.Width ));
-                list.Add("imageUrl", new ConfigOption("imageUrl", new SerializationOptions(JsonMode.Ignore), "", this.ImageUrl ));
-                list.Add("imageUrlProxy", new ConfigOption("imageUrlProxy", new SerializationOptions("imageUrl"), "", this.ImageUrlProxy ));
-                list.Add("alternateText", new ConfigOption("alternateText", new SerializationOptions("altText"), "", this.AlternateText ));
-                list.Add("align", new ConfigOption("align", new SerializationOptions(JsonMode.ToLower), ImageAlign.NotSet, this.Align ));
-                list.Add("lazyLoad", new ConfigOption("lazyLoad", null, false, this.LazyLoad ));
-                list.Add("monitorComplete", new ConfigOption("monitorComplete", null, true, this.MonitorComplete ));
-                list.Add("allowPan", new ConfigOption("allowPan", null, false, this.AllowPan ));
-                list.Add("resizable", new ConfigOption("resizable", null, false, this.Resizable ));
-                list.Add("monitorPoll", new ConfigOption("monitorPoll", null, 200, this.MonitorPoll ));
-                list.Add("resizeConfigProxy", new ConfigOption("resizeConfigProxy", new SerializationOptions("resizeConfig", JsonMode.Raw), "", this.ResizeConfigProxy ));
-                list.Add("xDelta", new ConfigOption("xDelta", null, 0, this.XDelta ));
-                list.Add("yDelta", new ConfigOption("yDelta", null, 0, this.YDelta ));
                 list.Add("listeners", new ConfigOption("listeners", new SerializationOptions("listeners", JsonMode.Object), null, this.Listeners ));
                 list.Add("directEvents", new ConfigOption("directEvents", new SerializationOptions("directEvents", JsonMode.Object), null, this.DirectEvents ));
-                list.Add("loadMask", new ConfigOption("loadMask", new SerializationOptions("loadMask", typeof(LoadMaskJsonConverter)), null, this.LoadMask ));
 
                 return list;
             }

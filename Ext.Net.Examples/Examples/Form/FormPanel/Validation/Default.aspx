@@ -67,10 +67,10 @@
                 <ext:Button runat="server" Text="Cancel" />
             </Buttons>
             <BottomBar>
-                <ext:StatusBar runat="server" />
+                <ext:StatusBar runat="server" Height="25" />
             </BottomBar>
             <Listeners>
-                <ClientValidation Handler="el.getBottomToolbar().setStatus({text : valid ? 'Form is valid' : 'Form is invalid', iconCls: valid ? 'icon-accept' : 'icon-exclamation'});" />
+                <ClientValidation Handler="this.getBottomToolbar().setStatus({text : valid ? 'Form is valid' : 'Form is invalid', iconCls: valid ? 'icon-accept' : 'icon-exclamation'});" />
             </Listeners>
         </ext:FormPanel>
     </form>

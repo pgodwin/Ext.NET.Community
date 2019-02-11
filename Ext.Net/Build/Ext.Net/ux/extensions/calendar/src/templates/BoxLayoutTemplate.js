@@ -110,7 +110,8 @@ Ext.extend(Ext.calendar.BoxLayoutTemplate, Ext.XTemplate, {
                         (prevMonth ? ' ext-cal-day-prev' : '') +
                         (nextMonth ? ' ext-cal-day-next' : '')
                 });
-                dt = dt.add(Date.DAY, 1);
+                dt.setHours(1);
+				dt = dt.add(Date.HOUR, 26);
                 first = false;
             }
         }

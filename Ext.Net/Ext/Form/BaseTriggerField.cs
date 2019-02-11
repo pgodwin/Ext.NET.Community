@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -35,12 +35,12 @@ namespace Ext.Net
 {
     [Meta]
     [Description("")]
-    public abstract partial class BaseTriggerField : TriggerFieldBase, IPostBackEventHandler 
+    public abstract partial class BaseTriggerField : TriggerFieldBase, IPostBackEventHandler
     {
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected override void OnBeforeClientInit(Observable sender)
         {
             if (this.AutoPostBack)
@@ -50,10 +50,10 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected override string PostBackArgument
         {
             get
@@ -64,15 +64,15 @@ namespace Ext.Net
 
         private static readonly object EventTriggerClicked = new object();
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         public delegate void TriggerClickedHandler(object sender, TriggerEventArgs e);
 
-		/// <summary>
-		/// 
-		/// </summary>
+        /// <summary>
+        /// 
+        /// </summary>
         [Category("Action")]
         [Description("Fires when a trigger has been clicked")]
         public event TriggerClickedHandler TriggerClicked
@@ -87,10 +87,10 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected virtual void OnTriggerClicked(TriggerEventArgs e)
         {
             TriggerClickedHandler handler = (TriggerClickedHandler)Events[EventTriggerClicked];
@@ -111,10 +111,10 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected override void OnPreRender(EventArgs e)
         {
             this.CheckTriggers();
@@ -122,10 +122,10 @@ namespace Ext.Net
             base.OnPreRender(e);
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected virtual void CheckTriggers()
         {
             if (this.Triggers.Count == 0)
@@ -134,19 +134,19 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         public override void RegisterIcons()
         {
             base.RegisterIcons();
 
-            if (!Ext.Net.X.IsAjaxRequest)
+            if (!Ext.Net.X.IsAjaxRequest || this.IsDynamic)
             {
                 foreach (FieldTrigger trigger in this.Triggers)
                 {
-                    this.RegisterIcon(trigger.Icon, false);
+                    this.RegisterIcon(trigger.Icon);
                 }
             }
         }
@@ -162,13 +162,13 @@ namespace Ext.Net
         [Description("")]
         public override string TriggerClass
         {
-            get 
-            { 
-                return base.TriggerClass; 
+            get
+            {
+                return base.TriggerClass;
             }
-            set 
-            { 
-                base.TriggerClass = value; 
+            set
+            {
+                base.TriggerClass = value;
             }
         }
     }
@@ -181,19 +181,19 @@ namespace Ext.Net
     {
         private readonly int index;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         public TriggerEventArgs(int index)
         {
             this.index = index;
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         public int Index
         {
             get

@@ -10,7 +10,7 @@ using System.Web.UI;
 
 namespace Ext.Net.Examples.FeedViewer
 {
-    public partial class FeedViewPort :Viewport
+    public partial class FeedViewPort : Viewport
     {
         public FeedViewPort()
         {
@@ -39,9 +39,15 @@ namespace Ext.Net.Examples.FeedViewer
             });
 
             this.Items.Add(new FeedTree { ID = "ctlFeedTree" });
-            this.Items.Add(new MainPanel());
+            this.Items.Add(new MainPanel { ID = "MainPanel1"});
+        }
 
-            this.Controls.Add(new FeedWindow());
+        protected override void OnInit(System.EventArgs e)
+        {
+ 	        base.OnInit(e);
+            this.Page.Init += delegate {
+                this.Page.Form.Controls.Add(new FeedWindow());
+            };            
         }
     }
 }

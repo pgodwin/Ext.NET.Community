@@ -21,10 +21,12 @@ Ext.extend(Ext.net.TaskManager, Ext.util.Observable, {
     initManager : function () {
         this.runner = new Ext.util.TaskRunner(this.interval || 10);
 
-        var task;        
+        var task,
+            i = 0;
+                    
         this.tasks = [];
 
-        for (var i = 0; i < this.tasksConfig.length; i++) {
+        for (i; i < this.tasksConfig.length; i++) {
             task = this.createTask(this.tasksConfig[i]);
             this.tasks.push(task);
             
@@ -52,15 +54,17 @@ Ext.extend(Ext.net.TaskManager, Ext.util.Observable, {
     },
 
     getTask : function (id) {
-        if (typeof id == "object") {
+        if (typeof id === "object") {
             return id;
-        } else if (typeof id == "string") {
-            for (var i = 0; this.tasks.length; i++) {
-                if (this.tasks[i].id == id) {
+        } else if (typeof id === "string") {
+            var i = 0;
+
+            for (i; this.tasks.length; i++) {
+                if (this.tasks[i].id === id) {
                     return this.tasks[i];
                 }
             }
-        } else if (typeof id == "number") {
+        } else if (typeof id === "number") {
             return this.tasks[id];
         }
         return null;
@@ -85,7 +89,9 @@ Ext.extend(Ext.net.TaskManager, Ext.util.Observable, {
     },
 
     startAll : function () {
-        for (var i = 0; i < this.tasks.length; i++) {
+        var i = 0;
+
+        for (i; i < this.tasks.length; i++) {
             this.startTask(this.tasks[i]);
         }
     },

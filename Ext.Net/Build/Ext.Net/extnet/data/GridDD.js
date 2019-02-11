@@ -9,7 +9,7 @@ Ext.grid.GridDragZone.override({
         if (rowIndex !== false) {
             var sm = this.grid.selModel;
         
-            if (!sm.isSelected(rowIndex) || e.hasModifier() || sm.keepSelectionOnClick == "always") {
+            if (!sm.isSelected(rowIndex) || e.hasModifier() || sm.keepSelectionOnClick === "always") {
                 sm.handleMouseDown(this.grid, rowIndex, e);
             }
         

@@ -3,7 +3,7 @@
 
 Ext.tree.TreeSorter.override({
     _sortFn : function (n1, n2) {
-        var desc = this.dir && this.dir.toLowerCase() == "desc",
+        var desc = this.dir && this.dir.toLowerCase() === "desc",
             prop = this.property || "text",
             sortType = this.sortType,
             folderSort = this.folderSort,

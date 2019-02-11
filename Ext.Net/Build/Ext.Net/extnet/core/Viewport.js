@@ -12,14 +12,21 @@ Ext.net.Viewport = Ext.extend(Ext.Container, {
         var html = document.getElementsByTagName("html")[0];
         html.className += " x-viewport";
         html.style.height = "100%";
-        this.el = Ext.get(this.renderTo || Ext.net.ResourceMgr.getAspForm() || Ext.getBody());
-        this.el.setHeight = this.el.setWidth = this.el.setSize = Ext.emptyFn;
+        this.el = Ext.get(Ext.getBody());
+        var el = Ext.get(this.renderTo || Ext.net.ResourceMgr.getAspForm());
+        this.el.setHeight = this.el.setWidth = this.el.setSize = Ext.emptyFn;        
         this.el.dom.scroll = "no";
+
+        if (el) {
+            el.setHeight = el.setWidth = el.setSize = Ext.emptyFn;
+            el.dom.scroll = "no";
+        }
+
         this.allowDomMove = false;
         this.autoWidth = this.autoHeight = true;
         this.autoHeight = true;
         Ext.EventManager.onWindowResize(this.fireResize, this);
-        this.renderTo = this.el;
+        //this.renderTo = this.el;
         
         Ext.getBody().applyStyles({
             overflow : "hidden",
@@ -30,6 +37,13 @@ Ext.net.Viewport = Ext.extend(Ext.Container, {
         });
         
         this.el.applyStyles({ height : "100%", width : "100%" });
+
+        if (el) {
+            el.applyStyles({ height : "100%", width : "100%" });
+        }
+        
+        this.el = Ext.get(this.renderTo || Ext.net.ResourceMgr.getAspForm() || Ext.getBody());
+        this.renderTo = this.el;
     },
 
     fireResize : function (w, h) {

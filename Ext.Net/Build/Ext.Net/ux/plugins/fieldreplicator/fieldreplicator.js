@@ -82,3 +82,5 @@ Ext.ux.FieldReplicator = {
         }
     }
 };
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

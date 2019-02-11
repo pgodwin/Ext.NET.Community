@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -68,7 +68,7 @@ namespace Ext.Net
                 list.Add("enable", new ConfigOption("enable", new SerializationOptions("enable", typeof(DirectEventJsonConverter)), null, this.Enable ));
                 list.Add("hide", new ConfigOption("hide", new SerializationOptions("hide", typeof(DirectEventJsonConverter)), null, this.Hide ));
                 list.Add("render", new ConfigOption("render", new SerializationOptions("render", typeof(DirectEventJsonConverter)), null, this.Render ));
-                list.Add("removed", new ConfigOption("removed", new SerializationOptions("render", typeof(DirectEventJsonConverter)), null, this.Removed ));
+                list.Add("removed", new ConfigOption("removed", new SerializationOptions("removed", typeof(DirectEventJsonConverter)), null, this.Removed ));
                 list.Add("show", new ConfigOption("show", new SerializationOptions("show", typeof(DirectEventJsonConverter)), null, this.Show ));
                 list.Add("stateRestore", new ConfigOption("stateRestore", new SerializationOptions("staterestore", typeof(DirectEventJsonConverter)), null, this.StateRestore ));
                 list.Add("stateSave", new ConfigOption("stateSave", new SerializationOptions("statesave", typeof(DirectEventJsonConverter)), null, this.StateSave ));

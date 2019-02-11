@@ -429,3 +429,5 @@ Ext.ux.ToolbarReorderer = Ext.extend(Ext.ux.Reorderer, {
         }, this);
     }
 });
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

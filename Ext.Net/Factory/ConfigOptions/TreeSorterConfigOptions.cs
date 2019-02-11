@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -56,7 +56,7 @@ namespace Ext.Net
                 ConfigOptionsCollection list = base.ConfigOptions;
                 
                 list.Add("caseSensitive", new ConfigOption("caseSensitive", null, false, this.CaseSensitive ));
-                list.Add("direction", new ConfigOption("direction", new SerializationOptions("dir", JsonMode.ToLower), SortDirection.ASC, this.Direction ));
+                list.Add("direction", new ConfigOption("direction", new SerializationOptions("dir", JsonMode.ToLower), SortDirection.Default, this.Direction ));
                 list.Add("folderSort", new ConfigOption("folderSort", null, false, this.FolderSort ));
                 list.Add("leafAttr", new ConfigOption("leafAttr", null, "leaf", this.LeafAttr ));
                 list.Add("property", new ConfigOption("property", null, "text", this.Property ));

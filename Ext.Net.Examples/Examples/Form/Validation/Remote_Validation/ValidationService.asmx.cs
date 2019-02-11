@@ -18,7 +18,7 @@ namespace Ext.Net.Examples.Examples.Form.Miscellaneous.Remote_Validation
         {
             bool success = value == "Valid";
             System.Threading.Thread.Sleep(1000);          
-            return new { success, message = success ? "" : "'Valid' is valid value only" };
+            return new { valid=success, message = success ? "" : "'Valid' is valid value only" };
         }
     }
 }

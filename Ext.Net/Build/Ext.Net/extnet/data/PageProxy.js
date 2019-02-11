@@ -123,8 +123,8 @@ Ext.extend(Ext.net.PageProxy, Ext.data.DataProxy, {
     errorHandler : function (response, result, context, type, action, extraParams) {
         var p = context.proxy;
 
-        p.fireEvent("loadexception", p, p.ro, response);
-        p.fireEvent("exception", p, "response", "read", p.ro, response, {message : response.statusText});
+        p.fireEvent("loadexception", p, p.ro, response, {message : response.responseText});
+        p.fireEvent("exception", p, "response", "read", p.ro, response, {message : response.responseText});
         p.ro.request.callback.call(p.ro.request.scope, null, p.ro.request.arg, false);
 
         if (p.ro.request.scope.showWarningOnFailure) {

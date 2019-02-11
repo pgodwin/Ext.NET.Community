@@ -60,7 +60,7 @@ Ext.net.MultiField = Ext.extend(Ext.form.Field, {
                 var fieldCt = this.el.createChild({ cls : "x-field-multi" }),
                     field = new Ext.ComponentMgr.create(this.fields[i]);
                     
-                if ((i + 1) == this.fields.length) {
+                if ((i + 1) === this.fields.length) {
                     fieldCt.setStyle("paddingRight", "0px");
                 }
 
@@ -126,7 +126,7 @@ Ext.net.MultiField = Ext.extend(Ext.form.Field, {
                 f = this.fields[i];
                 
                 if (f.anchor) {
-                    if (f.anchor.indexOf("%") != -1) {
+                    if (f.anchor.indexOf("%") !== -1) {
                         aw = parseFloat(f.anchor.replace("%", ""));
                         ratio = aw * 0.01;
                         percentWidth += aw;
@@ -137,7 +137,7 @@ Ext.net.MultiField = Ext.extend(Ext.form.Field, {
                     w = Math.floor(ratio * pw);
                     sum += w;
                     
-                    if (percentWidth == 100 && i == (this.fields.length - 1)) {
+                    if (percentWidth === 100 && i === (this.fields.length - 1)) {
                         w += (pw - sum);
                     }
                     
@@ -152,7 +152,9 @@ Ext.net.MultiField = Ext.extend(Ext.form.Field, {
     beforeDestroy : function () {
         Ext.Panel.superclass.beforeDestroy.call(this);
         
-        for (var i = this.fields.length - 1; i >= 0; i--) {
+        var i = this.fields.length - 1;
+
+        for (i; i >= 0; i--) {
             Ext.destroy(this.fields[i]);
         }
     },

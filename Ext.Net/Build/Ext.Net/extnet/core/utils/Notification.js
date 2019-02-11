@@ -15,8 +15,6 @@ Ext.net.Notification = function () {
 
     var notifications = [];
 
-    Ext.util.CSS.createStyleSheet(".x-notification-auto-hide .x-tool-close{display: none !important}", "Ext.net.Notification");
-
     return {
         show: function (config) {
             config = Ext.applyIf(config || {}, {
@@ -62,13 +60,14 @@ Ext.net.Notification = function () {
                 },
 
                 isStandardAlign: function () {
-                    return this.alignToCfg.el == document && this.alignToCfg.position == "br-br";
+                    return this.alignToCfg.el == document && this.alignToCfg.position === "br-br";
                 },
 
                 getStatndardAlign: function () {
-                    var w = [];
+                    var w = [],
+                        i = 0;
 
-                    for (var i = 0; i < notifications.length; i++) {
+                    for (i; i < notifications.length; i++) {
                         var window = notifications[i];
 
                         if (window.isStandardAlign()) {
@@ -85,7 +84,7 @@ Ext.net.Notification = function () {
                     offset.push(predefinedOffset[0]);
                     offset.push(predefinedOffset[1]);
 
-                    if (this.showMode == "grid" && this.isStandardAlign()) {
+                    if (this.showMode === "grid" && this.isStandardAlign()) {
                         var saw = this.getStatndardAlign(),
                             height = this.getSize().height - offset[1],
                             width = this.getSize().width - offset[0],
@@ -112,9 +111,10 @@ Ext.net.Notification = function () {
 
                         while (xPos >= 0 && !found) {
                             while (yPos >= 0 && !found) {
-                                var intersect = false;
+                                var intersect = false,
+                                    i = 0;
 
-                                for (var i = 0; i < saw.length; i++) {
+                                for (i; i < saw.length; i++) {
                                     var window = saw[i];
 
                                     if (isIntersect({ x: xPos, y: yPos, width: width, height: height }, window.getBox())) {
@@ -258,7 +258,9 @@ Ext.net.Notification = function () {
             });
 
             w.on("beforedestroy", function () {
-                for (var i = 0; i < notifications.length; i++) {
+                var i = 0;
+
+                for (i; i < notifications.length; i++) {
                     if (notifications[i].id == this.id) {
                         notifications.remove(this);
                         break;
@@ -283,7 +285,9 @@ Ext.net.Notification = function () {
             }
 
             if (config.closeVisible) {
-                for (var i = notifications.length - 1; i >= 0; i--) {
+                var i = notifications.length - 1;
+
+                for (i; i >= 0; i--) {
                     notifications[i].destroy();
                 }
             }

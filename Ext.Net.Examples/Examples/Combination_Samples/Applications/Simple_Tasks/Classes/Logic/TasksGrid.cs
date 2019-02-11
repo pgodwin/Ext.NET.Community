@@ -147,14 +147,14 @@ namespace Ext.Net.Examples.SimpleTasks
                 }
                 else
                 {
-                    this.Store.SuspendEvents(false);
+                    this.store.SuspendEvents(false);
                     foreach (Task task in tasks)
                     {
                         this.store.UpdateRecordField((object)task.ID, "Completed", task.Completed);
                         this.store.UpdateRecordField((object)task.ID, "CompletedDate", new JRawValue(DateTimeUtils.DateNetToJs(task.CompletedDate.Value)));
                     }
-                    this.Store.ResumeEvents();
-                    this.Store.FireEvent("datachanged", new JRawValue(this.Store.ClientID));
+                    this.store.ResumeEvents();
+                    this.store.FireEvent("datachanged", new JRawValue(this.store.ClientID));
                 }
 
                 return true;
@@ -347,15 +347,15 @@ namespace Ext.Net.Examples.SimpleTasks
 
                 ctx.SubmitChanges();
 
-                this.Store.SuspendEvents(false);
+                this.store.SuspendEvents(false);
 
                 foreach (int id in taskIds)
                 {
-                    this.Store.RemoveRecord((object)id);
+                    this.store.RemoveRecord((object)id);
                 }
 
-                this.Store.ResumeEvents();
-                this.Store.FireEvent("datachanged", new JRawValue(this.Store.ClientID));
+                this.store.ResumeEvents();
+                this.store.FireEvent("datachanged", new JRawValue(this.store.ClientID));
                 
                 return true;
             }

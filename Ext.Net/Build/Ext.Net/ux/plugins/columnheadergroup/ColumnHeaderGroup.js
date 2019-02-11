@@ -235,7 +235,9 @@ Ext.ux.grid.ColumnHeaderGroup = Ext.extend(Ext.util.Observable, {
         },
         
         beforeMenuShow : function () {
-            this.beforeColMenuShow();
+            if (this.grid.enableColumnHide !== false) {
+                this.beforeColMenuShow();
+            }
             
             this.constructor.prototype.beforeMenuShow.apply(this, arguments);
         },
@@ -485,3 +487,5 @@ Ext.ux.grid.ColumnHeaderGroup = Ext.extend(Ext.util.Observable, {
         };
     }
 });
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

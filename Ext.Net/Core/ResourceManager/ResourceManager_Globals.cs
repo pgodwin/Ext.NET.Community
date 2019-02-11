@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -880,7 +880,7 @@ namespace Ext.Net
 
                 if (cfgLocale.IsEmpty())
                 {
-                    return this.Page != null ? System.Threading.Thread.CurrentThread.CurrentUICulture.ToString() : "";
+                    cfgLocale = (this.Page != null) ? System.Threading.Thread.CurrentThread.CurrentUICulture.ToString() : "";
                 }
 
                 return cfgLocale;
@@ -933,7 +933,7 @@ namespace Ext.Net
             }
         }
 
-        private bool? removeViewState;
+        private bool? disableViewState;
 
         /// <summary>
         /// Remove ViewState data from page's rendering.
@@ -941,18 +941,18 @@ namespace Ext.Net
         [Category("Config Options")]
         [DefaultValue(false)]
         [Description("Remove ViewState data from page's rendering.")]
-        public virtual bool RemoveViewState
+        public virtual bool DisableViewState
         {
             get
             {
-                if (this.removeViewState != null)
+                if (this.disableViewState != null)
                 {
-                    return (bool)this.removeViewState;
+                    return (bool)this.disableViewState;
                 }
 
                 if (!this.DesignMode && HttpContext.Current != null)
                 {
-                    string token = "Ext.Net.RemoveViewState";
+                    string token = "Ext.Net.DisableViewState";
 
                     object obj = HttpContext.Current.Application[token];
 
@@ -967,15 +967,15 @@ namespace Ext.Net
                     }
                 }
 
-                return GlobalConfig.Settings.RemoveViewState;
+                return GlobalConfig.Settings.DisableViewState;
             }
             set
             {
-                this.removeViewState = value;
+                this.disableViewState = value;
 
                 if (!this.DesignMode)
                 {
-                    ResourceManager.RemoveViewStateStatic = value;
+                    ResourceManager.DisableViewStateStatic = value;
                 }
             }
         }
@@ -1302,12 +1302,11 @@ namespace Ext.Net
 
                     if (obj == null)
                     {
-                        obj = Session(token);
+                        obj = ResourceManager.Session(token);
                     }
 
                     if (obj != null && obj is string)
                     {
-
                         return (string)obj;
                     }
                 }

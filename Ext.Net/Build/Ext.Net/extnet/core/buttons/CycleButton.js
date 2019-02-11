@@ -23,9 +23,11 @@ Ext.override(Ext.CycleButton, {
         this.menu.cls = "x-cycle-menu";
         
         var checked = 0, 
-            item;
+            item,
+            i = 0,
+            len;
         
-        for (var i = 0, len = this.itemCount; i < len; i++) {
+        for (i, len = this.itemCount; i < len; i++) {
             item = this.menu.items[i];
 
             item.group = item.group || this.id;

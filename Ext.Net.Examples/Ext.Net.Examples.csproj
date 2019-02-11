@@ -64,6 +64,8 @@
     <Reference Include="Wilco.SyntaxHighlighter, Version=0.5.0.0, Culture=neutral, PublicKeyToken=fb87150479c2990b, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Module\AnalyticsFilter.cs" />
+    <Compile Include="Code\Module\AnalyticsModule.cs" />
     <Compile Include="Code\Northwind\EntitiesAdditions.cs" />
     <Compile Include="Code\Northwind\Northwind.cs">
       <DependentUpon>Northwind.dbml</DependentUpon>
@@ -695,7 +697,7 @@
     <Content Include="Examples\GridPanel\Miscellaneous\Submit_to_Handler\Default.aspx" />
     <Content Include="Examples\GridPanel\Miscellaneous\Submit_Two_Grids\config.xml" />
     <Content Include="Examples\GridPanel\Miscellaneous\Submit_Two_Grids\Default.aspx" />
-    <Content Include="Examples\GridPanel\Miscellaneous\Table_Grid\thumbnail.gif" />
+    <Content Include="Examples\GridPanel\Miscellaneous\TableGrid\thumbnail.gif" />
     <Content Include="Examples\GridPanel\Miscellaneous\Two_Grids\config.xml" />
     <Content Include="Examples\GridPanel\Miscellaneous\Two_Grids\WithSave.aspx" />
     <Content Include="Examples\GridPanel\Miscellaneous\Two_Grids\countries.xml" />
@@ -969,8 +971,8 @@
     <Content Include="Examples\GridPanel\Data_with_Details\Form_Details\Default.aspx" />
     <Content Include="Examples\GridPanel\Data_with_Details\One-to-Many\config.xml" />
     <Content Include="Examples\GridPanel\Data_with_Details\One-to-Many\Default.aspx" />
-    <Content Include="Examples\GridPanel\Miscellaneous\Table_Grid\config.xml" />
-    <Content Include="Examples\GridPanel\Miscellaneous\Table_Grid\Default.aspx" />
+    <Content Include="Examples\GridPanel\Miscellaneous\TableGrid\config.xml" />
+    <Content Include="Examples\GridPanel\Miscellaneous\TableGrid\Default.aspx" />
     <Content Include="Examples\GridPanel\Miscellaneous\Xml_File_Loading\config.xml" />
     <Content Include="Examples\GridPanel\Miscellaneous\Xml_File_Loading\Default.aspx" />
     <Content Include="Examples\GridPanel\Selection_Models\Cell_Selection\config.xml" />
@@ -1225,6 +1227,8 @@
     <Content Include="Examples\GridPanel\Data_Presentation\Grid_and_Store_Reconfigure\Default.aspx" />
     <Content Include="Examples\GridPanel\Editable\Editor_with_DirectMethod\config.xml" />
     <Content Include="Examples\GridPanel\Editable\Editor_with_DirectMethod\Default.aspx" />
+    <Content Include="Examples\GridPanel\Miscellaneous\Add_Mode\config.xml" />
+    <Content Include="Examples\GridPanel\Miscellaneous\Add_Mode\Default.aspx" />
     <Content Include="Examples\GridPanel\Miscellaneous\Custom_UI\btn.gif" />
     <Content Include="Examples\GridPanel\Miscellaneous\Custom_UI\Default.aspx" />
     <Content Include="Examples\GridPanel\Miscellaneous\Custom_UI\grid3-hd-btn.png" />
@@ -1302,6 +1306,8 @@
     <Content Include="Examples\TabPanel\GroupTabPanel\Overview\Default.aspx" />
     <Content Include="Examples\TabPanel\TabStrip\Overview\config.xml" />
     <Content Include="Examples\TabPanel\TabStrip\Overview\Default.aspx" />
+    <Content Include="Examples\Toolbar\Menu\Horizontal_Menu\config.xml" />
+    <Content Include="Examples\Toolbar\Menu\Horizontal_Menu\Default.aspx" />
     <Content Include="Examples\Toolbar\Menu\Menu_Layout\config.xml" />
     <Content Include="Examples\Toolbar\Menu\Menu_Layout\Default.aspx" />
     <Content Include="Examples\Toolbar\Menu\Top_Menu\config.xml" />
@@ -1315,6 +1321,11 @@
     <Content Include="Examples\TreePanel\Advanced\Remote_Mode_with_Service\RemoteTree.asmx" />
     <Content Include="Examples\TreePanel\Advanced\TreeGrid\config.xml" />
     <Content Include="Examples\TreePanel\Advanced\TreeGrid\Default.aspx" />
+    <Content Include="Examples\_Just_For_Fun\Basic\Example3\config.xml" />
+    <Content Include="Examples\_Just_For_Fun\Basic\Example3\Default.aspx" />
+    <Content Include="Examples\_Just_For_Fun\Basic\Example2\config.xml" />
+    <Content Include="Examples\_Just_For_Fun\Basic\Example2\Default.aspx" />
+    <Content Include="Examples\_Just_For_Fun\Basic\Example2\search.png" />
     <Content Include="resources\icons\calendar.png" />
     <Content Include="resources\icons\comments.png" />
     <Content Include="resources\icons\comment_add.png" />

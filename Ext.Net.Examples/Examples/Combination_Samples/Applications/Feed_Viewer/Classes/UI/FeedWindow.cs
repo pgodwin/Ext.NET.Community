@@ -73,52 +73,6 @@ namespace Ext.Net.Examples.FeedViewer
 
         private void BuildCombo()
         {
-            Store store = new Store
-            {
-                ID = "FeedUrlStore",
-                Reader =
-                {
-                    new ArrayReader
-                    {
-                        Fields =
-                        {
-                            new RecordField("url"),
-                            new RecordField("text")
-                        }
-                    }
-                }
-            };
-            this.Controls.Add(store);
-
-            if (!Ext.Net.X.IsAjaxRequest)
-            {
-                store.DataSource = new object[]
-                                       {
-                                           new string[]
-                                               {
-                                                   "http://www.divergingpath.com/rss.cfm?mode=full", "Aaron Conran's Blog"    
-                                               },
-                                           new string[]
-                                               {
-                                                   "http://feeds.yuiblog.com/YahooUserInterfaceBlog", "Yahoo! UI Blog"    
-                                               },
-                                           new string[]
-                                               {
-                                                   "http://feeds.feedburner.com/jquery/", "jQuery Blog"    
-                                               },
-                                           new string[]
-                                               {
-                                                   "http://sports.yahoo.com/nba/rss.xml", "NBA News"    
-                                               },
-                                           new string[]
-                                               {
-                                                   "http://feeds.dzone.com/dzone/frontpage", "DZone.com"    
-                                               } 
-                                       };
-
-                store.DataBind();
-            }
-            
             this.feedUrl = new ComboBox
             {
                 ID = "FeedUrl",
@@ -132,21 +86,66 @@ namespace Ext.Net.Examples.FeedViewer
                 DisplayField = "url",
                 ValueField = "url",
                 Mode = DataLoadMode.Local,
-                StoreID = store.ID,
+                Store = { 
+                    new Store
+                    {
+                        ID = "FeedUrlStore",
+                        Reader =
+                        {
+                            new ArrayReader
+                            {
+                                Fields =
+                                {
+                                    new RecordField("url"),
+                                    new RecordField("text")
+                                }
+                            }
+                        }
+                    }
+                },
                 ForceSelection = false,
                 Listeners =
                 {
-                   Valid = { Fn = FeedWindow.SCOPE + ".syncShadow", Scope = FeedWindow.SCOPE},
-                   Invalid = { Fn = FeedWindow.SCOPE + ".syncShadow", Scope = FeedWindow.SCOPE }
+                    Valid = { Fn = FeedWindow.SCOPE + ".syncShadow", Scope = FeedWindow.SCOPE },
+                    Invalid = { Fn = FeedWindow.SCOPE + ".syncShadow", Scope = FeedWindow.SCOPE }
                 },
                 Template =
                 {
-                   Html = @"<tpl for="".""><div class=""x-combo-list-item"">
+                    Html = @"<tpl for="".""><div class=""x-combo-list-item"">
                             <em>{url}</em><strong>{text}</strong>
                             <div class=""x-clear""></div>
                             </div></tpl>"
                 }
             };
+
+            if (!Ext.Net.X.IsAjaxRequest)
+            {
+                this.feedUrl.Store.Primary.DataSource = new object[]
+                   {
+                       new string[]
+                           {
+                               "http://www.divergingpath.com/rss.cfm?mode=full", "Aaron Conran's Blog"    
+                           },
+                       new string[]
+                           {
+                               "http://feeds.yuiblog.com/YahooUserInterfaceBlog", "Yahoo! UI Blog"    
+                           },
+                       new string[]
+                           {
+                               "http://feeds.feedburner.com/jquery/", "jQuery Blog"    
+                           },
+                       new string[]
+                           {
+                               "http://sports.yahoo.com/nba/rss.xml", "NBA News"    
+                           },
+                       new string[]
+                           {
+                               "http://feeds.dzone.com/dzone/frontpage", "DZone.com"    
+                           } 
+                   };
+
+                this.feedUrl.Store.Primary.DataBind();
+            }
         }
 
         private void BuildForm()

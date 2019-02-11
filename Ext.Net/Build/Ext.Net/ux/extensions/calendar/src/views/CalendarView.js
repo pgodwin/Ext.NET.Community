@@ -236,6 +236,13 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
 
         if (this.store) {
             this.setStore(this.store, true);
+			
+			if (this.store.deferLoad) {
+                this.reloadStore();
+                delete this.store.deferLoad;
+            } else {
+                this.store.initialParams = this.getStoreParams();
+            }
         }
 
         this.el.on({
@@ -290,6 +297,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         row = 0,
         dt = this.viewStart.clone(),
         weeks = this.weekCount < 1 ? 6: this.weekCount;
+		
+		dt.setHours(1);
 
         this.eventGrid = [[]];
         this.allDayGrid = [[]];
@@ -312,7 +321,7 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
             for (d = 0; d < this.dayCount; d++) {
                 if (evtsInView.getCount() > 0) {
                     var evts = evtsInView.filterBy(function(rec) {
-                        var startsOnDate = (dt.getTime() == rec.data[Ext.calendar.EventMappings.StartDate.name].clearTime(true).getTime());
+                        var startsOnDate = Ext.calendar.Date.equalDates(dt, rec.data[Ext.calendar.EventMappings.StartDate.name]);
                         var spansFromPrevView = (w == 0 && d == 0 && (dt > rec.data[Ext.calendar.EventMappings.StartDate.name]));
                         return startsOnDate || spansFromPrevView;
                     },
@@ -321,7 +330,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
                     this.sortEventRecordsForDay(evts);
                     this.prepareEventGrid(evts, w, d);
                 }
-                dt = dt.add(Date.DAY, 1);
+                
+				dt = dt.add(Date.DAY, 1);
             }
         }
         this.currentWeekCount = w;
@@ -371,6 +381,8 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
         d1 = d,
         row = this.findEmptyRowIndex(w, d, allday),
         dt = this.viewStart.clone();
+		
+		dt.setHours(1);
 
         var start = {
             event: evt,
@@ -703,19 +715,32 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * earliest and latest dates that match the view requirements and contain the date passed to this function.
      * @param {Date} dt The date used to calculate the new view boundaries
      */
-    setStartDate: function(start, refresh) {
+    setStartDate: function(start, refresh, reload) {
         this.startDate = start.clearTime();
         this.setViewBounds(start);
-        this.store.load({
-            params: {
-                start: this.viewStart.format('m-d-Y'),
-                end: this.viewEnd.format('m-d-Y')
-            }
-        });
+
+        if (reload == true) {
+            this.reloadStore();
+        }
         if (refresh === true) {
             this.refresh();
         }
         this.fireEvent('datechange', this, this.startDate, this.viewStart, this.viewEnd);
+    },
+	
+	getStoreParams : function () {
+        return {
+            start : this.viewStart.format('m-d-Y'),
+            end   : this.viewEnd.format('m-d-Y')
+        };
+    },
+	
+	reloadStore : function (o) {
+        o = Ext.isObject(o) ? o : {};
+        o.params = o.params || {};
+        
+        Ext.apply(o.params, this.getStoreParams());
+        this.store.load(o);
     },
 
     // private
@@ -734,6 +759,10 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
             // auto by month
             start = start.getFirstDateOfMonth();
             offset = start.getDay() - this.startDay;
+
+			if (offset < 0) {
+                offset += 7;
+            }
 
             this.viewStart = start.add(Date.DAY, -offset).clearTime(true);
 
@@ -820,9 +849,9 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
      * Updates the view to contain the passed date
      * @param {Date} dt The date to display
      */
-    moveTo: function(dt, noRefresh) {
+    moveTo: function(dt, noRefresh, reload) {
         if (Ext.isDate(dt)) {
-            this.setStartDate(dt);
+            this.setStartDate(dt, undefined, reload);
             if (noRefresh !== false) {
                 this.refresh();
             }
@@ -834,47 +863,47 @@ Ext.calendar.CalendarView = Ext.extend(Ext.BoxComponent, {
     /**
      * Updates the view to the next consecutive date(s)
      */
-    moveNext: function(noRefresh) {
-        return this.moveTo(this.viewEnd.add(Date.DAY, 1));
+    moveNext: function(noRefresh, reload) {
+        return this.moveTo(this.viewEnd.add(Date.HOUR, 25),noRefresh, reload);
     },
 
     /**
      * Updates the view to the previous consecutive date(s)
      */
-    movePrev: function(noRefresh) {
+    movePrev: function(noRefresh, reload) {
         var days = Ext.calendar.Date.diffDays(this.viewStart, this.viewEnd) + 1;
-        return this.moveDays( - days, noRefresh);
+        return this.moveDays( - days, noRefresh, reload);
     },
 
     /**
      * Shifts the view by the passed number of months relative to the currently set date
      * @param {Number} value The number of months (positive or negative) by which to shift the view
      */
-    moveMonths: function(value, noRefresh) {
-        return this.moveTo(this.startDate.add(Date.MONTH, value), noRefresh);
+    moveMonths: function(value, noRefresh, reload) {
+        return this.moveTo(this.startDate.add(Date.MONTH, value), noRefresh, reload);
     },
 
     /**
      * Shifts the view by the passed number of weeks relative to the currently set date
      * @param {Number} value The number of weeks (positive or negative) by which to shift the view
      */
-    moveWeeks: function(value, noRefresh) {
-        return this.moveTo(this.startDate.add(Date.DAY, value * 7), noRefresh);
+    moveWeeks: function(value, noRefresh, reload) {
+        return this.moveTo(this.startDate.add(Date.DAY, value * 7), noRefresh, reload);
     },
 
     /**
      * Shifts the view by the passed number of days relative to the currently set date
      * @param {Number} value The number of days (positive or negative) by which to shift the view
      */
-    moveDays: function(value, noRefresh) {
-        return this.moveTo(this.startDate.add(Date.DAY, value), noRefresh);
+    moveDays: function(value, noRefresh, reload) {
+        return this.moveTo(this.startDate.add(Date.DAY, value), noRefresh, reload);
     },
 
     /**
      * Updates the view to show today
      */
-    moveToday: function(noRefresh) {
-        return this.moveTo(new Date(), noRefresh);
+    moveToday: function(noRefresh, reload) {
+        return this.moveTo(new Date(), noRefresh, reload);
     },
 
     /**

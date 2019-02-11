@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -43,7 +43,7 @@ namespace Ext.Net
     {
         private IList items;
         private IList layoutItems;
-        private Control cotentContainer;
+        private Control contentContainer;
 
 		/// <summary>
 		/// 
@@ -68,16 +68,26 @@ namespace Ext.Net
 
             if (control is IContent)
             {
-                cotentContainer = ((IContent) control).ContentContainer;
+                contentContainer = ((IContent) control).ContentContainer;
             }
+        }
+
+        /// <summary>
+		/// 
+		/// </summary>
+        [Description("")]
+        public override string Build(bool selfRendering)
+        {
+            return this.Build(selfRendering, false);
         }
 
 		/// <summary>
 		/// 
 		/// </summary>
 		[Description("")]
-        public override string Build(bool selfRendering)
+        public virtual string Build(bool selfRendering, bool forceResources)
         {
+            this.ForceResources = forceResources;
             if (this.script == null)
             {
                 Page pageHolder = null;
@@ -91,7 +101,7 @@ namespace Ext.Net
                     ResourceManager rm = new ResourceManager();
                     rm.RenderScripts = ResourceLocationType.None;
                     rm.RenderStyles = ResourceLocationType.None;
-                    rm.IDMode = IDMode.ExplicitClientID;
+                    rm.IDMode = IDMode.Client;
                     rm.IsDynamic = true;
                     pageHolder.Controls.Add(rm);
 
@@ -229,7 +239,7 @@ namespace Ext.Net
 		[Description("")]
         protected override bool ExcludeControl(Control parent, Control control)
         {
-            return Object.ReferenceEquals(this.Control, parent) && control != this.cotentContainer && !this.items.Contains(control);
+            return Object.ReferenceEquals(this.Control, parent) && control != this.contentContainer && !this.items.Contains(control);
         }
 
 		/// <summary>

@@ -44,6 +44,10 @@ Ext.extend(Ext.net.CellCommands, Ext.util.Observable, {
         
         this.grid.afterRender = grid.afterRender.createSequence(function () {
             view.mainBody.on("click", this.onClick, this);
+
+            if (view.lockedBody) {
+                view.lockedBody.on("click", this.onClick, this);
+            }
         }, this);
 
         var cm = this.grid.getColumnModel(),
@@ -89,9 +93,11 @@ Ext.extend(Ext.net.CellCommands, Ext.util.Observable, {
             if (column.prepareCommands) {                
                 commands = Ext.net.clone(column.commands);
                 column.prepareCommands(this.grid, commands, record, row, col, value);
-            }    
-                
-            for (var i = rightAlign ? (commands.length - 1) : 0; rightAlign ? (i >= 0) : (i < commands.length); rightAlign ? i-- : i++) {
+            }
+            
+            var i = rightAlign ? (commands.length - 1) : 0;
+                            
+            for (i; rightAlign ? (i >= 0) : (i < commands.length); rightAlign ? i-- : i++) {
                 var cmd = commands[i];
                 
                 cmd.tooltip = cmd.tooltip || {};
@@ -125,7 +131,7 @@ Ext.extend(Ext.net.CellCommands, Ext.util.Observable, {
                 commands   : preparedCommands,
                 value      : userRendererValue,
                 rightAlign : rightAlign,
-                rightValue : column.align == "right"
+                rightValue : column.align === "right"
             });
         } else {
             meta.css = meta.css || "";

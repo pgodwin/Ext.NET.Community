@@ -12,7 +12,7 @@ Ext.ListView.override({
     setColumnHeader : function (column, header) {
         if (Ext.isString(column)) {
             Ext.each(this.columns, function (c, i) {
-                if (c.dataIndex == column) {
+                if (c.dataIndex === column) {
                     column = i;
                     return false;
                 }

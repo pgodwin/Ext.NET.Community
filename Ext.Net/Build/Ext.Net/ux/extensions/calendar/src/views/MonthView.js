@@ -356,12 +356,12 @@ Ext.calendar.MonthView = Ext.extend(Ext.calendar.CalendarView, {
 
     // inherited docs
     moveNext: function() {
-        return this.moveMonths(1);
+        return this.moveMonths(1, undefined, true);
     },
 
     // inherited docs
     movePrev: function() {
-        return this.moveMonths( - 1);
+        return this.moveMonths( - 1, undefined, true);
     },
 
     // private

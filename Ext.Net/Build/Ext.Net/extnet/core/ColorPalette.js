@@ -5,7 +5,7 @@ Ext.override(Ext.ColorPalette, {
     silentSelect : function (color) {
         color = color.replace("#", "");
         
-        if (color != this.value || this.allowReselect) {
+        if (color !== this.value || this.allowReselect) {
             var el = this.el;
             
             if (this.value) {
@@ -25,6 +25,12 @@ Ext.override(Ext.ColorPalette, {
 	getColorField : function () {
         if (!this.colorField) {
             this.colorField = new Ext.form.Hidden({ id : this.id + "_Color", name : this.id + "_Color" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.colorField);
         }
         
         return this.colorField;

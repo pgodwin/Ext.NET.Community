@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -157,7 +158,7 @@ namespace Ext.Net
                 {
                     try
                     {
-                        this.SelectedDate = DateTime.Parse(obj.ToString(), System.Threading.Thread.CurrentThread.CurrentCulture.DateTimeFormat);
+                        this.SelectedDate = DateTime.Parse(obj.ToString(), this.ResourceManager.CurrentLocale.DateTimeFormat);
                     }
                     catch (FormatException)
                     {
@@ -174,7 +175,6 @@ namespace Ext.Net
         /// <summary>
         /// 
         /// </summary>
-        [ConfigOption(typeof(CtorDateTimeJsonConverter))]
         [DirectEventUpdate(MethodName = "SetValueProxy")]
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -188,19 +188,33 @@ namespace Ext.Net
             }
             set
             {
+                if (this.SafeResourceManager == null)
+                {
+                    this.Init += delegate
+                    {
+                        this.Value = this.ViewState["Value"];
+                    };
+
+                    this.ViewState["Value"] = value;
+                    
+                    return;
+                }
+
                 DateTime obj = (DateTime)this.EmptyValue;
+
+                CultureInfo culture = this.ResourceManager.CurrentLocale;
 
                 if (value is string)
                 {
                     try
                     {
-                        obj = DateTime.ParseExact((string)value, this.Format, System.Threading.Thread.CurrentThread.CurrentCulture);
+                        obj = DateTime.ParseExact((string)value, this.Format, culture);
                     }
                     catch 
                     {
                         try
                         {
-                            obj = DateTime.Parse((string)value, System.Threading.Thread.CurrentThread.CurrentCulture);
+                            obj = DateTime.Parse((string)value, culture);
                         }
                         catch { }
                     }
@@ -211,6 +225,18 @@ namespace Ext.Net
                 }
 
                 this.ViewState["Value"] = obj;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ConfigOption("value", typeof(CtorDateTimeJsonConverter))]
+        protected internal override object ValueProxy
+        {
+            get
+            {
+                return base.ValueProxy;
             }
         }
 
@@ -341,18 +367,30 @@ namespace Ext.Net
             string val = postCollection[this.UniqueName];
 
             this.SuspendScripting();
-            this.RawValue = val;
+            this.RawValue = val != null && val.Equals(this.EmptyText) ? null : val;
             this.ResumeScripting();
 
             if (val != null)
             {
+                bool result = true;
                 try
                 {
                     this.SuspendScripting();
-                    this.SelectedDate = DateTime.ParseExact(val, this.Format, System.Threading.Thread.CurrentThread.CurrentCulture);
+                    if(!val.Equals(this.EmptyText))
+                    {
+                        DateTime dt = DateTime.ParseExact(val, this.Format, this.ResourceManager.CurrentLocale);
+                        result = dt != this.SelectedDate;
+                        this.SelectedDate = dt;    
+                    }
+                    else
+                    {
+                        result = (DateTime)this.EmptyValue != this.SelectedDate;
+                        this.SelectedDate = (DateTime)this.EmptyValue;
+                    }
                 }
                 catch
                 {
+                    result = (DateTime)this.EmptyValue != this.SelectedDate;
                     this.SelectedDate = (DateTime)this.EmptyValue;
                 }
                 finally
@@ -360,7 +398,7 @@ namespace Ext.Net
                     this.ResumeScripting();
                 }
 
-                return true;
+                return result;
             }
 
             return false;
@@ -444,8 +482,7 @@ namespace Ext.Net
         {
             get
             {
-                this.DisabledDates.Format = this.Format;
-                return this.DisabledDates.ToString();
+                return this.DisabledDates.ToString(this.Format, this.HasResourceManager ? this.ResourceManager.CurrentLocale : CultureInfo.InvariantCulture);
             }
         }
 
@@ -541,7 +578,7 @@ namespace Ext.Net
         {
             get
             {
-                return DateTimeUtils.ConvertNetToPHP(this.Format);
+                return DateTimeUtils.ConvertNetToPHP(this.Format, this.HasResourceManager ? this.ResourceManager.CurrentLocale : CultureInfo.InvariantCulture);
             }
         }
 
@@ -913,6 +950,24 @@ namespace Ext.Net
             converters.Add(new CtorDateTimeJsonConverter());
 
             this.Call("setMaxValue", new JRawValue(JSON.Serialize(maxDate.Date, converters)));
+        }
+
+        /// <summary>
+        /// Replaces any existing disabled dates with new values and refreshes the DateField.
+        /// </summary>
+        [Description("Replaces any existing disabled dates with new values and refreshes the DateField.")]
+        public void UpdateDisabledDates()
+        {
+            this.Call("setDisabledDates", new JRawValue(this.DisabledDates.ToString(this.Format, this.HasResourceManager ? this.ResourceManager.CurrentLocale : CultureInfo.InvariantCulture)));
+        }
+
+        /// <summary>
+        /// Replaces any existing disabled days (by index, 0-6) with new values and refreshes the DateField.
+        /// </summary>
+        [Description("Replaces any existing disabled days (by index, 0-6) with new values and refreshes the DateField.")]
+        public void UpdateDisabledDays()
+        {
+            this.Call("setDisabledDays", this.DisabledDays);
         }
         
 

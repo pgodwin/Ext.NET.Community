@@ -49,15 +49,15 @@
                 
                 if (source.hasSelection()) {
                     var records = source.selModel.getSelections();
-                    this.swapRecords(source, destination, records);
                     source.deleteSelected();
+					this.swapRecords(source, destination, records);                    
                 }
             },
             addAll : function (source, destination) {
                 source = source || GridPanel1;
                 destination = destination || GridPanel2;
-                this.swapRecords(source, destination, source.store.getRange());
                 source.store.removeAll();
+				this.swapRecords(source, destination, source.store.getRange());                
             },
 
             remove : function (source, destination) {

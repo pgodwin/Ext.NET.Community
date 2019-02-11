@@ -34,8 +34,8 @@ Ext.Window = Ext.extend(Ext.Panel, {
      */
     /**
      * @cfg {Boolean} modal
-     * True to make the window modal and mask everything behind it when displayed, false to display it without
-     * restricting access to other UI elements (defaults to false).
+* True to make the window modal and mask everything behind it when displayed, false to display it without
+* restricting access to other UI elements (defaults to false).
      */
     /**
      * @cfg {String/Element} animateTarget

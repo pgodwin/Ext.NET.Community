@@ -9,9 +9,8 @@
 Ext.ux.StartMenu = Ext.extend(Ext.menu.Menu, {
     toolsWidth: 100,
     
-    initComponent: function (config) {
-    	Ext.ux.StartMenu.superclass.initComponent.call(this, config);
-
+    initComponent : function (config) {
+        Ext.ux.StartMenu.superclass.initComponent.call(this, config);
         var tools = this.toolItems;
         this.toolItems = new Ext.util.MixedCollection();
         if (tools) {
@@ -98,9 +97,9 @@ Ext.ux.StartMenu = Ext.extend(Ext.menu.Menu, {
         }, this);
 
         this.toolItems.each(
-        	function (item) {
-	            var li = document.createElement("li");
-	            li.className = "x-menu-list-item";
+            function (item) {
+                var li = document.createElement("li");
+                li.className = "x-menu-list-item";
 	            toolsUl.dom.appendChild(li);
 	            item.render(li);
                 item.parentMenu = this;
@@ -108,22 +107,22 @@ Ext.ux.StartMenu = Ext.extend(Ext.menu.Menu, {
 
         this.toolsUl = toolsUl;
 
-        this.menuBWrap.setStyle('position', 'relative');
+        this.menuBWrap.setStyle("position", "relative");
         this.menuBWrap.setHeight(this.height);
         this.on("show", function () {
             this.menuBWrap.setHeight(this.height - (this.header.getHeight() || 22) - 6);            
-        }, this, {single:true});
+        }, this, {single: true});
 
         this.menuPanel.setStyle({
-        	padding: '2px',
-        	position: 'absolute',
-        	overflow: 'auto'
+        	padding: "2px",
+        	position: "absolute",
+        	overflow: "auto"
         });
 
         this.toolsPanel.setStyle({
-        	padding: '2px 4px 2px 2px',
-        	position: 'absolute',
-        	overflow: 'auto'
+        	padding: "2px 4px 2px 2px",
+        	position: "absolute",
+        	overflow: "auto"
         });
 
         this.setTitle(this.title);
@@ -617,7 +616,7 @@ Ext.ux.TaskBar.TaskButton = function (win, el) {
     this.win = win;
     Ext.ux.TaskBar.TaskButton.superclass.constructor.call(this, {
         iconCls: win.iconCls,
-        text: Ext.util.Format.ellipsis(win.title, 12),
+        text: Ext.util.Format.ellipsis(win.title, win.desktop.app.textLengthToTruncate || 12),
         renderTo: el,
         handler: function () {
             if (win.minimized || win.hidden) {
@@ -890,14 +889,15 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
 
         this.setBackgroundColor = function (color) {
             if (color) {
-                Ext.get(document.body).setStyle('background-color', color);
+                Ext.get(document.body).setStyle("background-color", color);
             }
         };
 
         this.setFontColor = function (color) {
             if (color) {
-                //Ext.util.CSS.updateRule('.x-shortcut-text', 'color', color);
-                Ext.util.CSS.createStyleSheet(".x-shortcut-text { color: " + color + "; }");
+                if (!Ext.util.CSS.updateRule(".x-shortcut-text", "color", color)) {
+					Ext.net.ResourceMgr.registerCssClass("", ".x-shortcut-text { color: " + color + "; }", false);        
+				}
             }
         };
 
@@ -1027,7 +1027,7 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
             var win = this.getWindow(windowID);
 
             this.tuneDesktopWindow(win);
-            win.taskButton.setText(win.title);
+            win.taskButton.setText(Ext.util.Format.ellipsis(win.title, win.desktop.app.textLengthToTruncate || 12));
             win.origShow();
 
             return true;
@@ -1091,7 +1091,12 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
         if (cfg.id) {
             window[cfg.id] = this;
         }
-        Ext.onReady(this.initApp, this);
+        if(!Ext.isReady){
+           Ext.onReady(this.initApp, this);
+        }
+        else{
+            this.initApp();
+        }
     };
 
     Ext.extend(Ext.app.App, Ext.util.Observable, {
@@ -1150,7 +1155,6 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
 
             this.initAutoRun();
 
-            Ext.util.CSS.createStyleSheet(".x-desktop-body .x-tip{z-index: 26000 !important;}");
             Ext.getBody().addClass('x-desktop-body');            
 
             Ext.EventManager.on(window, 'beforeunload', this.onUnload, this);
@@ -1261,7 +1265,7 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
         
         show: function () {
             this.desktop.tuneDesktopWindow(this);
-            this.taskButton.setText(this.title);
+            this.taskButton.setText(Ext.util.Format.ellipsis(this.title, this.desktop.app.textLengthToTruncate || 12));
             this.origShow();
         },
         
@@ -1269,7 +1273,7 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
             Ext.net.DesktopWindow.superclass.initComponent.call(this); 
             
             if (!this.lazyRender) {
-                this.render(Ext.get('x-desktop'));
+                this.render(Ext.get("x-desktop"));
             }
         },
 
@@ -1295,7 +1299,7 @@ Ext.extend(Ext.ux.TaskBar.TaskButton, Ext.Button, {
                 return;
             }
 
-            this.fireEvent('minimize', this);
+            this.fireEvent("minimize", this);
         }
     });
     Ext.reg("desktopwindow", Ext.net.DesktopWindow);

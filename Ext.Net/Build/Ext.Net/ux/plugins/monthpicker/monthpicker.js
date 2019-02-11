@@ -95,3 +95,5 @@ Ext.ux.MonthPicker.prototype = {
         }
     }
 };
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

@@ -52,5 +52,37 @@ Ext.extend(Ext.net.ProxyDDCreator, Ext.util.Observable, {
         }        
         
         return ddControl;
+    },
+    
+    lock : function () {
+        Ext.each(this.ddControl, function (dd) {
+            if (dd && dd.lock) {
+                dd.lock();
+            }
+        });
+    },
+    
+    unlock : function () {
+        Ext.each(this.ddControl, function (dd) {
+            if (dd && dd.unlock) {
+                dd.unlock();
+            }
+        });
+    },
+    
+    unreg : function () {
+        Ext.each(this.ddControl, function (dd) {
+            if (dd && dd.unreg) {
+                dd.unreg();
+            }
+        });
+    },
+    
+    destroy : function () {
+        Ext.each(this.ddControl, function (dd) {
+            if (dd && dd.unreg) {
+                dd.unreg();
+            }
+        });
     }
 });

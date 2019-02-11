@@ -50,10 +50,10 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
         
         this.availableHeight = w;
         
-        var pw = this.availableHeight, lastProportionedColumn;
+        var pw = this.availableHeight, 
+            lastProportionedColumn;
 
         if (this.split) {
-            this.minHeight = Math.min(pw / len, 100);
             this.maxHeight = pw - ((this.minHeight + 5) * (len ? (len - 1) : 1));
         }
 
@@ -79,7 +79,8 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
         }
 
         var remaining = (pw = pw < 0 ? 0 : pw),
-            splitterPos = 0, cw;
+            splitterPos = 0, 
+            cw;
         
         for (i = 0; i < len; i++) {
             c = cs[i];
@@ -90,7 +91,7 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
             }
             
             if (c.rowHeight) {
-                cw = (i == lastProportionedColumn) ? remaining : Math.floor(c.rowHeight * pw);
+                cw = (i === lastProportionedColumn) ? remaining : Math.floor(c.rowHeight * pw);
                 c.setHeight(cw - cel.getMargins("tb"));
                 
                 if (Ext.isEmpty(c.width)) {
@@ -122,12 +123,10 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
                     this.splitBars[i].index = i;
                     this.splitBars[i].topComponent = c;
                     this.splitBars[i].addListener("resize", this.onColumnResize, this);
-                    this.splitBars[i].minSize = this.minHeight;
+                    this.splitBars[i].minSize = Math.max(c.boxMinHeight || 5, 5);
 
                     splitterPos += this.splitBars[i].el.getHeight();
-                }
-
-                delete c.rowHeight;
+                }                
             }
         }
 
@@ -143,9 +142,11 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
             sb.topComponent.setHeight(newHeight);
             
             var items = this.container.items.items,
-                expansion = newHeight - sb.dragSpecs.startSize;
+                expansion = newHeight - sb.dragSpecs.startSize,
+                i = sb.index + 1,
+                len;
             
-            for (var i = sb.index + 1, len = items.length; expansion && i < len; i++) {
+            for (i, len = items.length; expansion && i < len; i++) {
                 var c = items[i],
                     w = c.el.getHeight();
                     
@@ -160,6 +161,8 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
                     c.setHeight(c.el.getHeight() - expansion);
                     break;
                 }
+                
+                delete c.rowHeight;
             }
             this.setMaxHeights();
         }
@@ -167,7 +170,8 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
 
     setMaxHeights : function () {
         var items = this.container.items.items,
-            spare = items[items.length - 1].el.dom.offsetHeight - 100, i;
+            spare = items[items.length - 1].el.dom.offsetHeight - 100, 
+            i;
 
         for (i = items.length - 2; i > -1; i--) {
             var sb = this.splitBars[i];
@@ -184,22 +188,6 @@ Ext.ux.RowLayout = Ext.extend(Ext.layout.ContainerLayout, {
     },
 
     onResize : function () {
-        if (this.split) {
-            var items = this.container.items.items, tw = 0, c, i;
-            
-            if (items[0].rendered) {
-                for (i = 0; i < items.length; i++) {
-                    c = items[i];
-                    tw += c.el.getHeight() + c.el.getMargins("tb");
-                }
-                
-                for (i = 0; i < items.length; i++) {
-                    c = items[i];
-                    c.rowHeight = (c.el.getHeight() + c.el.getMargins("tb")) / tw;
-                }
-            }
-        }
-        
         Ext.ux.RowLayout.superclass.onResize.apply(this, arguments);
     }
 });

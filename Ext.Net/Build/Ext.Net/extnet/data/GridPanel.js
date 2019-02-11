@@ -12,12 +12,14 @@ Ext.net.GridPanel = function (config) {
 };
 
 Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
-    clearEditorFilter: true,
-    selectionSavingBuffer: 0,
+    clearEditorFilter     : true,
+    selectionSavingBuffer : 0,
 
-    getFilterPlugin: function () {
+    getFilterPlugin : function () {
         if (this.plugins && Ext.isArray(this.plugins)) {
-            for (var i = 0; i < this.plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < this.plugins.length; i++) {
                 if (this.plugins[i].isGridFiltersPlugin) {
                     return this.plugins[i];
                 }
@@ -29,9 +31,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    getRowEditor: function () {
+    getRowEditor : function () {
         if (this.plugins && Ext.isArray(this.plugins)) {
-            for (var i = 0; i < this.plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < this.plugins.length; i++) {
                 if (this.plugins[i].isRowEditor) {
                     return this.plugins[i];
                 }
@@ -43,9 +47,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    getRowExpander: function () {
+    getRowExpander : function () {
         if (this.plugins && Ext.isArray(this.plugins)) {
-            for (var i = 0; i < this.plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < this.plugins.length; i++) {
                 if (this.plugins[i].id === "expander") {
                     return this.plugins[i];
                 }
@@ -57,7 +63,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    doSelection: function () {
+    doSelection : function () {
         var data = this.selModel.selectedData,
             silent = true;
 
@@ -88,9 +94,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                 }
             } else if (this.selModel.selectRow && data.length > 0) {
                 var records = [],
-                    record;
+                    record,
+                    i = 0;
 
-                for (var i = 0; i < data.length; i++) {
+                for (i; i < data.length; i++) {
                     if (!Ext.isEmpty(data[i].recordID)) {
                         record = this.store.getById(data[i].recordID);
 
@@ -130,17 +137,19 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    updateSelectedRows: function () {
-        var records = [];
+    updateSelectedRows : function () {
+        var records = [],
+            id;
 
         if (this.selectionMemory) {
-            for (var id in this.selectedIds) {
+            for (id in this.selectedIds) {
                 records.push({ RecordID: this.selectedIds[id].id, RowIndex: this.selectedIds[id].index });
             }
         } else {
-            var selectedRecords = this.selModel.getSelections();
+            var selectedRecords = this.selModel.getSelections(),
+                i = 0;
 
-            for (var i = 0; i < selectedRecords.length; i++) {
+            for (i; i < selectedRecords.length; i++) {
                 records.push({ RecordID: selectedRecords[i].id, RowIndex: this.store.indexOfId(selectedRecords[i].id) });
             }
         }
@@ -148,13 +157,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.hField.setValue(Ext.encode(records));
     },
 
-    updateCellSelection: function (sm, selection) {
+    updateCellSelection : function (sm, selection) {
         if (selection === null) {
             this.hField.setValue("");
         }
     },
 
-    cellSelect: function (sm, rowIndex, colIndex) {
+    cellSelect : function (sm, rowIndex, colIndex) {
         var r = this.store.getAt(rowIndex),
             selection = {
                 record: r,
@@ -170,7 +179,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
     selectionMemory: true,
 
     //private
-    removeOrphanColumnPlugins: function (column) {
+    removeOrphanColumnPlugins : function (column) {
         var p,
             i = 0;
 
@@ -187,16 +196,17 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                 } else {
                     i++;
                 }
-            }
-            else {
+            } else {
                 i++;
             }
         }
     },
 
-    addColumnPlugins: function (plugins, init) {
+    addColumnPlugins : function (plugins, init) {
         if (Ext.isArray(plugins)) {
-            for (var i = 0; i < plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < plugins.length; i++) {
 
                 this.plugins.push(plugins[i]);
 
@@ -213,9 +223,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    initColumnPlugins: function (plugins, init) {
+    initColumnPlugins : function (plugins, init) {
         var cp = [],
-            p;
+            p,
+            i = 0;
 
         this.initGridPlugins();
 
@@ -223,7 +234,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             this.removeOrphanColumnPlugins();
         }
 
-        for (var i = 0; i < plugins.length; i++) {
+        for (i; i < plugins.length; i++) {
             p = this.getColumnModel().config[plugins[i]];
             p.isColumnPlugin = true;
             cp.push(p);
@@ -231,7 +242,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.addColumnPlugins(cp, init);
     },
 
-    initGridPlugins: function () {
+    initGridPlugins : function () {
         if (Ext.isEmpty(this.plugins)) {
             this.plugins = [];
         } else if (!Ext.isArray(this.plugins)) {
@@ -239,7 +250,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    initSelectionData: function () {
+    initSelectionData : function () {
         if (this.store) {
             if (this.store.getCount() > 0) {
                 this.doSelection();
@@ -249,7 +260,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    initComponent: function () {
+    initComponent : function () {
         Ext.net.GridPanel.superclass.initComponent.call(this);
 
         this.initGridPlugins();
@@ -262,9 +273,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             this.plugins.push(new Ext.ux.grid.ColumnHeaderGroup({ rows: this.getView().headerGroupRows }));
         }
 
-        var cm = this.getColumnModel();
+        var cm = this.getColumnModel(),
+            j = 0;
 
-        for (var j = 0; j < cm.config.length; j++) {
+        for (j; j < cm.config.length; j++) {
             var column = cm.config[j];
 
             if (column.commands) {
@@ -295,10 +307,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
 
         if (this.getView().headerRows) {
-            for (var rowIndex = 0; rowIndex < this.view.headerRows.length; rowIndex++) {
-                var cols = this.view.headerRows[rowIndex].columns;
+            var rowIndex = 0;
 
-                for (var colIndex = 0; colIndex < cols.length; colIndex++) {
+            for (rowIndex; rowIndex < this.view.headerRows.length; rowIndex++) {
+                var cols = this.view.headerRows[rowIndex].columns,
+                    colIndex = 0;
+
+                for (colIndex; colIndex < cols.length; colIndex++) {
                     var col = cols[colIndex];
 
                     if (Ext.isEmpty(col.component)) {
@@ -318,28 +333,31 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             this.colModel.on("hiddenchange", this.onHeaderRowHiddenChange, this);
 
             Ext.apply(this.getView(), {
-                onColumnMove: function (cm, oldIndex, newIndex) {
-                    for (var rowIndex = 0; rowIndex < this.headerRows.length; rowIndex++) {
+                onColumnMove : function (cm, oldIndex, newIndex) {
+                    var rowIndex = 0;
+
+                    for (rowIndex; rowIndex < this.headerRows.length; rowIndex++) {
                         var cols = this.headerRows[rowIndex].columns,
-                            tmp = cols[newIndex],
                             c = cols[oldIndex];
-                        cols[newIndex] = c;
-                        cols[oldIndex] = tmp;
+                        cols.splice(oldIndex, 1);
+                        cols.splice(newIndex, 0, c);
                     }
                     this.constructor.prototype.onColumnMove.call(this, cm, oldIndex, newIndex);
                 },
 
-                updateHeaders: function () {
-                    var col;
+                updateHeaders : function () {
+                    var col, div;
 
                     if (this.headerControlsInsideGrid) {
                         var el = Ext.net.ResourceMgr.getAspForm() || Ext.getBody(),
-                            ce;
+                            ce,
+                            i = 0;
 
-                        for (var i = 0; i < this.headerRows.length; i++) {
-                            var c1 = this.headerRows[i].columns;
+                        for (i; i < this.headerRows.length; i++) {
+                            var c1 = this.headerRows[i].columns,
+                                j = 0;
 
-                            for (var j = 0; j < c1.length; j++) {
+                            for (j; j < c1.length; j++) {
                                 col = c1[j];
 
                                 if (col.component) {
@@ -367,13 +385,15 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                     this.constructor.prototype.updateHeaders.call(this);
 
                     if (this.headerRows) {
-                        for (var ii = 0; ii < this.headerRows.length; ii++) {
-                            var c2 = this.headerRows[ii].columns,
-                                tr = this.mainHd.child("tr.x-grid3-hd-row-r" + ii);
+                        var ii = 0;
 
-                            for (var jj = 0; jj < c2.length; jj++) {
-                                col = c2[jj],
-                                    div;
+                        for (ii; ii < this.headerRows.length; ii++) {
+                            var c2 = this.headerRows[ii].columns,
+                                tr = this.mainHd.child("tr.x-grid3-hd-row-r" + ii),
+                                jj = 0;
+
+                            for (jj; jj < c2.length; jj++) {
+                                col = c2[jj];
 
                                 if (!Ext.isEmpty(col.component)) {
                                     div = Ext.fly(tr.dom.cells[jj]).child("div.x-grid3-hd-inner");
@@ -402,9 +422,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
                         this.grid.syncHeaders.defer(100, this.grid);
 
-                        var cm = this.grid.getColumnModel();
+                        var cm = this.grid.getColumnModel(),
+                            k = 0;
 
-                        for (var k = 0; k < cm.columns.length; k++) {
+                        for (k; k < cm.columns.length; k++) {
                             if (cm.isHidden(k)) {
                                 this.grid.onHeaderRowHiddenChange(cm, k, true);
                             }
@@ -429,18 +450,18 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
     /*Selection Memory*/
 
-    clearMemory: function () {
+    clearMemory : function () {
         delete this.selModel.selectedData;
         this.selectedIds = {};
         this.hField.setValue("");
     },
 
-    memoryReConfigure: function () {
+    memoryReConfigure : function () {
         this.store.on("clear", this.onMemoryClear, this);
         this.store.on("datachanged", this.memoryRestoreState, this);
     },
 
-    onMemorySelect: function (sm, idx, rec) {
+    onMemorySelect : function (sm, idx, rec) {
         if (this.getSelectionModel().singleSelect) {
             this.clearMemory();
         }
@@ -451,12 +472,16 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.onMemorySelectId(sm, absIndex, id);
     },
 
-    onMemorySelectId: function (sm, index, id) {
-        var obj = { id: id, index: index };
+    onMemorySelectId : function (sm, index, id) {
+        var obj = { 
+            id    : id, 
+            index : index 
+        };
+        
         this.selectedIds[id] = obj;
     },
 
-    getPagingToolbar: function () {
+    getPagingToolbar : function () {
         var bar = this.getBottomToolbar();
 
         if (bar && bar.getPageData) {
@@ -472,7 +497,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return null;
     },
 
-    getAbsoluteIndex: function (pageIndex) {
+    getAbsoluteIndex : function (pageIndex) {
         var absIndex = pageIndex,
             bar = this.getPagingToolbar();
 
@@ -483,26 +508,26 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return absIndex;
     },
 
-    onMemoryDeselect: function (sm, idx, rec) {
+    onMemoryDeselect : function (sm, idx, rec) {
         delete this.selectedIds[this.getRecId(rec)];
     },
 
-    onStoreRemove: function (store, rec, idx) {
+    onStoreRemove : function (store, rec, idx) {
         this.onMemoryDeselect(null, idx, rec);
     },
 
-    memoryRestoreState: function () {
+    memoryRestoreState : function () {
         if (this.store !== null) {
             var i = 0,
                 sel = [],
                 all = true,
                 silent = true;
-            
+
             if (this.selModel.isLocked()) {
                 this.wasLocked = true;
                 this.selModel.unlock();
-            }  
-                                
+            }
+
             this.store.each(function (rec) {
                 var id = this.getRecId(rec);
 
@@ -540,14 +565,14 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                     this.selModel.uncheckHeader();
                 }
             }
-            
+
             if (this.wasLocked) {
                 this.selModel.lock();
-            }  
+            }
         }
     },
 
-    getRecId: function (rec) {
+    getRecId : function (rec) {
         var id = rec.get(this.memoryIDField);
 
         if (Ext.isEmpty(id)) {
@@ -557,21 +582,26 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return id;
     },
 
-    onMemoryClear: function () {
+    onMemoryClear : function () {
         this.selectedIds = {};
     },
 
     /*------------------------------*/
 
-    getSelectionModelField: function () {
+    getSelectionModelField : function () {
         if (!this.selectionModelField) {
             this.selectionModelField = new Ext.form.Hidden({ id: this.id + "_SM", name: this.id + "_SM" });
+            this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectionModelField);
         }
 
         return this.selectionModelField;
     },
 
-    initSelection: function () {
+    initSelection : function () {
         this.hField = this.getSelectionModelField();
 
         if (this.selModel.select) {
@@ -584,7 +614,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    getKeyMap: function () {
+    getKeyMap : function () {
         if (!this.keyMap) {
             this.keyMap = new Ext.KeyMap(this.view.el, this.keys);
         }
@@ -592,7 +622,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return this.keyMap;
     },
 
-    onRender: function (ct, position) {
+    onRender : function (ct, position) {
         Ext.net.GridPanel.superclass.onRender.call(this, ct, position);
 
         this.getSelectionModelField().render(this.el.parent() || this.el);
@@ -606,10 +636,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.relayEvents(this.store, ["commitdone", "commitfailed"]);
     },
 
-    onHeaderRowHiddenChange: function (cm, colIndex, hidden) {
-        var display = hidden ? "none" : "";
+    onHeaderRowHiddenChange : function (cm, colIndex, hidden) {
+        var display = hidden ? "none" : "",
+            rowIndex = 0;
 
-        for (var rowIndex = 0; rowIndex < this.view.headerRows.length; rowIndex++) {
+        for (rowIndex; rowIndex < this.view.headerRows.length; rowIndex++) {
             var tr = this.view.mainHd.child("tr.x-grid3-hd-row-r" + rowIndex);
 
             if (tr && tr.dom.cells.length > colIndex) {
@@ -620,11 +651,14 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.syncHeaders.defer(100, this);
     },
 
-    syncHeaders: function () {
-        for (var rowIndex = 0; rowIndex < this.view.headerRows.length; rowIndex++) {
-            var cols = this.view.headerRows[rowIndex].columns;
+    syncHeaders : function () {
+        var rowIndex = 0;
 
-            for (var colIndex = 0; colIndex < cols.length; colIndex++) {
+        for (rowIndex; rowIndex < this.view.headerRows.length; rowIndex++) {
+            var cols = this.view.headerRows[rowIndex].columns,
+                colIndex = 0;
+
+            for (colIndex; colIndex < cols.length; colIndex++) {
                 var col = cols[colIndex],
                     cmp;
 
@@ -653,7 +687,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    onRowContextMenu: function (grid, rowIndex, e) {
+    onRowContextMenu : function (grid, rowIndex, e) {
         e.stopEvent();
 
         if (!this.selModel.isSelected(rowIndex)) {
@@ -664,7 +698,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.showContextMenu(e, rowIndex);
     },
 
-    showContextMenu: function (e, rowIndex) {
+    showContextMenu : function (e, rowIndex) {
         e.stopEvent();
 
         if (rowIndex === undefined) {
@@ -676,11 +710,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    reload: function (options) {
+    reload : function (options) {
         this.store.reload(options);
     },
 
-    isDirty: function () {
+    isDirty : function () {
         if (this.store.modified.length > 0 || this.store.deleted.length > 0) {
             return true;
         }
@@ -688,25 +722,25 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return false;
     },
 
-    hasSelection: function () {
+    hasSelection : function () {
         return this.selModel.hasSelection();
     },
 
-    addRecord: function (values, commit, clearFilter) {
+    addRecord : function (values, commit, clearFilter) {
         var rowIndex = this.store.data.length;
 
         this.insertRecord(rowIndex, values, commit, clearFilter);
         return rowIndex;
     },
 
-    addRecordEx: function (values, commit, clearFilter) {
+    addRecordEx : function (values, commit, clearFilter) {
         var rowIndex = this.store.data.length,
             record = this.insertRecord(rowIndex, values, commit, clearFilter);
 
         return { index: rowIndex, record: record };
     },
 
-    insertRecord: function (rowIndex, values, commit, clearFilter) {
+    insertRecord : function (rowIndex, values, commit, clearFilter) {
         if (arguments.length === 0) {
             this.insertRecord(0, {});
             this.getView().focusRow(0);
@@ -718,11 +752,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return this.store.insertRecord(rowIndex, values, false, commit, clearFilter);
     },
 
-    deleteRecord: function (record) {
+    deleteRecord : function (record) {
         this.store.remove(record);
     },
 
-    deleteSelected: function () {
+    deleteSelected : function () {
         var s = this.selModel.getSelections(),
             i;
 
@@ -731,13 +765,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    clear: function () {
+    clear : function () {
         this.store.removeAll();
     },
 
     saveMask: false,
 
-    initEvents: function () {
+    initEvents : function () {
         Ext.net.GridPanel.superclass.initEvents.call(this);
 
         if (this.saveMask) {
@@ -746,7 +780,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    reconfigure: function (store, colModel) {
+    reconfigure : function (store, colModel) {
         Ext.net.GridPanel.superclass.reconfigure.call(this, store, colModel);
 
         if (this.saveMask) {
@@ -756,7 +790,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    onDestroy: function () {
+    onDestroy : function () {
         if (this.rendered) {
             if (this.saveMask) {
                 this.saveMask.destroy();
@@ -766,7 +800,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         Ext.net.GridPanel.superclass.onDestroy.call(this);
     },
 
-    insertColumn: function (index, newCol) {
+    insertColumn : function (index, newCol) {
         var c = this.getColumnModel().config,
             cfg;
 
@@ -779,7 +813,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, new Ext.grid.ColumnModel(cfg));
     },
 
-    addColumn: function (newCol) {
+    addColumn : function (newCol) {
         var c = this.getColumnModel().config,
             cfg;
 
@@ -790,7 +824,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, new Ext.grid.ColumnModel(cfg));
     },
 
-    removeColumn: function (index) {
+    removeColumn : function (index) {
         var c = this.getColumnModel().config,
             cfg;
 
@@ -803,7 +837,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, new Ext.grid.ColumnModel(cfg));
     },
 
-    reconfigureColumns: function (cfg) {
+    reconfigureColumns : function (cfg) {
         var oldCM = this.getColumnModel(),
             newCM,
             specialCols = ["checker", "expander"],
@@ -811,6 +845,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
         cfg = Ext.apply(cfg.columns ? cfg : { columns: cfg }, { events: oldCM.events, directEvents: oldCM.directEvents, defaultSortable: oldCM.defaultSortable });
 
+        Ext.each(cfg.columns, function (col) {
+            if (col.id === "expander") {
+                specialCols.remove("expander");
+                return false;
+            }
+        });
+        
         for (i = 0; i < specialCols.length; i++) {
             var specCol = oldCM.getColumnById(specialCols[i]);
 
@@ -828,11 +869,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, newCM);
     },
 
-    load: function (options) {
+    load : function (options) {
         this.store.load(options);
     },
 
-    save: function (options) {
+    save : function (options) {
         if (options && options.visibleOnly) {
             options.grid = this;
         }
@@ -848,9 +889,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
     //    - dirtyCellsOnly
     //    - dirtyRowsOnly
     //    - currentPageOnly
+    //    - excludeId
     //    - filterRecord - function (record) - return false to exclude the record
     //    - filterField - function (record, fieldName, value) - return false to exclude the field for particular record
-    getRowsValues: function (config) {
+    getRowsValues : function (config) {
         config = config || {};
 
         this.stopEditing(false);
@@ -862,7 +904,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
         if (this.selectionMemory && config.selectedOnly && !config.currentPageOnly && this.store.isPagingStore()) {
             records = [];
-            for (var id in this.selectedIds) {
+
+            var id;
+
+            for (id in this.selectedIds) {
                 record = this.store.getById(this.selectedIds[id].id);
 
                 if (!Ext.isEmpty(record)) {
@@ -875,7 +920,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             var obj = {}, dataR;
 
             if (this.store.metaId()) {
-                obj[this.store.metaId()] = records[i].id;
+                obj[this.store.metaId()] = config.excludeId === true ? undefined : records[i].id;
             }
 
             dataR = Ext.apply(obj, records[i].data);
@@ -890,7 +935,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return values;
     },
 
-    serialize: function (config) {
+    serialize : function (config) {
         return Ext.encode(this.getRowsValues(config));
     },
 
@@ -900,10 +945,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
     //   - dirtyCellsOnly
     //   - dirtyRowsOnly
     //   - currentPageOnly
+    //   - excludeId
     //   - encode
     //    - filterRecord - function (record) - return false to exclude the record
     //    - filterField - function (record, fieldName, value) - return false to exclude the field for particular record
-    submitData: function (config) {
+    submitData : function (config) {
         config = config || {};
         config.selectedOnly = config.selectedOnly || false;
         encode = config.encode;
@@ -916,12 +962,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
         if (encode) {
             values = Ext.util.Format.htmlEncode(values);
+            delete config.encode;
         }
 
-        this.store.submitData(values);
+        this.store.submitData(values, config);
     },
 
-    onEditComplete: function (ed, value, startValue) {
+    onEditComplete : function (ed, value, startValue) {
         Ext.net.GridPanel.superclass.onEditComplete.call(this, ed, value, startValue);
 
         ed.field.reset();
@@ -934,7 +981,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.fireEvent("editcompleted", ed, value, startValue);
     },
 
-    stopEditing: function (cancel) {
+    stopEditing : function (cancel) {
         var ae = this.activeEditor;
 
         Ext.net.GridPanel.superclass.stopEditing.call(this, cancel);
@@ -944,7 +991,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    startEditing: function (row, col) {
+    startEditing : function (row, col) {
         this.stopEditing();
 
         if (this.colModel.isCellEditable(col, row)) {
@@ -952,13 +999,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             var r = this.store.getAt(row),
                 field = this.colModel.getDataIndex(col),
                 e = {
-                    grid: this,
-                    record: r,
-                    field: field,
-                    value: r.data[field],
-                    row: row,
-                    column: col,
-                    cancel: false
+                    grid   : this,
+                    record : r,
+                    field  : field,
+                    value  : r.data[field],
+                    row    : row,
+                    column : col,
+                    cancel : false
                 };
 
             if (this.fireEvent("beforeedit", e) !== false && !e.cancel) {
@@ -972,31 +1019,31 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                 if (!ed.rendered) {
                     ed.parentEl = this.view.getEditorParent(ed);
                     ed.on({
-                        scope: this,
-                        render: {
-                            fn: function (c) {
+                        scope  : this,
+                        render : {
+                            fn : function (c) {
                                 c.field.focus(false, true);
                             },
-                            single: true,
-                            scope: this
+                            single : true,
+                            scope  : this
                         },
-                        specialkey: function (field, e) {
+                        specialkey : function (field, e) {
                             this.getSelectionModel().onEditorKey(field, e);
                         },
-                        complete: this.onEditComplete,
-                        canceledit: this.stopEditing.createDelegate(this, [true])
+                        complete   : this.onEditComplete,
+                        canceledit : this.stopEditing.createDelegate(this, [true])
                     });
                 }
 
                 Ext.apply(ed, {
-                    row: row,
-                    col: col,
-                    record: r
+                    row    : row,
+                    col    : col,
+                    record : r
                 });
 
                 this.lastEdit = {
-                    row: row,
-                    col: col
+                    row : row,
+                    col : col
                 };
 
                 this.activeEditor = ed;

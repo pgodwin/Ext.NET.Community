@@ -112,6 +112,7 @@
                 runat="server" 
                 DisplayField="Common" 
                 ValueField="Common"
+                
                 TypeAhead="false"
                 LoadingText="Searching..." 
                 Width="570"

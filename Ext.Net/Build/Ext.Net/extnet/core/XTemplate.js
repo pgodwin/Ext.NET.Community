@@ -23,10 +23,23 @@ Ext.net.XTemplate = function (config) {
 
 Ext.extend(Ext.net.XTemplate, Ext.XTemplate, {
     destroy : function () {
-        var ns = this.ns || Ext.net.ResourceMgr.ns;
+        var ns = this.ns || Ext.net.ResourceMgr.ns,
+            id = this.itemId || this.proxyId;        
             
-        if (ns && window[ns + "." + (this.itemId || this.proxyId)]) {
-            Ext.ns(ns)[this.itemId || this.proxyId] = undefined;
+        if (ns && id) {                
+            if (Ext.isObject(ns) && ns[id]) {
+                try {
+                    delete ns[id];
+                } catch (e) {
+                    ns[id] = undefined;
+                }
+            } else if (Ext.net.ResourceMgr.getCmp(ns + "." + id)) {
+                try {
+                    delete Ext.ns(ns)[id];
+                } catch (f) {
+                    Ext.ns(ns)[id] = undefined;
+                }
+            }
         } else if (window[this.proxyId]) {
             window[this.proxyId] = null;
         }

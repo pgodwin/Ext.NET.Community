@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -56,13 +56,12 @@ namespace Ext.Net
                 ConfigOptionsCollection list = base.ConfigOptions;
                 
                 list.Add("inputType", new ConfigOption("inputType", new SerializationOptions(JsonMode.ToLower), InputType.Text, this.InputType ));
-                list.Add("valueProxy", new ConfigOption("valueProxy", new SerializationOptions("value"), null, this.ValueProxy ));
                 list.Add("allowDecimals", new ConfigOption("allowDecimals", null, true, this.AllowDecimals ));
                 list.Add("trimTrailedZeros", new ConfigOption("trimTrailedZeros", null, true, this.TrimTrailedZeros ));
                 list.Add("allowNegative", new ConfigOption("allowNegative", null, true, this.AllowNegative ));
                 list.Add("baseChars", new ConfigOption("baseChars", null, "0123456789", this.BaseChars ));
                 list.Add("decimalPrecision", new ConfigOption("decimalPrecision", null, 2, this.DecimalPrecision ));
-                list.Add("decimalSeparator", new ConfigOption("decimalSeparator", null, ".", this.DecimalSeparator ));
+                list.Add("decimalSeparatorProxy", new ConfigOption("decimalSeparatorProxy", new SerializationOptions("decimalSeparator"), "", this.DecimalSeparatorProxy ));
                 list.Add("maxText", new ConfigOption("maxText", null, "The maximum value for this field is {maxValue}", this.MaxText ));
                 list.Add("maxValue", new ConfigOption("maxValue", null, Double.MaxValue, this.MaxValue ));
                 list.Add("minText", new ConfigOption("minText", null, "The minimum value for this field is {minValue}", this.MinText ));

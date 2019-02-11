@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -79,6 +79,9 @@ namespace Ext.Net
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void CheckStore()
         {
             // do not remove
@@ -152,8 +155,11 @@ namespace Ext.Net
                         parameter.Editor.Editor.RegisterAllResources = true;
                         parameter.Editor.Editor.RegisterScripts();
                         parameter.Editor.Editor.RegisterStyles();
+                        parameter.Editor.Editor.AutoRender = false;
 
-                        sb.Append(JSON.Serialize(parameter.Name).ConcatWith(":new Ext.grid.GridEditor(", parameter.Editor.Editor.GetClientConstructor(true), "),"));
+                        parameter.Editor.Editor.Visible = true;
+                        sb.Append(JSON.Serialize(parameter.Name).ConcatWith(":new Ext.grid.GridEditor(", parameter.Editor[0].ToConfig(LazyMode.Instance), "),"));
+                        parameter.Editor.Editor.Visible = false;
                         count++;
                     }
                 }
@@ -306,6 +312,7 @@ namespace Ext.Net
 
                 Field editor = parameter.Editor.Editor;
                 editor.Visible = false;
+                editor.EnableViewState = false;
 
                 if (!this.Controls.Contains(editor))
                 {
@@ -365,7 +372,7 @@ namespace Ext.Net
         protected override bool LoadPostData(string postDataKey, NameValueCollection postCollection)
         {
             baseLoadPostData = base.LoadPostData(postDataKey, postCollection);
-            string val = postCollection[this.ClientID.ConcatWith("_Data")];
+            string val = postCollection[this.ConfigID.ConcatWith("_Data")];
 
             if (val.IsNotEmpty())
             {
@@ -602,7 +609,9 @@ namespace Ext.Net
             if (property.Editor.Count > 0)
             {
                 property.Editor[0].AutoRender = false;
+                property.Editor[0].Visible = true;
                 this.Set("customEditors[{0}]".FormatWith(JSON.Serialize(property.Name)), new JRawValue("new Ext.grid.GridEditor({0})".FormatWith(property.Editor[0].ToConfig(LazyMode.Instance))));
+                property.Editor[0].Visible = false;
             }
 
             this.Call("setProperty", property.Name, property.Mode == ParameterMode.Raw ? (object)new JRawValue(property.Value) : (object)property.Value, true);

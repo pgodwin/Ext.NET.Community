@@ -10,7 +10,7 @@ Ext.net.PageTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
         }
         
         if (this.doPreload(node)) {
-            if (typeof callback == "function") {
+            if (typeof callback === "function") {
                 callback();
             }
         } else {
@@ -43,7 +43,7 @@ Ext.net.PageTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
             Ext.net.DirectEvent.request(config);
 
         } else {
-            if (typeof callback == "function") {
+            if (typeof callback === "function") {
                 callback();
             }
         }
@@ -59,7 +59,7 @@ Ext.net.PageTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
         
         loader.fireEvent("loadexception", loader, a.node, response, result.errorMessage || response.statusText);
         
-        if (typeof a.callback == "function") {
+        if (typeof a.callback === "function") {
             a.callback(loader, a.node);
         }
     },
@@ -78,10 +78,12 @@ Ext.net.PageTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
     },
 
     getParams : function (node) {
-        var buf = {}, bp = this.baseParams;
+        var buf = {}, 
+            bp = this.baseParams,
+            key;
         
-        for (var key in bp) {
-            if (typeof bp[key] != "function") {
+        for (key in bp) {
+            if (typeof bp[key] !== "function") {
                 buf[key] = bp[key];
             }
         }
@@ -92,10 +94,13 @@ Ext.net.PageTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
 
     processResponse : function (response, data, node, callback) {
         try {
-            var o = data;
+            var o = data,
+                i = 0,
+                len;
+
             node.beginUpdate();
             
-            for (var i = 0, len = o.length; i < len; i++) {
+            for (i, len = o.length; i < len; i++) {
                 var n = this.createNode(o[i]);
 
                 if (n) {
@@ -105,7 +110,7 @@ Ext.net.PageTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
             
             node.endUpdate();
             
-            if (typeof callback == "function") {
+            if (typeof callback === "function") {
                 callback(this, node);
             }
         } catch (e) {

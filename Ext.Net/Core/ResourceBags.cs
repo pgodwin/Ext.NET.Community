@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -424,7 +424,18 @@ namespace Ext.Net
         [Description("")]
         public void RegisterClientScriptInclude(string resourceName)
         {
-            this.RegisterClientScriptInclude(this.GetType(), resourceName);
+            this.RegisterClientScriptInclude(this.GetType(), resourceName, false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="force"></param>
+        [Description("")]
+        public void RegisterClientScriptInclude(string resourceName, bool force)
+        {
+            this.RegisterClientScriptInclude(this.GetType(), resourceName, force);
         }
 
         /// <summary>
@@ -435,7 +446,19 @@ namespace Ext.Net
         [Description("")]
         public void RegisterClientScriptInclude(Type type, string resourceName)
         {
-            this.RegisterClientScriptInclude(resourceName, this.GetWebResourceUrl(type, resourceName));
+            this.RegisterClientScriptInclude(resourceName, this.GetWebResourceUrl(type, resourceName), false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="resourceName"></param>
+        /// <param name="force"></param>
+        [Description("")]
+        public void RegisterClientScriptInclude(Type type, string resourceName, bool force)
+        {
+            this.RegisterClientScriptInclude(resourceName, this.GetWebResourceUrl(type, resourceName), force);
         }
 
         /// <summary>
@@ -446,6 +469,18 @@ namespace Ext.Net
         [Description("")]
         public void RegisterClientScriptInclude(string key, string url)
         {
+            this.RegisterClientScriptInclude(key, url, false);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="url"></param>
+        /// <param name="force"></param>
+        [Description("")]
+        public void RegisterClientScriptInclude(string key, string url, bool force)
+        {
             if (!this.IsClientScriptIncludeRegistered(key))
             {
                 if (!X.IsAjaxRequest)
@@ -454,7 +489,7 @@ namespace Ext.Net
                 }
                 else
                 {
-                    this.RegisterClientScriptIncludeInternal(key, url);
+                    this.RegisterClientScriptIncludeInternal(key, url, force);
                 }
             }
         }
@@ -482,19 +517,34 @@ namespace Ext.Net
 
         internal void RegisterClientScriptIncludeInternal(string resourceName)
         {
+            this.RegisterClientScriptIncludeInternal(this.GetType(), resourceName, false);
+        }
+
+        internal void RegisterClientScriptIncludeInternal(string resourceName, bool force)
+        {
             this.RegisterClientScriptIncludeInternal(this.GetType(), resourceName);
         }
 
         internal void RegisterClientScriptIncludeInternal(Type type, string resourceName)
         {
-            this.RegisterClientScriptIncludeInternal(resourceName, this.GetWebResourceUrl(type, resourceName));
+            this.RegisterClientScriptIncludeInternal(resourceName, this.GetWebResourceUrl(type, resourceName), false);
+        }
+
+        internal void RegisterClientScriptIncludeInternal(Type type, string resourceName, bool force)
+        {
+            this.RegisterClientScriptIncludeInternal(resourceName, this.GetWebResourceUrl(type, resourceName), force);
         }
 
         internal void RegisterClientScriptIncludeInternal(string key, string url)
         {
+            this.RegisterClientScriptIncludeInternal(key, url, false);
+        }
+
+        internal void RegisterClientScriptIncludeInternal(string key, string url, bool force)
+        {
             if (!this.IsClientScriptIncludeInternalRegistered(key))
             {
-                this.clientScriptIncludeInternalBag.Add(key, this.ResolveUrl(url));
+                this.clientScriptIncludeInternalBag.Add(key, (force ? "_force_" : "") + this.ResolveUrl(url));
             }
         }
 
@@ -504,7 +554,7 @@ namespace Ext.Net
 
         private InsertOrderedDictionary<string, string> clientStyleBlockBag = new InsertOrderedDictionary<string, string>();
 
-        internal bool IsClientStyleBlockRegistered(string key)
+        public bool IsClientStyleBlockRegistered(string key)
         {
             return this.clientStyleBlockBag.ContainsKey(key);
         }
@@ -571,7 +621,12 @@ namespace Ext.Net
 
         private InsertOrderedDictionary<string, string> clientStyleIncludeBag = new InsertOrderedDictionary<string, string>();
 
-        internal bool IsClientStyleIncludeRegistered(string key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool IsClientStyleIncludeRegistered(string key)
         {
             return this.clientStyleIncludeBag.ContainsKey(key);
         }

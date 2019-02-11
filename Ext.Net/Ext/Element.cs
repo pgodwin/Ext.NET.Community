@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -686,7 +686,7 @@ namespace Ext.Net
         [Description("Appends an event handler to this element.")]
         public virtual Element AddListener(string eventName, string fn)
         {
-            this.Call("on", eventName.ToLower(), new JRawValue(TokenUtils.ParseAndNormalize(fn)));
+            this.Call("on", eventName.ToLower(), new JRawValue(TokenUtils.ParseAndNormalize(fn).Trim('"')));
             return this;
         }
 
@@ -719,7 +719,7 @@ namespace Ext.Net
         [Description("Appends an event handler to this element.")]
         public virtual Element AddListener(string eventName, string fn, string scope)
         {
-            this.Call("on", eventName.ToLower(), new JRawValue(TokenUtils.ParseAndNormalize(fn)), new JRawValue(scope));
+            this.Call("on", eventName.ToLower(), new JRawValue(TokenUtils.ParseAndNormalize(fn).Trim('"')), new JRawValue(scope));
             return this;
         }
 
@@ -754,7 +754,7 @@ namespace Ext.Net
         [Description("Appends an event handler to this element.")]
         public virtual Element AddListener(string eventName, string fn, string scope, HandlerConfig options)
         {
-            this.Call("on", eventName, new JRawValue(TokenUtils.ParseAndNormalize(fn)), new JRawValue(scope), new JRawValue(options.ToJsonString()));
+            this.Call("on", eventName, new JRawValue(TokenUtils.ParseAndNormalize(fn).Trim('"')), new JRawValue(scope), new JRawValue(options.ToJsonString()));
             return this;
         }
 
@@ -770,6 +770,113 @@ namespace Ext.Net
         {
             this.Call("on", eventName, fn, new JRawValue(scope), new JRawValue(options.ToJsonString()));
             return this;
+        }
+
+        /// <summary>
+        /// Appends an events handlers to this element.
+        /// </summary>
+        /// <param name="listeners">Listeners object</param>
+        /// <returns>This element</returns>
+        [Description("Appends an events handlers to this element.")]
+        public virtual Element On(ElementListeners listeners)
+        {
+            return this.AddListener(listeners);
+        }
+
+        /// <summary>
+        /// Appends an event handler to this element.
+        /// <param name="eventName">The type of event to handle</param>
+        /// <param name="fn">The handler function the event invokes.
+        /// This function is passed the following parameters:
+        ///    evt : EventObject
+        ///    The EventObject describing the event.
+        ///    el : Element
+        ///    The Element which was the target of the event. Note that this may be filtered by using the delegate option.
+        ///    o : Object
+        ///    The options object from the addListener call.
+        /// </param>
+        /// </summary>
+        [Description("Appends an event handler to this element.")]
+        public virtual Element On(string eventName, string fn)
+        {
+            return this.AddListener(eventName, fn);
+        }
+
+        /// <summary>
+        /// Appends an event handler to this element.
+        /// <param name="eventName">The type of event to handle</param>
+        /// <param name="fn">The handler function the event invoke</param>
+        /// </summary>
+        [Description("Appends an event handler to this element.")]
+        public virtual Element On(string eventName, JFunction fn)
+        {
+            return this.AddListener(eventName, fn);
+        }
+
+        /// <summary>
+        /// Appends an event handler to this element.
+        /// <param name="eventName">The type of event to handle</param>
+        /// <param name="fn">The handler function the event invokes.
+        /// This function is passed the following parameters:
+        ///    evt : EventObject
+        ///    The EventObject describing the event.
+        ///    el : Element
+        ///    The Element which was the target of the event. Note that this may be filtered by using the delegate option.
+        ///    o : Object
+        ///    The options object from the addListener call.
+        /// </param>
+        /// <param name="scope">The scope (this reference) in which the handler function is executed. If omitted, defaults to this Element..</param>
+        /// </summary>
+        [Description("Appends an event handler to this element.")]
+        public virtual Element On(string eventName, string fn, string scope)
+        {
+            return this.AddListener(eventName, fn, scope);
+        }
+
+        /// <summary>
+        /// Appends an event handler to this element.
+        /// <param name="eventName">The type of event to handle</param>
+        /// <param name="fn">The handler function the event invokes.</param>
+        /// <param name="scope">The scope (this reference) in which the handler function is executed. If omitted, defaults to this Element..</param>
+        /// </summary>
+        [Description("Appends an event handler to this element.")]
+        public virtual Element On(string eventName, JFunction fn, string scope)
+        {
+            return this.AddListener(eventName, fn, scope);
+        }
+
+        /// <summary>
+        /// Appends an event handler to this element.
+        /// <param name="eventName">The type of event to handle</param>
+        /// <param name="fn">The handler function the event invokes.
+        /// This function is passed the following parameters:
+        ///    evt : EventObject
+        ///    The EventObject describing the event.
+        ///    el : Element
+        ///    The Element which was the target of the event. Note that this may be filtered by using the delegate option.
+        ///    o : Object
+        ///    The options object from the addListener call.
+        /// </param>
+        /// <param name="scope">The scope (this reference) in which the handler function is executed. If omitted, defaults to this Element.</param>
+        /// <param name="options">An object containing handler configuration properties. </param>
+        /// </summary>
+        [Description("Appends an event handler to this element.")]
+        public virtual Element On(string eventName, string fn, string scope, HandlerConfig options)
+        {
+            return this.AddListener(eventName, fn, scope, options);
+        }
+
+        /// <summary>
+        /// Appends an event handler to this element.
+        /// <param name="eventName">The type of event to handle</param>
+        /// <param name="fn">The handler function the event invokes.</param>
+        /// <param name="scope">The scope (this reference) in which the handler function is executed. If omitted, defaults to this Element.</param>
+        /// <param name="options">An object containing handler configuration properties. </param>
+        /// </summary>
+        [Description("Appends an event handler to this element.")]
+        public virtual Element On(string eventName, JFunction fn, string scope, HandlerConfig options)
+        {
+            return this.AddListener(eventName, fn, scope, options);
         }
 
         /// <summary>

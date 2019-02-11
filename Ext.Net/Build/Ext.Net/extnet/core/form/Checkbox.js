@@ -11,7 +11,13 @@ Ext.form.Checkbox.prototype.onRender = Ext.form.Checkbox.prototype.onRender.crea
     }
     
     this.labelEl = this.wrap.child(".x-form-cb-label");
-    this.applyBoxLabelCss();    
+    this.applyBoxLabelCss();
+});
+
+Ext.form.Checkbox.prototype.initComponent = Ext.form.Checkbox.prototype.initComponent.createInterceptor(function () {
+    if (this.value) {
+        this.checked = this.value;
+    }
 });
 
 Ext.form.Checkbox.override({
@@ -62,5 +68,26 @@ Ext.form.Checkbox.override({
                 this.applyBoxLabelCss();
             }
         }
+    },
+    
+    setValue : function (v) {
+        var checked = this.checked,
+            inputVal = this.inputValue;
+            
+        this.checked = (v === true || v === "true" || v === "1" || v === 1 || (inputVal ? v === inputVal : String(v).toLowerCase() === "on"));
+        
+		if (this.rendered) {
+            this.el.dom.checked = this.checked;
+            this.el.dom.defaultChecked = this.checked;
+        }
+
+        if (checked !== this.checked) {
+            this.fireEvent("check", this, this.checked);
+
+            if (this.handler) {
+                this.handler.call(this.scope || this, this, this.checked);
+            }
+        }
+        return this;
     }
 });

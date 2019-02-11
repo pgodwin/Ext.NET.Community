@@ -171,7 +171,7 @@
                                             <BaseParams>
                                                 <ext:Parameter 
                                                     Name="SupplierID" 
-                                                    Value="#{GridPanel1}.getSelectionModel().hasSelection() ? #{GridPanel1}.getSelectionModel().getSelected().id : -1"
+                                                    Value="Ext.getCmp('#{GridPanel1}') && #{GridPanel1}.getSelectionModel().hasSelection() ? #{GridPanel1}.getSelectionModel().getSelected().id : -1"
                                                     Mode="Raw" 
                                                     />
                                             </BaseParams>

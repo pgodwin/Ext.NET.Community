@@ -1,6 +1,6 @@
 ﻿Product      : Ext.NET Community
-Version      : 1.0.0 RC1
-Last Updated : 2010-11-02
+Version      : 1.0.0 RC2
+Last Updated : 2011-05-31
 
 
 --------------------------------------------------------------------------
@@ -10,9 +10,10 @@ Last Updated : 2010-11-02
 I.    ADD TO VISUAL STUDIO TOOLBOX INSTRUCTIONS
 II.   Version 1.0.0 BREAKING CHANGES
 III.  SAMPLE WEB.CONFIG
-IV.   CREDITS
-	
-	
+IV.   <extnet> WEB.CONFIG GLOBAL CONFIGURATION PROPERTIES
+V.    CREDITS
+
+
 -------------------------------------------------------------------------
    I. ADD TO VISUAL STUDIO TOOLBOX INSTRUCTIONS
 --------------------------------------------------------------------------
@@ -70,7 +71,7 @@ See CHANGELOG.txt
 		<section name="extnet" type="Ext.Net.GlobalConfig" requirePermission="false" />
 	</configSections>
   
-	<extnet />
+	<extnet scriptMode="Release" /> <!-- See Property Options in README.txt -->
   
 	<!-- 
 		The following system.web section is only requited for running ASP.NET AJAX under Internet
@@ -111,7 +112,9 @@ See CHANGELOG.txt
 </configuration>
 
 
-EXT.NET GLOBAL CONFIGURATION PROPERTIES
+--------------------------------------------------------------------------
+   IV. <extnet> WEB.CONFIG GLOBAL CONFIGURATION PROPERTIES
+--------------------------------------------------------------------------
   
 directEventUrl : string
 	The url to request for all DirectEvents.
@@ -226,7 +229,7 @@ quickTips : boolean
     
     See \Build\Ext.Net\Licenses\Newtonsoft.Json.txt
     
-3.  Ext JS - JavaScript Library provided by Sencha, Inc.
+3.  Ext JS JavaScript Library provided by Sencha, Inc.
     http://www.sencha.com/products/js/   
     
     See \Build\Ext.Net\Licenses\ExtJS.txt
@@ -236,9 +239,8 @@ quickTips : boolean
                                
 --------------------------------------------------------------------------
 	
-          Copyright 2010 Ext.NET, Inc., All rights reserved.
+          Copyright 2011 Ext.NET, Inc., All rights reserved.
 
                            Ext.NET, Inc.
-                         +1(888)775-5888
                          support@ext.net
                            www.ext.net

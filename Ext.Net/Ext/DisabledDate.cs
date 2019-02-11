@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -30,6 +30,7 @@ using System.IO;
 using Ext.Net.Utilities;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Ext.Net
 {
@@ -100,11 +101,11 @@ namespace Ext.Net
 		/// 
 		/// </summary>
 		[Description("")]
-        public string ToString(string format)
+        public string ToString(string format, CultureInfo locale)
         {
             if (this.regex.IsNotEmpty())
             {
-                return this.regex;
+                return JSON.Serialize(this.regex);
             }
 
             if (this.Date == DateTime.MinValue)
@@ -115,7 +116,7 @@ namespace Ext.Net
             //clear time
             this.Date = new DateTime(this.Date.Year, this.Date.Month, this.Date.Day, 0,0,0,0);
 
-            return this.Date.ToString(format);
+            return Ext.Net.Utilities.DateTimeUtils.DateNetToJs(this.Date);
         }
     }
 
@@ -125,19 +126,11 @@ namespace Ext.Net
     [Description("")]
     public partial class DisabledDateCollection : StateManagedCollection<DisabledDate>
     {
-        private string format;
-
-        internal string Format
-        {
-            get { return this.format?? "d"; }
-            set { this.format = value; }
-        }
-
 		/// <summary>
 		/// 
 		/// </summary>
 		[Description("")]
-        public override string ToString()
+        public virtual string ToString(string format, CultureInfo locale)
         {
             if (this.Count == 0)
             {
@@ -151,7 +144,7 @@ namespace Ext.Net
 
             foreach (DisabledDate disabledDate in this)
             {
-                writer.WriteValue(disabledDate.ToString(this.Format));
+                writer.WriteRawValue(disabledDate.ToString(format, locale));
             }
 
             writer.WriteEndArray();

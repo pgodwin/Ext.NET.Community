@@ -6,3 +6,13 @@ Ext.tree.TreeNodeUI.prototype.renderElements = Ext.tree.TreeNodeUI.prototype.ren
         this.hide();
     }
 });
+
+Ext.tree.TreeNodeUI.override({
+    collapse : function () {
+        this.updateExpandIcon();
+
+        if (this.rendered) {
+            this.ctNode.style.display = "none";
+        }
+    }
+});

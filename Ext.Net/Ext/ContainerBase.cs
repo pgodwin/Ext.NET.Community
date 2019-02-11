@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -189,20 +189,34 @@ namespace Ext.Net
         /// The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel').
         /// </summary>
         [Meta]
-        [ConfigOption]
         [Category("5. Container")]
-        [DefaultValue("panel")]
+        [DefaultValue("Panel")]
+        [TypeConverter(typeof(DefaultTypeConverter))]
         [NotifyParentProperty(true)]    
         [Description("The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel').")]
         public virtual string DefaultType
         {
             get
             {
-                return (string)this.ViewState["DefaultType"] ?? "panel";
+                return (string)this.ViewState["DefaultType"] ?? "Panel";
             }
             set
             {
                 this.ViewState["DefaultType"] = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ConfigOption("defaultType")]
+        [DefaultValue("panel")]
+        [Description("")]
+        protected virtual string DefaultTypeProxy
+        {
+            get
+            {
+                return DefaultTypeConverter.GetXType(this.DefaultType);
             }
         }
 
@@ -792,9 +806,14 @@ namespace Ext.Net
             return layout;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected internal virtual Layout GetLayoutFromContent()
         {
             Layout layout = null;
+
             if (this is IContent)
             {
                 foreach (Control control in ((IContent)this).ContentControls)
@@ -917,10 +936,10 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected override void Render(HtmlTextWriter writer)
         {
             if (!this.DesignMode && this.Page != null && !RequestManager.IsAjaxRequest && this.LayoutControl != null)

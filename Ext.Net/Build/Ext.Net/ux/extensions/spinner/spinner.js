@@ -25,7 +25,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         Ext.ux.Spinner.superclass.constructor.call(this, config);                
     },
 
-    init: function (field) {
+    init : function (field) {
         this.field = field;
 
         field.afterMethod('onRender', this.doRender, this);
@@ -37,7 +37,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         field.beforeMethod('onDestroy', this.doDestroy, this);
     },
 
-    doRender: function (ct, position) {
+    doRender : function (ct, position) {
         var el = this.el = this.field.getEl();
         var f = this.field;
 
@@ -80,7 +80,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         this.initSpinner();
     },
 
-    doAfterRender: function () {
+    doAfterRender : function () {
         var y;
         if (Ext.isIE && this.el.getY() != (y = this.trigger.getY())) {
             this.el.position();
@@ -88,14 +88,14 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         }
     },
 
-    doEnable: function () {
+    doEnable : function () {
         this.disabled = false;
         if (this.wrap) {
             this.wrap.removeClass(this.field.disabledClass);
         }
     },
 
-    doDisable: function () {
+    doDisable : function () {
         this.disabled = true;
         if (this.wrap) {            
             this.wrap.addClass(this.field.disabledClass);
@@ -103,14 +103,14 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         }
     },
 
-    doResize: function (w, h) {
+    doResize : function (w, h) {
         if (typeof w == 'number') {
             this.el.setWidth(w - this.trigger.getWidth());
         }
         this.wrap.setWidth(this.el.getWidth() + this.trigger.getWidth());
     },
 
-    doFocus: function () {
+    doFocus : function () {
         if (!this.mimicing) {
             this.wrap.addClass('x-trigger-wrap-focus');
             this.mimicing = true;
@@ -122,21 +122,24 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     // private
-    checkTab: function (e) {
-        if (e.getKey() == e.TAB) {
+    checkTab : function (e) {
+        if (e.getKey() == e.TAB && !this.field.inEditor) {
             this.triggerBlur();
+        } else {
+            Ext.get(Ext.isIE ? document.body : document).un("mousedown", this.mimicBlur, this);
+            this.el.un("keydown", this.checkTab, this);
         }
     },
 
     // private
-    mimicBlur: function (e) {
+    mimicBlur : function (e) {
         if (!this.wrap.contains(e.target) && this.field.validateBlur(e)) {
             this.triggerBlur();
         }
     },
 
     // private
-    triggerBlur: function () {
+    triggerBlur : function () {
         this.mimicing = false;
         Ext.get(Ext.isIE ? document.body : document).un("mousedown", this.mimicBlur, this);
         this.el.un("keydown", this.checkTab, this);
@@ -145,12 +148,12 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         this.field.onBlur.call(this.field);
     },
 
-    initTrigger: function () {
+    initTrigger : function () {
         this.trigger.addClassOnOver('x-form-trigger-over');
         this.trigger.addClassOnClick('x-form-trigger-click');
     },
 
-    initSpinner: function () {
+    initSpinner : function () {
         this.field.addEvents({
             'spin': true,
             'spinup': true,
@@ -207,7 +210,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         this.dd.onDrag = this.onDrag.createDelegate(this);
     },
 
-    onMouseOver: function () {
+    onMouseOver : function () {
         if (this.disabled) {
             return;
         }
@@ -217,12 +220,12 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onMouseOut: function () {
+    onMouseOut : function () {
         this.trigger.removeClass(this.tmpHoverClass);
     },
 
     //private
-    onMouseMove: function () {
+    onMouseMove : function () {
         if (this.disabled) {
             return;
         }
@@ -233,7 +236,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onMouseDown: function () {
+    onMouseDown : function () {
         if (this.disabled) {
             return;
         }
@@ -243,12 +246,12 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onMouseUp: function () {
+    onMouseUp : function () {
         this.trigger.removeClass(this.tmpClickClass);
     },
 
     //private
-    onTriggerClick: function () {
+    onTriggerClick : function () {
         if (this.disabled || ( this.el.dom.readOnly && this.mimicReadOnly )) {
             return;
         }
@@ -258,7 +261,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    getMiddle: function () {
+    getMiddle : function () {
         var t = this.trigger.getTop();
         var h = this.trigger.getHeight();
         var middle = t + (h / 2);
@@ -275,7 +278,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         return true;
     },
 
-    handleMouseWheel: function (e) {
+    handleMouseWheel : function (e) {
         //disable scrolling when not focused
         if (this.wrap.hasClass('x-trigger-wrap-focus') == false) {
             return;
@@ -294,18 +297,18 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    startDrag: function () {
+    startDrag : function () {
         this.proxy.show();
         this._previousY = Ext.fly(this.dd.getDragEl()).getTop();
     },
 
     //private
-    endDrag: function () {
+    endDrag : function () {
         this.proxy.hide();
     },
 
     //private
-    onDrag: function () {
+    onDrag : function () {
         if (this.disabled) {
             return;
         }
@@ -326,7 +329,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onSpinUp: function () {
+    onSpinUp : function () {
         if (this.isSpinnable() == false) {
             return;
         }
@@ -343,7 +346,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onSpinDown: function () {
+    onSpinDown : function () {
         if (this.isSpinnable() == false) {
             return;
         }
@@ -360,7 +363,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onSpinUpAlternate: function () {
+    onSpinUpAlternate : function () {
         if (this.isSpinnable() == false) {
             return;
         }
@@ -370,7 +373,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     //private
-    onSpinDownAlternate: function () {
+    onSpinDownAlternate : function () {
         if (this.isSpinnable() == false) {
             return;
         }
@@ -379,18 +382,18 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         this.field.fireEvent("spindown", this);
     },
 
-    spin: function (down, alternate) {
+    spin : function (down, alternate) {
         var v = parseFloat(this.field.getValue());
         var incr = (alternate == true) ? this.alternateIncrementValue : this.incrementValue;
         (down == true) ? v -= incr : v += incr;
 
         v = (isNaN(v)) ? this.defaultValue : v;
         v = this.fixBoundries(v);
-        this.field.setRawValue(v);
+        this.field.setValue(v);
         this.field.removeClass(this.field.emptyClass);
     },
 
-    fixBoundries: function (value) {
+    fixBoundries : function (value) {
         var v = value;
 
         if (this.field.minValue != undefined && v < this.field.minValue) {
@@ -404,7 +407,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
     },
 
     // private
-    fixPrecision: function (value) {
+    fixPrecision : function (value) {
         var nan = isNaN(value);
         if (!this.field.allowDecimals || this.field.decimalPrecision == -1 || nan || !value) {
             return nan ? '' : value;
@@ -412,7 +415,7 @@ Ext.ux.Spinner = Ext.extend(Ext.util.Observable, {
         return parseFloat(parseFloat(value).toFixed(this.field.decimalPrecision));
     },
 
-    doDestroy: function () {
+    doDestroy : function () {
         if (this.trigger) {
             this.trigger.remove();
         }
@@ -456,7 +459,7 @@ Ext.ux.TextSpinner = Ext.extend(Ext.ux.Spinner, {
          Ext.ux.TextSpinner.superclass.constructor.call(this, config); 
     },
     
-    spin: function (down, alternate) {
+    spin : function (down, alternate) {
         var v = this.value || 0;
         var incr = (alternate == true) ? this.alternateIncrementValue : this.incrementValue;
         (down == true) ? v -= incr : v += incr;
@@ -467,7 +470,7 @@ Ext.ux.TextSpinner = Ext.extend(Ext.ux.Spinner, {
         this.field.spinnerValue = v;
     },
     
-    fixBoundries: function (value) {
+    fixBoundries : function (value) {
         var v = value;
 
         if (this.minValue != undefined && v < this.minValue) {
@@ -480,13 +483,13 @@ Ext.ux.TextSpinner = Ext.extend(Ext.ux.Spinner, {
         return this.fixPrecision(v);
     },
     
-    fixPrecision: function (value) {
+    fixPrecision : function (value) {
         var nan = isNaN(value);
         
         return nan ? '' : value;
     },
     
-    doRender: function () {
+    doRender : function () {
         Ext.ux.TextSpinner.superclass.doRender.apply(this, arguments);        
         
         this.relayEvents(this.field, ["spin", "spinup", "spindown"]);
@@ -544,16 +547,26 @@ Ext.ux.form.SpinnerField = Ext.extend(Ext.form.NumberField, {
 	constructor : function (config) {
 		var spinnerConfig = Ext.copyTo({}, config, 'incrementValue,alternateIncrementValue,accelerate,defaultValue,triggerClass,splitterClass');
 
-		var spl = this.spinner = new Ext.ux.Spinner(spinnerConfig);
+		this.spinner = new Ext.ux.Spinner(spinnerConfig);
 
-		var plugins = config.plugins
-			? (Ext.isArray(config.plugins)
-				? config.plugins.push(spl)
-				: [config.plugins, spl])
-			: spl;
-
-		Ext.ux.form.SpinnerField.superclass.constructor.call(this, Ext.apply(config, {plugins: plugins}));
+		Ext.ux.form.SpinnerField.superclass.constructor.call(this, config);
 	},
+	
+	initComponent : function(){
+        Ext.ux.form.SpinnerField.superclass.initComponent.call(this);
+        
+        if(this.plugins){
+            if(Ext.isArray(this.plugins)){
+                this.plugins.push(this.spinner)
+            }
+            else{
+                this.plugins = [this.plugins, this.spinner];
+            }
+        }
+        else{
+            this.plugins = this.spinner;
+        }        
+    },
 
     // private
     getResizeEl : function () {

@@ -57,9 +57,9 @@ Ext.grid.CheckColumn.prototype = {
             
             if (this.singleSelect) {
                 this.grid.store.each(function (record, i) {
-                    var value = (i == rIndex);
+                    var value = (i === rIndex);
 
-                    if (value != record.get(dataIndex)) {
+                    if (value !== record.get(dataIndex)) {
                         record.set(dataIndex, value);
                     }
                 });
@@ -77,7 +77,7 @@ Ext.grid.CheckColumn.prototype = {
     },
     
     destroy : function () {
-        if(this.grid){
+        if (this.grid) {
             this.grid.getView().mainBody.un("mousedown", this.onMouseDown, this);
         }
     },

@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -191,6 +191,15 @@ namespace Ext.Net
             public virtual RecordField.Builder IsComplex(bool isComplex)
             {
                 this.ToComponent().IsComplex = isComplex;
+                return this as RecordField.Builder;
+            }
+             
+ 			/// <summary>
+			/// (Optional) Use when converting received data into a Number type (either int or float). If the value cannot be parsed, null will be used if useNull is true, otherwise the value will be 0. Defaults to false
+			/// </summary>
+            public virtual RecordField.Builder UseNull(bool useNull)
+            {
+                this.ToComponent().UseNull = useNull;
                 return this as RecordField.Builder;
             }
             

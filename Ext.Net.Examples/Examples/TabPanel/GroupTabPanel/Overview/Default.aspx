@@ -309,13 +309,13 @@
                             <ext:ToolbarFill runat="server" />
                             <ext:Button ID="Button1" runat="server" Text="Set Custom Css Class" Icon="BulletBlue">
                                 <Listeners>
-                                    <Click Handler="GroupTabPanel1.addClass('custom'); el.disable(); Button2.enable();" />
+                                    <Click Handler="GroupTabPanel1.addClass('custom'); this.disable(); Button2.enable();" />
                                 </Listeners>
                             </ext:Button>
                             
                             <ext:Button ID="Button2" runat="server" Text="Remove Customer Css Class" Disabled="true" Icon="BulletBlack">
                                 <Listeners>
-                                    <Click Handler="GroupTabPanel1.removeClass('custom'); el.disable(); Button1.enable();" />
+                                    <Click Handler="GroupTabPanel1.removeClass('custom'); this.disable(); Button1.enable();" />
                                 </Listeners>
                             </ext:Button>
                         </Items>

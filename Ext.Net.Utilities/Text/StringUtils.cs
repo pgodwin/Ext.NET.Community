@@ -20,7 +20,6 @@ using System.Web.UI;
 
 namespace Ext.Net.Utilities
 {
-
     public static class StringUtils
     {
         /// <summary>
@@ -1026,6 +1025,69 @@ namespace Ext.Net.Utilities
             decoder.GetChars(bytes, 0, bytes.Length, chars, 0);
 
             return new String(chars);
+        }
+
+        /// <summary>
+        /// Base64 string encoder
+        /// </summary>
+        /// <param name="text">The text string to encode</param>
+        /// <returns>The encoded string</returns>
+        public static string Base64Encode(this string text)
+        {
+            byte[] bytes = new byte[text.Length];
+            bytes = Encoding.UTF8.GetBytes(text);
+            
+            return Convert.ToBase64String(bytes);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="regex"></param>
+        /// <returns></returns>
+        public static string FormatRegexPattern(this string regex)
+        {
+            if (!regex.StartsWith("/", StringComparison.InvariantCulture))
+            {
+                regex = "/{0}".FormatWith(regex);
+            }
+
+            if (!regex.EndsWith("/", StringComparison.InvariantCulture))
+            {
+                regex = "{0}/".FormatWith(regex);
+            }
+
+            return regex;
+        }
+
+        private static readonly Random random = new Random();
+
+        /// <summary>
+        /// Generate a random string of character at a certain length
+        /// </summary>
+        /// <param name="chars">The Characters to use in the random string</param>
+        /// <param name="length">The length of the random string</param>
+        /// <returns>A string of random characters</returns>
+        public static string Randomize(this string chars, int length)
+        {
+            char[] buf = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                buf[i] = chars[StringUtils.random.Next(chars.Length)];
+            }
+
+            return new string(buf);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chars"></param>
+        /// <returns></returns>
+        public static string Randomize(this string chars)
+        {
+            return chars.Randomize(chars.Length);
         }
     }
 }

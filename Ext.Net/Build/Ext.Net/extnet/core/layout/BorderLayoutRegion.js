@@ -14,6 +14,10 @@ Ext.layout.BorderLayout.SplitRegion.prototype.getCollapsedEl = Ext.layout.Border
     }
 });
 
+Ext.layout.BorderLayout.Region.prototype.destroy = Ext.layout.BorderLayout.Region.prototype.destroy.createInterceptor(function () {
+    this.clearMonitor();
+});
+
 Ext.layout.BorderLayout.SplitRegion.override({
     expandableSplitTip : "Double click to show."
 });

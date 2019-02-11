@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Security.Permissions;
 using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Serialization;
 
@@ -103,10 +104,10 @@ namespace Ext.Net
         private string dynamicID;
         private bool isDynamicIDSet;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected string DynamicID
         {
             get
@@ -186,16 +187,8 @@ namespace Ext.Net
                 {
                     return this.AddNamespaceToID(this.ItemID);
                 }
-                
-                switch (this.IDMode)
-                {
-                    case IDMode.Static:
-                        return this.AddNamespaceToID(this.ID);
-                    case IDMode.Explicit:
-                        return this.AddNamespaceToID(this.IsGeneratedID ? this.BaseClientID : this.ID);
-                    default:
-                        return this.AddNamespaceToID(this.BaseClientID);
-                }
+
+                return this.AddNamespaceToID(this.ConfigID);
             }
         }
 
@@ -215,6 +208,31 @@ namespace Ext.Net
                         return this.ID;
                     case IDMode.Explicit:
                         return this.IsGeneratedID ? this.BaseClientID : this.ID;
+                    case IDMode.Predictable:
+                        Control parent = this.NamingContainer;
+
+                        return parent != null ? string.Format("{0}_{1}", parent.ID, this.ID) : this.ID;
+                    case IDMode.Parent:
+                        string id2 = "";
+
+                        Control nc = this.NamingContainer;
+
+                        if (nc != null)
+                        {
+                            Control nc_parent = nc.Parent;
+
+                            if (nc_parent != null)
+                            {
+                                Control nc_parent_parent = nc_parent.Parent;
+
+                                bool isCmp = nc_parent is Component;
+                                string parentID = isCmp ? (nc_parent as Component).ConfigID : nc_parent.ID;
+
+                                id2 = (nc_parent_parent != null && nc_parent_parent is IContent) ? (nc_parent_parent as Component).ConfigID : parentID;
+                            }
+                        }
+
+                        return !string.IsNullOrEmpty(id2) ? string.Format("{0}_{1}", id2, this.ID) : this.ID;
                     default:
                         return this.BaseClientID;
                 }
@@ -246,7 +264,7 @@ namespace Ext.Net
         {
             get
             {
-                if (!this.IsIdRequired && (this.IDMode == IDMode.Ignore || ((this.IDMode == IDMode.Explicit || this.IDMode == IDMode.ExplicitClientID) && this.IsGeneratedID)))
+                if (!this.IsIdRequired && (this.IDMode == IDMode.Ignore || ((this.IDMode == IDMode.Explicit || this.IDMode == IDMode.Client) && this.IsGeneratedID)))
                 {
                     return "";
                 }
@@ -290,7 +308,7 @@ namespace Ext.Net
                 {
                     mode = (IDMode)obj;
                 }
-                else
+                else if (!this.StopIDModeInheritance)
                 {
                     XControl control = this.ParentWebControl;
 
@@ -310,6 +328,22 @@ namespace Ext.Net
             set
             {
                 this.ViewState["IDMode"] = value;
+            }
+        }
+
+        private bool stopIDModeInheritance;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool StopIDModeInheritance
+        {
+            get
+            {
+                return this.stopIDModeInheritance;
+            }
+            set
+            {
+                this.stopIDModeInheritance = value;
             }
         }
 
@@ -355,6 +389,11 @@ namespace Ext.Net
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parseDot"></param>
+        /// <returns></returns>
         protected virtual string GetNamespace(bool parseDot)
         {
             object obj = this.ViewState["Namespace"];
@@ -372,7 +411,7 @@ namespace Ext.Net
                     string parentNS;
                     if (control != null)
                     {
-                        parentNS = control.ClientNamespace;                       
+                        parentNS = control.ClientNamespace;
                     }
                     else
                     {
@@ -426,9 +465,15 @@ namespace Ext.Net
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         protected virtual string AddNamespaceToID(string id)
         {
             string ns = this.ClientNamespace;
+
             if (ns.IsNotEmpty())
             {
                 return ns + "." + id;
@@ -491,7 +536,7 @@ namespace Ext.Net
         }
 
         private bool autoDataBind;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -510,10 +555,10 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected internal virtual string ClientInitID
         {
             get
@@ -522,12 +567,12 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
+        /// <summary>
+        /// 
+        /// </summary>
         [XmlIgnore]
         [JsonIgnore]
-		[Description("")]
+        [Description("")]
         public virtual ConfigOptionsCollection ConfigOptions
         {
             get
@@ -565,7 +610,7 @@ namespace Ext.Net
         /// <param name="config"></param>
         /// <returns></returns>
         [Description("")]
-        public T Apply<T>(IApply config) where T : IComponent
+        public T Apply<T>(object config) where T : IComponent
         {
             return (T)this.Apply(config);
         }
@@ -576,7 +621,7 @@ namespace Ext.Net
         /// <param name="config"></param>
         /// <returns></returns>
         [Description("")]
-        public object Apply(IApply config)
+        public object Apply(object config)
         {
             return ObjectUtils.Apply(this, config);
         }

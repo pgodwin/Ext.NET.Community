@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -384,7 +384,7 @@ namespace Ext.Net
         }
 
 		/// <summary>
-		/// 
+		/// Get css resources
 		/// </summary>
 		[Description("")]
         public List<ClientStyleItem> GetStyles()
@@ -413,7 +413,7 @@ namespace Ext.Net
         }
 
 		/// <summary>
-		/// 
+		/// Get script resources
 		/// </summary>
 		[Description("")]
         public List<ClientScriptItem> GetScripts()
@@ -434,6 +434,24 @@ namespace Ext.Net
 
                 return this.proxyScripts;
             }
+        }
+
+        /// <summary>
+        /// Get generated and added javascript methods calling
+        /// </summary>
+        /// <returns></returns>
+        public string GetGeneratedScripts()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            foreach (KeyValuePair<long, string> proxyScript in this.ProxyScripts)
+            {
+                if (proxyScript.Value.IsNotEmpty())
+                {
+                    sb.Append(proxyScript.Value);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

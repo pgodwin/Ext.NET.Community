@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -35,6 +35,7 @@ using System.Web.UI.WebControls;
 
 using Ext.Net.Utilities;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace Ext.Net
 {
@@ -236,19 +237,29 @@ namespace Ext.Net
             }
             set
             {
+                if (this.SafeResourceManager == null)
+                {
+                    this.Init += delegate
+                    {
+                        this.Value = this.ViewState["Value"];
+                    };
+                    this.ViewState["Value"] = value;
+                    return;
+                }
+                
                 DateTime obj = (DateTime)this.EmptyValue;
 
                 if (value is string)
                 {
                     try
                     {
-                        obj = DateTime.ParseExact((string)value, this.Format, System.Threading.Thread.CurrentThread.CurrentCulture);
+                        obj = DateTime.ParseExact((string)value, this.Format, this.ResourceManager.CurrentLocale);
                     }
                     catch
                     {
                         try
                         {
-                            obj = DateTime.Parse((string)value, System.Threading.Thread.CurrentThread.CurrentCulture);
+                            obj = DateTime.Parse((string)value, this.ResourceManager.CurrentLocale);
                         }
                         catch { }
                     }
@@ -444,7 +455,7 @@ namespace Ext.Net
                 {
                     try
                     {
-                        this.SelectedDate = DateTime.Parse(init.ToString(), System.Threading.Thread.CurrentThread.CurrentCulture.DateTimeFormat);
+                        this.SelectedDate = DateTime.Parse(init.ToString(), this.ResourceManager.CurrentLocale.DateTimeFormat);
                     }
                     catch (FormatException)
                     {
@@ -507,9 +518,7 @@ namespace Ext.Net
         {
             get
             {
-                this.DisabledDates.Format = this.Format.IsEmpty() ? "yyyy-MM-dd\\Thh:mm:ss" : this.Format;
-
-                return this.DisabledDates.ToString();
+                return this.DisabledDates.ToString(this.Format.IsEmpty() ? "yyyy-MM-dd\\Thh:mm:ss" : this.Format, this.HasResourceManager ? this.ResourceManager.CurrentLocale : CultureInfo.InvariantCulture);
             }
         }
 
@@ -629,7 +638,7 @@ namespace Ext.Net
         {
             get
             {
-                return DateTimeUtils.ConvertNetToPHP(this.Format);
+                return DateTimeUtils.ConvertNetToPHP(this.Format, this.ResourceManager.CurrentLocale);
             }
         }
 
@@ -1063,14 +1072,14 @@ namespace Ext.Net
         {
             this.HasLoadPostData = true;
 
-            string val = postCollection[this.ClientID.ConcatWith("_Input")];
+            string val = postCollection[this.ConfigID.ConcatWith("_Input")];
 
             if (val.IsNotEmpty())
             {
                 try
                 {
                     this.SuspendScripting();
-                    this.SelectedDate = DateTime.ParseExact(val, "yyyy\\-MM\\-dd\\THH\\:mm\\:ss", System.Threading.Thread.CurrentThread.CurrentCulture);
+                    this.SelectedDate = DateTime.ParseExact(val, "yyyy\\-MM\\-dd\\THH\\:mm\\:ss", this.ResourceManager.CurrentLocale);
                 }
                 catch
                 {
@@ -1149,7 +1158,7 @@ namespace Ext.Net
         [Description("Replaces any existing disabled dates with new values and refreshes the DatePicker.")]
         public void UpdateDisabledDates()
         {
-            this.Call("setDisabledDates", new JRawValue(this.DisabledDates.ToString()));
+            this.Call("setDisabledDates", new JRawValue(this.DisabledDates.ToString(this.Format, this.HasResourceManager ? this.ResourceManager.CurrentLocale : CultureInfo.InvariantCulture)));
         }
 
         /// <summary>

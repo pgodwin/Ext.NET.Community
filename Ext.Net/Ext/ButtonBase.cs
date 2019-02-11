@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -235,7 +235,7 @@ namespace Ext.Net
         {
             this.HasLoadPostData = true;
 
-            string val = postCollection[this.ClientID.ConcatWith("_Pressed")];
+            string val = postCollection[this.ConfigID.ConcatWith("_Pressed")];
 
             if (val.IsNotEmpty())
             {
@@ -1175,6 +1175,62 @@ namespace Ext.Net
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [Meta]
+        [ConfigOption(JsonMode.Ignore)]
+        [Category("5. Button")]
+        [DefaultValue("")]
+        [DirectEventUpdate(GenerateMode = AutoGeneratingScript.Simple)]
+        [Description("")]
+        public virtual string NavigateUrl
+        {
+            get
+            {
+                return (string)this.ViewState["NavigateUrl"] ?? "";
+            }
+            set
+            {
+                this.ViewState["NavigateUrl"] = value;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ConfigOption("navigateUrl")]
+        [DefaultValue("")]
+        [Description("")]
+        protected virtual string NavigateUrlProxy
+        {
+            get
+            {
+                return this.ResolveUrlLink(this.NavigateUrl);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Meta]
+        [ConfigOption]
+        [TypeConverter(typeof(TargetConverter))]
+        [Category("5. Hyperlink")]
+        [DefaultValue("")]
+        [DirectEventUpdate(MethodName = "SetTarget")]
+        [Description("")]
+        public virtual string Target
+        {
+            get
+            {
+                return (string)this.ViewState["Target"] ?? "";
+            }
+            set
+            {
+                this.ViewState["Target"] = value;
+            }
+        }
 
         /*  Public Methods
             -----------------------------------------------------------------------------------------------*/
@@ -1249,6 +1305,15 @@ namespace Ext.Net
             {
                 this.SetIconClass("");
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
+        protected virtual void SetTarget(string target)
+        {
+            this.Call("setTarget", target);
         }
 
         /// <summary>

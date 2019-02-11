@@ -2690,6 +2690,34 @@
             <Attribute Type="Description" RawValue="Gets or Sets the Controls ValidationGroup" />
           </Attributes>
         </ConfigOption>
+        <ConfigOption Name="NavigateUrl" Type="string" DefaultValue="&quot;&quot;">
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="JsonMode.Ignore" />
+            <Attribute Type="Category" RawValue="&quot;5. Button&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="DirectEventUpdate" RawValue="GenerateMode = AutoGeneratingScript.Simple" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="NavigateUrlProxy" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;navigateUrl&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="Target" Type="string" DefaultValue="&quot;&quot;">
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="TypeConverter" RawValue="typeof(TargetConverter)" />
+            <Attribute Type="Category" RawValue="&quot;5. Hyperlink&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetTarget&quot;" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
       </ConfigOptions>
       <Methods>
         <Method Name="Focus" Modifier="Override">
@@ -2888,15 +2916,21 @@
         <Attribute Type="Description" RawValue="Container for a group of buttons." />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="DefaultType" Modifier="Override" Type="string" DefaultValue="&quot;button&quot;">
+        <ConfigOption Name="DefaultType" Modifier="Override" Type="string" DefaultValue="&quot;Button&quot;">
           <Summary><![CDATA[The default type of content Container represented by this object as registered in Ext.ComponentMgr. Defaults to 'button' in ButtonGroup]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;5. Container&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;button&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;Button&quot;" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The default type of content Container represented by this object as registered in Ext.ComponentMgr. Defaults to 'button' in ButtonGroup" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Modifier="Override" Access="Protected" Type="string" DefaultValue="&quot;button&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;button&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Frame" Modifier="Override" Type="bool" DefaultValue="true">
@@ -4186,6 +4220,16 @@
             <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
+        <ConfigOption Name="CellId" Type="string" DefaultValue="&quot;&quot;">
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;6. TableLayout&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
       </ConfigOptions>
       <Methods />
     </Class>
@@ -4478,15 +4522,14 @@
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Checked" Type="bool" DefaultValue="false">
-          <Summary><![CDATA[True if the the checkbox should render already checked (defaults to false).]]></Summary>
+          <Summary><![CDATA[True if the checkbox should render already checked (defaults to false).]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetValue&quot;" />
             <Attribute Type="DefaultValue" RawValue="false" />
             <Attribute Type="Category" RawValue="&quot;6. Checkbox&quot;" />
             <Attribute Type="Bindable" RawValue="true, BindingDirection.TwoWay" />
-            <Attribute Type="Description" RawValue="True if the the checkbox should render already checked (defaults to false)." />
+            <Attribute Type="Description" RawValue="True if the checkbox should render already checked (defaults to false)." />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="CheckedCls" Type="string" DefaultValue="&quot;x-form-check-checked&quot;">
@@ -4607,15 +4650,22 @@
         <Attribute Type="Description" RawValue="A grouping container for Ext.form.Checkbox controls." />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="DefaultType" Type="string" DefaultValue="&quot;checkbox&quot;">
+        <ConfigOption Name="DefaultType" Type="string" DefaultValue="&quot;Checkbox&quot;">
           <Summary><![CDATA[The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'checkbox').]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;5. Container&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;checkbox&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;Checkbox&quot;" />
+            <Attribute Type="TypeConverter" RawValue="typeof(DefaultTypeConverter)" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'checkbox')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Access="Protected" Type="string" DefaultValue="&quot;checkbox&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;checkbox&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Listeners" Type="CheckboxGroupListeners">
@@ -6271,6 +6321,9 @@
         <ConfigOption Name="ColumnMoved" Type="ComponentListener">
           <Summary><![CDATA[Fires when a column is moved.]]></Summary>
           <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(ColumnModel), &quot;this&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;oldIndex&quot;, typeof(int), &quot;&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="2, &quot;newIndex&quot;, typeof(int), &quot;&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;columnmoved&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -6281,6 +6334,7 @@
         <ConfigOption Name="ConfigChanged" Type="ComponentListener">
           <Summary><![CDATA[Fires when the configuration is changed.]]></Summary>
           <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(ColumnModel), &quot;this&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;configchanged&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -6291,6 +6345,9 @@
         <ConfigOption Name="HeaderChange" Type="ComponentListener">
           <Summary><![CDATA[Fires when the text of a header changes.]]></Summary>
           <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(ColumnModel), &quot;this&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;columnIndex&quot;, typeof(int), &quot;&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="2, &quot;newText&quot;, typeof(string), &quot;&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;headerchange&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -6301,6 +6358,9 @@
         <ConfigOption Name="HiddenChange" Type="ComponentListener">
           <Summary><![CDATA[Fires when a column is hidden or 'unhidden'.]]></Summary>
           <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(ColumnModel), &quot;this&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;columnIndex&quot;, typeof(int), &quot;&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="2, &quot;hidden&quot;, typeof(bool), &quot;&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;hiddenchange&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -6311,6 +6371,9 @@
         <ConfigOption Name="WidthChange" Type="ComponentListener">
           <Summary><![CDATA[Fires when the width of a column is programmaticially changed using setColumnWidth. Note internal resizing suppresses the event from firing. ]]></Summary>
           <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(ColumnModel), &quot;this&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;columnIndex&quot;, typeof(int), &quot;&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="2, &quot;newWidth&quot;, typeof(int), &quot;&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;widthchange&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -7295,15 +7358,6 @@
         <Attribute Type="Description" />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="Value" Modifier="Override" Type="object" DefaultValue="&quot;&quot;">
-          <Attributes>
-            <Attribute Type="ConfigOption" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
-            <Attribute Type="Browsable" RawValue="false" />
-            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Hidden" />
-            <Attribute Type="Description" />
-          </Attributes>
-        </ConfigOption>
         <ConfigOption Name="SelectedIndexProperty" Access="Protected" Type="int" DefaultValue="-1">
           <Attributes>
             <Attribute Type="ConfigOption" RawValue="&quot;initSelectedIndex&quot;" />
@@ -7504,6 +7558,17 @@
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="ButtonAlign" Type="Alignment" DefaultValue="Alignment.Left">
+          <Summary><![CDATA[Valid values are \"left\", \"center\" and \"right\" (defaults to \"left\").]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="JsonMode.ToLower" />
+            <Attribute Type="Category" RawValue="&quot;3. CommandColumn&quot;" />
+            <Attribute Type="DefaultValue" RawValue="Alignment.Left" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="Valid values are \&quot;left\&quot;, \&quot;center\&quot; and \&quot;right\&quot; (defaults to \&quot;left\&quot;)." />
           </Attributes>
         </ConfigOption>
       </ConfigOptions>
@@ -7718,6 +7783,14 @@
         <Attribute Type="Description" RawValue="Base Class for all Ext.Net Web Controls." />
       </Attributes>
       <ConfigOptions>
+        <ConfigOption Name="Bin" Type="ItemsCollection&lt;Observable&gt;">
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="&quot;bin&quot;, typeof(ItemCollectionJsonConverter), int.MinValue" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
         <ConfigOption Name="ContentEl" Type="string" DefaultValue="&quot;&quot;">
           <Summary><![CDATA[The id of an existing HTML node to use as the panel's body content (defaults to '').]]></Summary>
           <Attributes>
@@ -7726,6 +7799,18 @@
             <Attribute Type="DeferredRender" />
             <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
             <Attribute Type="Description" RawValue="The id of an existing HTML node to use as the panel's body content (defaults to '')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="Html" Type="string" DefaultValue="&quot;&quot;">
+          <Summary><![CDATA[An HTML fragment, or a DomHelper specification to use as the layout element content (defaults to '')]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;Update&quot;" />
+            <Attribute Type="ConfigOption" RawValue="&quot;html&quot;" />
+            <Attribute Type="Category" RawValue="&quot;3. Component&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="An HTML fragment, or a DomHelper specification to use as the layout element content (defaults to '')" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Anchor" Type="string" DefaultValue="null">
@@ -8446,6 +8531,38 @@
           </Attributes>
           <Parameters />
         </Method>
+        <Method Name="Update" ParamsRaw="string html">
+          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
+          </Attributes>
+          <Parameters />
+        </Method>
+        <Method Name="Update" ParamsRaw="string html, bool loadScripts">
+          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
+          </Attributes>
+          <Parameters />
+        </Method>
+        <Method Name="Update" ParamsRaw="string html, bool loadScripts, string callback">
+          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
+          </Attributes>
+          <Parameters />
+        </Method>
+        <Method Name="Update" ParamsRaw="string html, bool loadScripts, JFunction callback">
+          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
+          </Attributes>
+          <Parameters />
+        </Method>
       </Methods>
     </Class>
     <Class Name="ComponentBaseDirectEvents" Abstract="true" Extends="ComponentDirectEvents">
@@ -8607,7 +8724,7 @@
             <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(Component), &quot;this&quot;" />
             <Attribute Type="ListenerArgument" RawValue="1, &quot;ownerCt&quot;, typeof(Container), &quot;Container which holds the component&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
-            <Attribute Type="ConfigOption" RawValue="&quot;render&quot;, typeof(DirectEventJsonConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;removed&quot;, typeof(DirectEventJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="Fires after the component is rendered." />
@@ -8810,7 +8927,7 @@
             <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(Component), &quot;this&quot;" />
             <Attribute Type="ListenerArgument" RawValue="1, &quot;ownerCt&quot;, typeof(Container), &quot;Container which holds the component&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
-            <Attribute Type="ConfigOption" RawValue="&quot;render&quot;, typeof(ListenerJsonConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;removed&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="Fires when a component is removed from an Ext.Container" />
@@ -9306,15 +9423,22 @@
             <Attribute Type="Description" RawValue="When set to true (50 milliseconds) or a number of milliseconds, the layout assigned for this container will buffer the frequency it calculates and does a re-layout of components. This is useful for heavy containers or containers with a large quantity of sub-components for which frequent layout calls would be expensive. Defaults to 50." />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="DefaultType" Type="string" DefaultValue="&quot;panel&quot;">
+        <ConfigOption Name="DefaultType" Type="string" DefaultValue="&quot;Panel&quot;">
           <Summary><![CDATA[The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel').]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;5. Container&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;panel&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;Panel&quot;" />
+            <Attribute Type="TypeConverter" RawValue="typeof(DefaultTypeConverter)" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Access="Protected" Type="string" DefaultValue="&quot;panel&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;panel&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Defaults" Type="ParameterCollection">
@@ -10641,13 +10765,13 @@
             <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="Format" Type="string" DefaultValue="&quot;d&quot;">
-          <Summary><![CDATA[A formatting string as used by Date.format to format a Date for this Column (defaults to 'd').]]></Summary>
+        <ConfigOption Name="Format" Type="string" DefaultValue="&quot;&quot;">
+          <Summary><![CDATA[A formatting string as used by Date.format to format a Date for this Column.]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
             <Attribute Type="Category" RawValue="&quot;3. DateColumn&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;d&quot;" />
-            <Attribute Type="Description" RawValue="A formatting string as used by Date.format to format a Date for this Column (defaults to 'd')." />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="Description" RawValue="A formatting string as used by Date.format to format a Date for this Column." />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="FormatProxy" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
@@ -10697,13 +10821,9 @@
             <Attribute Type="Description" RawValue="Gets or sets the current selected date of the DatePicker." />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="Value" Modifier="Override" Type="object">
+        <ConfigOption Name="ValueProxy" Modifier="Override" Access="ProtectedInternal" Type="object">
           <Attributes>
-            <Attribute Type="ConfigOption" RawValue="typeof(CtorDateTimeJsonConverter)" />
-            <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetValueProxy&quot;" />
-            <Attribute Type="Browsable" RawValue="false" />
-            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Hidden" />
-            <Attribute Type="Description" />
+            <Attribute Type="ConfigOption" RawValue="&quot;value&quot;, typeof(CtorDateTimeJsonConverter)" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="EmptyValue" Modifier="Override" Type="object">
@@ -11968,6 +12088,13 @@
       </ConfigOptions>
       <Methods />
     </Class>
+    <Class Name="DefaultTypeConverter" Extends="StringConverter">
+      <Attributes>
+        <Attribute Type="Description" />
+      </Attributes>
+      <ConfigOptions />
+      <Methods />
+    </Class>
     <Class Name="DeferredRenderAttribute" Extends="System">
       <Attributes>
         <Attribute Type="AttributeUsage" RawValue="AttributeTargets.Property, AllowMultiple = false" />
@@ -12075,6 +12202,16 @@
             <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
             <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetWallpaper&quot;" />
             <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="TextLengthToTruncate" Type="int" DefaultValue="12">
+          <Summary><![CDATA[The maximum length of Ext.ux.TaskBar.TaskButton's text to allow before truncating]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;4. Desktop&quot;" />
+            <Attribute Type="DefaultValue" RawValue="12" />
+            <Attribute Type="Description" RawValue="The maximum length of Ext.ux.TaskBar.TaskButton's text to allow before truncating" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Listeners" Type="DesktopListeners">
@@ -15680,11 +15817,16 @@
           <Summary><![CDATA[A value to initialize this field with.]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetValueProxy&quot;" />
             <Attribute Type="Category" RawValue="&quot;5. Field&quot;" />
             <Attribute Type="DefaultValue" RawValue="null" />
             <Attribute Type="Description" RawValue="A value to initialize this field with." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="ValueProxy" Access="ProtectedInternal" Type="object" DefaultValue="null">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;value&quot;" />
+            <Attribute Type="DefaultValue" RawValue="null" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="RawValue" Type="object" DefaultValue="null">
@@ -15829,6 +15971,20 @@
           <Parameters />
         </Method>
         <Method Name="AlignIndicator">
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Description" />
+          </Attributes>
+          <Parameters />
+        </Method>
+        <Method Name="MarkAsValid">
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Description" />
+          </Attributes>
+          <Parameters />
+        </Method>
+        <Method Name="MarkAsValid" ParamsRaw="bool abortRequest">
           <Attributes>
             <Attribute Type="Meta" />
             <Attribute Type="Description" />
@@ -17556,6 +17712,28 @@
             <Attribute Type="Description" RawValue="True to complete edit complete the editing process if in edit mode when the field is blurred. Defaults to true." />
           </Attributes>
         </ConfigOption>
+        <ConfigOption Name="CancelOnEsc" Type="bool" DefaultValue="true">
+          <Summary><![CDATA[True to cancel the edit when the escape key is pressed (defaults to false)]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;2. GridEditorOptions&quot;" />
+            <Attribute Type="DefaultValue" RawValue="true" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="True to cancel the edit when the escape key is pressed (defaults to false)" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="CompleteOnEnter" Type="bool" DefaultValue="true">
+          <Summary><![CDATA[True to complete the edit when the enter key is pressed (defaults to false)]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;2. GridEditorOptions&quot;" />
+            <Attribute Type="DefaultValue" RawValue="true" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="True to complete the edit when the enter key is pressed (defaults to false)" />
+          </Attributes>
+        </ConfigOption>
         <ConfigOption Name="CancelOnBlur" Type="bool" DefaultValue="false">
           <Summary><![CDATA[True to cancel the edit when the blur event is fired (defaults to false)]]></Summary>
           <Attributes>
@@ -17576,6 +17754,39 @@
             <Attribute Type="DefaultValue" RawValue="false" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="True to skip the edit completion process (no save, no events fired) if the user completes an edit and the value has not changed (defaults to false). Applies only to string values - edits for other data types will never be ignored." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="RevertInvalid" Type="bool" DefaultValue="true">
+          <Summary><![CDATA[True to automatically revert the field value and cancel the edit when the user completes an edit and the field validation fails (defaults to true)]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;4. Editor&quot;" />
+            <Attribute Type="DefaultValue" RawValue="true" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="True to automatically revert the field value and cancel the edit when the user completes an edit and the field validation fails (defaults to true)" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="Shadow" Type="ShadowMode" DefaultValue="ShadowMode.None">
+          <Summary><![CDATA[\"sides\" for sides/bottom only, \"frame\" for 4-way shadow, and \"drop\" for bottom-right shadow (defaults to \"frame\")]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="typeof(ShadowJsonConverter)" />
+            <Attribute Type="Category" RawValue="&quot;4. Editor&quot;" />
+            <Attribute Type="DefaultValue" RawValue="ShadowMode.None" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="\&quot;sides\&quot; for sides/bottom only, \&quot;frame\&quot; for 4-way shadow, and \&quot;drop\&quot; for bottom-right shadow (defaults to \&quot;frame\&quot;)" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="SwallowKeys" Type="bool" DefaultValue="true">
+          <Summary><![CDATA[Handle the keydown/keypress events so they don't propagate (defaults to true)]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;4. Editor&quot;" />
+            <Attribute Type="DefaultValue" RawValue="true" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" RawValue="Handle the keydown/keypress events so they don't propagate (defaults to true)" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Offsets" Type="int[]" DefaultValue="null">
@@ -21504,15 +21715,6 @@
             <Attribute Type="Description" RawValue="The Text value to initialize this field with." />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="Value" Modifier="Override" Type="object">
-          <Attributes>
-            <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetValueProxy&quot;" />
-            <Attribute Type="ConfigOption" />
-            <Attribute Type="Browsable" RawValue="false" />
-            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Hidden" />
-            <Attribute Type="Description" />
-          </Attributes>
-        </ConfigOption>
         <ConfigOption Name="Listeners" Type="EditorListeners">
           <Summary><![CDATA[Client-side JavaScript Event Handlers]]></Summary>
           <Attributes>
@@ -22107,6 +22309,7 @@
           <Attributes>
             <Attribute Type="Meta" />
             <Attribute Type="ConfigOption" />
+            <Attribute Type="TypeConverter" RawValue="typeof(TargetConverter)" />
             <Attribute Type="Category" RawValue="&quot;6. Hyperlink&quot;" />
             <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
             <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetTarget&quot;" />
@@ -22116,14 +22319,46 @@
       </ConfigOptions>
       <Methods />
     </Class>
-    <Class Name="Image" Extends="BoxComponentBase">
+    <Class Name="Image" Extends="ImageBase">
       <Summary><![CDATA[Basic image field.]]></Summary>
       <Attributes>
         <Attribute Type="Meta" />
         <Attribute Type="ToolboxData" RawValue="&quot;&lt;{0}:Image runat=\&quot;server\&quot; /&gt;&quot;" />
         <Attribute Type="ToolboxBitmap" RawValue="typeof(Image), &quot;Build.ToolboxIcons.Image.bmp&quot;" />
-        <Attribute Type="Designer" RawValue="typeof(EmptyDesigner)" />
         <Attribute Type="Description" RawValue="Basic image field." />
+      </Attributes>
+      <ConfigOptions>
+        <ConfigOption Name="Listeners" Type="ImageListeners">
+          <Summary><![CDATA[Client-side JavaScript Event Handlers]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="&quot;listeners&quot;, JsonMode.Object" />
+            <Attribute Type="Category" RawValue="&quot;2. Observable&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Visible" />
+            <Attribute Type="Description" RawValue="Client-side JavaScript Event Handlers" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DirectEvents" Type="ImageDirectEvents">
+          <Summary><![CDATA[Server-side Ajax Event Handlers]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="Category" RawValue="&quot;2. Observable&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Visible" />
+            <Attribute Type="ConfigOption" RawValue="&quot;directEvents&quot;, JsonMode.Object" />
+            <Attribute Type="Description" RawValue="Server-side Ajax Event Handlers" />
+          </Attributes>
+        </ConfigOption>
+      </ConfigOptions>
+      <Methods />
+    </Class>
+    <Class Name="ImageBase" Abstract="true" Extends="BoxComponentBase">
+      <Attributes>
+        <Attribute Type="Meta" />
+        <Attribute Type="Description" />
       </Attributes>
       <ConfigOptions>
         <ConfigOption Name="Height" Modifier="Override" Type="Unit" DefaultValue="typeof(Unit), &quot;&quot;">
@@ -22277,30 +22512,6 @@
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetYDelta&quot;" />
             <Attribute Type="Description" RawValue="Y offset" />
-          </Attributes>
-        </ConfigOption>
-        <ConfigOption Name="Listeners" Type="ImageListeners">
-          <Summary><![CDATA[Client-side JavaScript Event Handlers]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" RawValue="&quot;listeners&quot;, JsonMode.Object" />
-            <Attribute Type="Category" RawValue="&quot;2. Observable&quot;" />
-            <Attribute Type="NotifyParentProperty" RawValue="true" />
-            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
-            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Visible" />
-            <Attribute Type="Description" RawValue="Client-side JavaScript Event Handlers" />
-          </Attributes>
-        </ConfigOption>
-        <ConfigOption Name="DirectEvents" Type="ImageDirectEvents">
-          <Summary><![CDATA[Server-side Ajax Event Handlers]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="Category" RawValue="&quot;2. Observable&quot;" />
-            <Attribute Type="NotifyParentProperty" RawValue="true" />
-            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
-            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Visible" />
-            <Attribute Type="ConfigOption" RawValue="&quot;directEvents&quot;, JsonMode.Object" />
-            <Attribute Type="Description" RawValue="Server-side Ajax Event Handlers" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="LoadMask" Type="LoadMask">
@@ -24166,10 +24377,10 @@
             <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="Value" Type="string" DefaultValue="&quot;&quot;">
+        <ConfigOption Name="Value" Type="string" DefaultValue="null">
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
+            <Attribute Type="DefaultValue" RawValue="null" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" />
           </Attributes>
@@ -24230,6 +24441,7 @@
           <Attributes>
             <Attribute Type="Meta" />
             <Attribute Type="Category" RawValue="&quot;6. ListView&quot;" />
+            <Attribute Type="ConfigOption" />
             <Attribute Type="DefaultValue" RawValue="true" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="Specify true to enable the columns to be sortable (defaults to true)." />
@@ -24835,15 +25047,21 @@
         <Attribute Type="Description" />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="DefaultType" Modifier="Override" Type="string" DefaultValue="&quot;menuitem&quot;">
+        <ConfigOption Name="DefaultType" Modifier="Override" Type="string" DefaultValue="&quot;MenuItem&quot;">
           <Summary><![CDATA[The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel').]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;5. Container&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;menuitem&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;MenuItem&quot;" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Modifier="Override" Access="Protected" Type="string" DefaultValue="&quot;menuitem&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;menuitem&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="EnableScrolling" Type="bool" DefaultValue="false">
@@ -26517,7 +26735,7 @@
           </Attributes>
           <Parameters />
         </Method>
-        <Method Name="ClearSelection">
+        <Method Name="ClearSelections">
           <Summary><![CDATA[Clear selection]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
@@ -27851,12 +28069,6 @@
             <Attribute Type="Description" RawValue="The Number (double) to initialize this field with." />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="ValueProxy" Access="ProtectedInternal" Type="object" DefaultValue="null">
-          <Attributes>
-            <Attribute Type="ConfigOption" RawValue="&quot;value&quot;" />
-            <Attribute Type="DefaultValue" RawValue="null" />
-          </Attributes>
-        </ConfigOption>
         <ConfigOption Name="AllowDecimals" Type="bool" DefaultValue="true">
           <Summary><![CDATA[False to disallow decimal values (defaults to true).]]></Summary>
           <Attributes>
@@ -27911,10 +28123,15 @@
           <Summary><![CDATA[Character(s) to allow as the decimal separator (defaults to '.').]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;7. NumberField&quot;" />
             <Attribute Type="DefaultValue" RawValue="&quot;.&quot;" />
             <Attribute Type="Description" RawValue="Character(s) to allow as the decimal separator (defaults to '.')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DecimalSeparatorProxy" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;decimalSeparator&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="MaxText" Type="string" DefaultValue="&quot;The maximum value for this field is {maxValue}&quot;">
@@ -29070,18 +29287,6 @@
             <Attribute Type="Description" RawValue="True to hide the expand/collapse toggle button when collapsible = true, false to display it (defaults to false)." />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="Html" Type="string" DefaultValue="&quot;&quot;">
-          <Summary><![CDATA[An HTML fragment, or a DomHelper specification to use as the panel's body content (defaults to '').]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;Update&quot;" />
-            <Attribute Type="ConfigOption" RawValue="&quot;html&quot;" />
-            <Attribute Type="Category" RawValue="&quot;6. Panel&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
-            <Attribute Type="NotifyParentProperty" RawValue="true" />
-            <Attribute Type="Description" RawValue="An HTML fragment, or a DomHelper specification to use as the panel's body content (defaults to '')." />
-          </Attributes>
-        </ConfigOption>
         <ConfigOption Name="Icon" Type="Icon" DefaultValue="Icon.None">
           <Summary><![CDATA[The icon to use in the Title bar. See also, IconCls to set an icon with a custom Css class.]]></Summary>
           <Attributes>
@@ -29408,38 +29613,6 @@
           <Attributes>
             <Attribute Type="Meta" />
             <Attribute Type="Description" RawValue="Shortcut for performing an expand or collapse based on the current state of the panel." />
-          </Attributes>
-          <Parameters />
-        </Method>
-        <Method Name="Update" ParamsRaw="string html">
-          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
-          </Attributes>
-          <Parameters />
-        </Method>
-        <Method Name="Update" ParamsRaw="string html, bool loadScripts">
-          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
-          </Attributes>
-          <Parameters />
-        </Method>
-        <Method Name="Update" ParamsRaw="string html, bool loadScripts, string callback">
-          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
-          </Attributes>
-          <Parameters />
-        </Method>
-        <Method Name="Update" ParamsRaw="string html, bool loadScripts, JFunction callback">
-          <Summary><![CDATA[Update the html of the Body, optionally searching for and processing scripts.]]></Summary>
-          <Attributes>
-            <Attribute Type="Meta" />
-            <Attribute Type="Description" RawValue="Update the html of the Body, optionally searching for and processing scripts." />
           </Attributes>
           <Parameters />
         </Method>
@@ -29814,6 +29987,108 @@
             <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;3. PanelResizer&quot;" />
             <Attribute Type="DefaultValue" RawValue="10000000" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="Listeners" Type="PanelResizerListeners">
+          <Summary><![CDATA[Client-side JavaScript Event Handlers]]></Summary>
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;listeners&quot;, JsonMode.Object" />
+            <Attribute Type="Category" RawValue="&quot;2. Observable&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Visible" />
+            <Attribute Type="ViewStateMember" />
+            <Attribute Type="Description" RawValue="Client-side JavaScript Event Handlers" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DirectEvents" Type="PanelResizerDirectEvents">
+          <Summary><![CDATA[Server-side Ajax Event Handlers]]></Summary>
+          <Attributes>
+            <Attribute Type="Category" RawValue="&quot;2. Observable&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Visible" />
+            <Attribute Type="ConfigOption" RawValue="&quot;directEvents&quot;, JsonMode.Object" />
+            <Attribute Type="ViewStateMember" />
+            <Attribute Type="Description" RawValue="Server-side Ajax Event Handlers" />
+          </Attributes>
+        </ConfigOption>
+      </ConfigOptions>
+      <Methods />
+    </Class>
+    <Class Name="PanelResizerDirectEvents" Extends="ComponentDirectEvents">
+      <Attributes />
+      <ConfigOptions>
+        <ConfigOption Name="DragStart" Type="ComponentDirectEvent">
+          <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelResizer)" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;e&quot;, typeof(Object)" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;dragstart&quot;, typeof(DirectEventJsonConverter)" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="Drag" Type="ComponentDirectEvent">
+          <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelResizer)" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;e&quot;, typeof(Object)" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;drag&quot;, typeof(DirectEventJsonConverter)" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DragEnd" Type="ComponentDirectEvent">
+          <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelResizer)" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;e&quot;, typeof(Object)" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;dragend&quot;, typeof(DirectEventJsonConverter)" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+      </ConfigOptions>
+      <Methods />
+    </Class>
+    <Class Name="PanelResizerListeners" Extends="ComponentListeners">
+      <Attributes />
+      <ConfigOptions>
+        <ConfigOption Name="DragStart" Type="ComponentListener">
+          <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelResizer)" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;e&quot;, typeof(Object)" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;dragstart&quot;, typeof(ListenerJsonConverter)" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="Drag" Type="ComponentListener">
+          <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelResizer)" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;e&quot;, typeof(Object)" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;drag&quot;, typeof(ListenerJsonConverter)" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DragEnd" Type="ComponentListener">
+          <Attributes>
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelResizer)" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;e&quot;, typeof(Object)" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;dragend&quot;, typeof(ListenerJsonConverter)" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" />
           </Attributes>
@@ -30709,15 +30984,22 @@
         <Attribute Type="Description" RawValue="A grouping container for Ext.form.Radio controls." />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="DefaultType" Type="string" DefaultValue="&quot;radio&quot;">
+        <ConfigOption Name="DefaultType" Type="string" DefaultValue="&quot;Radio&quot;">
           <Summary><![CDATA[The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'radio').]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;5. Container&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;radio&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;Radio&quot;" />
+            <Attribute Type="TypeConverter" RawValue="typeof(DefaultTypeConverter)" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'radio')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Access="Protected" Type="string" DefaultValue="&quot;radio&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;radio&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Listeners" Type="RadioGroupListeners">
@@ -31075,6 +31357,16 @@
             <Attribute Type="Description" RawValue="True to render this property as complex object" />
           </Attributes>
         </ConfigOption>
+        <ConfigOption Name="UseNull" Type="bool" DefaultValue="false">
+          <Summary><![CDATA[(Optional) Use when converting received data into a Number type (either int or float). If the value cannot be parsed, null will be used if useNull is true, otherwise the value will be 0. Defaults to false]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" />
+            <Attribute Type="Category" RawValue="&quot;Config Options&quot;" />
+            <Attribute Type="DefaultValue" RawValue="false" />
+            <Attribute Type="Description" RawValue="(Optional) Use when converting received data into a Number type (either int or float). If the value cannot be parsed, null will be used if useNull is true, otherwise the value will be 0. Defaults to false" />
+          </Attributes>
+        </ConfigOption>
       </ConfigOptions>
       <Methods />
     </Class>
@@ -31209,6 +31501,14 @@
           <Attributes>
             <Attribute Type="ConfigOption" RawValue="JsonMode.ToLower" />
             <Attribute Type="DefaultValue" RawValue="ValidatioEventOwner.Element" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="InitValueValidation" Type="InitValueValidation" DefaultValue="InitValueValidation.Valid">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="JsonMode.ToLower" />
+            <Attribute Type="DefaultValue" RawValue="InitValueValidation.Valid" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" />
           </Attributes>
@@ -31550,6 +31850,17 @@
             <Attribute Type="DefaultValue" RawValue="false" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="True to wrap an element with a div if needed (required for textareas and images, defaults to false)" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="ResizeElement" Type="JFunction">
+          <Summary><![CDATA[Performs resizing of the associated Element. ]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="JsonMode.Raw" />
+            <Attribute Type="Category" RawValue="&quot;3. Resizable&quot;" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
+            <Attribute Type="Description" RawValue="Performs resizing of the associated Element. " />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Listeners" Type="ResizableListeners">
@@ -36393,6 +36704,17 @@
             <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
+        <ConfigOption Name="TableAttrs" Type="DomObject">
+          <Summary><![CDATA[An object containing properties which are added to the DomHelper specification used to create the layout's <table> element.]]></Summary>
+          <Attributes>
+            <Attribute Type="Meta" />
+            <Attribute Type="ConfigOption" RawValue="JsonMode.Object" />
+            <Attribute Type="Category" RawValue="&quot;6. TableLayout&quot;" />
+            <Attribute Type="NotifyParentProperty" RawValue="true" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="Description" RawValue="An object containing properties which are added to the DomHelper specification used to create the layout's &lt;table&gt; element." />
+          </Attributes>
+        </ConfigOption>
         <ConfigOption Name="Columns" Type="int" DefaultValue="0">
           <Summary><![CDATA[The total number of columns to create in the table for this layout. If not specified, all panels added to this layout will be rendered into a single row using a column per panel.]]></Summary>
           <Attributes>
@@ -36426,6 +36748,14 @@
             <Attribute Type="ConfigOption" RawValue="JsonMode.Raw" />
             <Attribute Type="DefaultValue" RawValue="0" />
             <Attribute Type="Description" />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="TableAttrs" Type="DomObject">
+          <Summary><![CDATA[An object containing properties which are added to the DomHelper specification used to create the layout's <table> element.]]></Summary>
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="JsonMode.Object" />
+            <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
+            <Attribute Type="Description" RawValue="An object containing properties which are added to the DomHelper specification used to create the layout's &lt;table&gt; element." />
           </Attributes>
         </ConfigOption>
       </ConfigOptions>
@@ -36942,7 +37272,8 @@
         </ConfigOption>
         <ConfigOption Name="BeforeTabClose" Type="ComponentDirectEvent">
           <Attributes>
-            <Attribute Type="ListenerArgument" RawValue="0, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelBase), &quot;tabpanel&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;beforetabclose&quot;, typeof(DirectEventJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -36952,7 +37283,8 @@
         </ConfigOption>
         <ConfigOption Name="BeforeTabHide" Type="ComponentDirectEvent">
           <Attributes>
-            <Attribute Type="ListenerArgument" RawValue="0, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelBase), &quot;tabpanel&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;beforetabhide&quot;, typeof(DirectEventJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -36962,7 +37294,8 @@
         </ConfigOption>
         <ConfigOption Name="TabClose" Type="ComponentDirectEvent">
           <Attributes>
-            <Attribute Type="ListenerArgument" RawValue="0, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelBase), &quot;tabpanel&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;tabclose&quot;, typeof(DirectEventJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -37033,7 +37366,8 @@
         </ConfigOption>
         <ConfigOption Name="BeforeTabClose" Type="ComponentListener">
           <Attributes>
-            <Attribute Type="ListenerArgument" RawValue="0, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelBase), &quot;tabpanel&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;beforetabclose&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -37043,7 +37377,8 @@
         </ConfigOption>
         <ConfigOption Name="BeforeTabHide" Type="ComponentListener">
           <Attributes>
-            <Attribute Type="ListenerArgument" RawValue="0, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelBase), &quot;tabpanel&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;beforetabhide&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -37053,7 +37388,8 @@
         </ConfigOption>
         <ConfigOption Name="TabClose" Type="ComponentListener">
           <Attributes>
-            <Attribute Type="ListenerArgument" RawValue="0, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="0, &quot;item&quot;, typeof(PanelBase), &quot;tabpanel&quot;" />
+            <Attribute Type="ListenerArgument" RawValue="1, &quot;tab&quot;, typeof(PanelBase), &quot;tab&quot;" />
             <Attribute Type="TypeConverter" RawValue="typeof(ExpandableObjectConverter)" />
             <Attribute Type="ConfigOption" RawValue="&quot;tabclose&quot;, typeof(ListenerJsonConverter)" />
             <Attribute Type="PersistenceMode" RawValue="PersistenceMode.InnerProperty" />
@@ -37329,6 +37665,13 @@
             <Attribute Type="DefaultValue" RawValue="20" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="For scrolling tabs, the number of pixels to increment on mouse wheel scrolling (defaults to 20)." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Access="Protected" Type="string" DefaultValue="&quot;box&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;box&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Listeners" Type="TabStripListeners">
@@ -38299,6 +38642,7 @@
           <Attributes>
             <Attribute Type="Meta" />
             <Attribute Type="ConfigOption" RawValue="typeof(RegexJsonConverter)" />
+            <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetRegex&quot;" />
             <Attribute Type="Category" RawValue="&quot;6. TextField&quot;" />
             <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
             <Attribute Type="Editor" RawValue="&quot;System.Web.UI.Design.WebControls.RegexTypeEditor&quot;, typeof(UITypeEditor)" />
@@ -38613,11 +38957,10 @@
             <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="SelectedTimeProxy" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
+        <ConfigOption Name="ValueProxy" Modifier="Override" Access="ProtectedInternal" Type="object" DefaultValue="null">
           <Attributes>
             <Attribute Type="ConfigOption" RawValue="&quot;value&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
-            <Attribute Type="Description" />
+            <Attribute Type="DefaultValue" RawValue="null" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="SelectedValue" Type="object" DefaultValue="null">
@@ -38632,7 +38975,6 @@
         <ConfigOption Name="Value" Modifier="Override" Type="object" DefaultValue="null">
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" RawValue="JsonMode.Ignore" />
             <Attribute Type="Browsable" RawValue="false" />
             <Attribute Type="DirectEventUpdate" RawValue="MethodName = &quot;SetTimeValue&quot;" />
             <Attribute Type="DesignerSerializationVisibility" RawValue="DesignerSerializationVisibility.Hidden" />
@@ -38667,7 +39009,7 @@
         </ConfigOption>
         <ConfigOption Name="FormatProxy" Access="Protected" Type="string" DefaultValue="&quot;&quot;">
           <Attributes>
-            <Attribute Type="ConfigOption" RawValue="&quot;format&quot;, typeof(NetToPHPDateFormatStringJsonConverter)" />
+            <Attribute Type="ConfigOption" RawValue="&quot;format&quot;" />
             <Attribute Type="DefaultValue" RawValue="&quot;&quot;" />
             <Attribute Type="Description" />
           </Attributes>
@@ -39040,15 +39382,21 @@
         <Attribute Type="Description" />
       </Attributes>
       <ConfigOptions>
-        <ConfigOption Name="DefaultType" Modifier="Override" Type="string" DefaultValue="&quot;button&quot;">
+        <ConfigOption Name="DefaultType" Modifier="Override" Type="string" DefaultValue="&quot;Button&quot;">
           <Summary><![CDATA[The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel').]]></Summary>
           <Attributes>
             <Attribute Type="Meta" />
-            <Attribute Type="ConfigOption" />
             <Attribute Type="Category" RawValue="&quot;5. Container&quot;" />
-            <Attribute Type="DefaultValue" RawValue="&quot;button&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;Button&quot;" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The default type of content Container represented by this object as registered in Ext.ComponentMgr (defaults to 'panel')." />
+          </Attributes>
+        </ConfigOption>
+        <ConfigOption Name="DefaultTypeProxy" Access="Protected" Type="string" DefaultValue="&quot;button&quot;">
+          <Attributes>
+            <Attribute Type="ConfigOption" RawValue="&quot;defaultType&quot;" />
+            <Attribute Type="DefaultValue" RawValue="&quot;button&quot;" />
+            <Attribute Type="Description" />
           </Attributes>
         </ConfigOption>
         <ConfigOption Name="Flat" Type="bool" DefaultValue="false">
@@ -42333,12 +42681,12 @@
             <Attribute Type="Description" RawValue="True for case-sensitive sort (defaults to false)" />
           </Attributes>
         </ConfigOption>
-        <ConfigOption Name="Direction" Type="SortDirection" DefaultValue="SortDirection.ASC">
+        <ConfigOption Name="Direction" Type="SortDirection" DefaultValue="SortDirection.Default">
           <Summary><![CDATA[The direction to sort (\"asc\" or \"desc\" case-insensitive, defaults to \"asc\")]]></Summary>
           <Attributes>
             <Attribute Type="Category" RawValue="&quot;1. TreeSorter&quot;" />
             <Attribute Type="ConfigOption" RawValue="&quot;dir&quot;, JsonMode.ToLower" />
-            <Attribute Type="DefaultValue" RawValue="SortDirection.ASC" />
+            <Attribute Type="DefaultValue" RawValue="SortDirection.Default" />
             <Attribute Type="NotifyParentProperty" RawValue="true" />
             <Attribute Type="Description" RawValue="The direction to sort (\&quot;asc\&quot; or \&quot;desc\&quot; case-insensitive, defaults to \&quot;asc\&quot;)" />
           </Attributes>

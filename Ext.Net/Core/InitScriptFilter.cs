@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -31,6 +31,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 
 using Ext.Net.Utilities;
+using System;
 
 namespace Ext.Net
 {
@@ -148,16 +149,23 @@ namespace Ext.Net
                 return;  
             }
 
-            if (ResourceManager.RemoveViewStateStatic)
+            var start = DateTime.Now.Ticks;
+
+            if (ResourceManager.DisableViewStateStatic)
             {
                 this.RemoveViewState();
             }
 
             this.RemoveWarning();
+
             this.ReplacePlaceHolder(InitScriptFilter.INIT_SCRIPT_PLACEHOLDER, OPEN_SCRIPT_TAG, CLOSE_SCRIPT_TAG);
             this.ReplacePlaceHolder(InitScriptFilter.CONFIG_SCRIPT_PLACEHOLDER, OPEN_SCRIPT_TAG, CLOSE_SCRIPT_TAG);
             this.ReplacePlaceHolder(InitScriptFilter.INIT_SCRIPT_FILES_PLACEHOLDER, OPEN_SCRIPT_FILES_TAG, CLOSE_SCRIPT_FILES_TAG);
             this.ReplacePlaceHolder(InitScriptFilter.INIT_STYLE_PLACEHOLDER, OPEN_STYLE_TAG, CLOSE_STYLE_TAG);
+
+            //var end = DateTime.Now.Ticks;
+            //string ticksMsg = string.Format("ticks({0});", TimeSpan.FromTicks(end - start).TotalMilliseconds);
+            //this.html.Replace("Ext.onReady(function(){", "Ext.onReady(function(){" + ticksMsg);
 
             byte[] data = System.Text.Encoding.UTF8.GetBytes(this.html.ToString());
             this.response.Write(data, 0, data.Length);

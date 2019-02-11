@@ -1,7 +1,6 @@
 ﻿// @source core/utils/ClickRepeater.js
 
-Ext.net.ClickRepeater = function (config)
-{
+Ext.net.ClickRepeater = function (config) {
     this.addEvents(
         "leftclick",
         "rightclick",
@@ -12,8 +11,8 @@ Ext.net.ClickRepeater = function (config)
 };
 
 Ext.extend(Ext.net.ClickRepeater, Ext.util.ClickRepeater, {
-    ignoredButtons: [],
-    btnEvents: {
+    ignoredButtons : [],
+    btnEvents : {
         0 : "leftclick", 
         1 : "middleclick", 
         2 : "rightclick"
@@ -32,8 +31,9 @@ Ext.extend(Ext.net.ClickRepeater, Ext.util.ClickRepeater, {
         this.disabled = false;
     },
     
-    isButtonIgnored: function (e) {
+    isButtonIgnored : function (e) {
         var ignored = false;
+
         Ext.each(this.ignoredButtons, function (b) {
             if (b == (e.button || e)) {
                 ignored = true;
@@ -47,9 +47,11 @@ Ext.extend(Ext.net.ClickRepeater, Ext.util.ClickRepeater, {
     handleMouseDown : function (e) {
         clearTimeout(this.timer);
         this.el.blur();
+
         if (this.pressClass) {
             this.el.addClass(this.pressClass);
         }
+        
         this.mousedownTime = new Date();
 
         Ext.getDoc().on("mouseup", this.handleMouseUp, this);
@@ -63,6 +65,7 @@ Ext.extend(Ext.net.ClickRepeater, Ext.util.ClickRepeater, {
         if (this.accelerate) {
             this.delay = 400;
 	    }
+
         this.timer = this.click.defer(this.delay || this.interval, this, [e]);
     },
     
@@ -70,6 +73,7 @@ Ext.extend(Ext.net.ClickRepeater, Ext.util.ClickRepeater, {
         if (!this.isButtonIgnored(e)) {
             this.fireClick(e);
         }
+
         this.timer = this.click.defer(this.accelerate ?
             this.easeOutExpo(this.mousedownTime.getElapsed(),
                 400,
@@ -78,7 +82,7 @@ Ext.extend(Ext.net.ClickRepeater, Ext.util.ClickRepeater, {
             this.interval, this, [e]);
     },
     
-    fireClick: function (e) {        
+    fireClick : function (e) {        
         if (this.fireEvent("click", this, e) !== false) {
             this.fireEvent(this.btnEvents[e.button] || "click", this, e);
         }        

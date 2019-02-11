@@ -3,7 +3,9 @@
 
 Ext.grid.CellSelectionModel.prototype.handleMouseDown = Ext.grid.CellSelectionModel.prototype.handleMouseDown.createInterceptor(function (g, row, cell, e) {
     if (this.ignoreTargets) {
-        for (var i = 0; i < this.ignoreTargets.length; i++) {
+        var i = 0;
+
+        for (i; i < this.ignoreTargets.length; i++) {
             if (e.getTarget(this.ignoreTargets[i])) {
                 return false;
             }
@@ -17,7 +19,9 @@ Ext.grid.RowSelectionModel.prototype.handleMouseDown = Ext.grid.RowSelectionMode
     }
     
     if (this.ignoreTargets) {
-        for (var i = 0; i < this.ignoreTargets.length; i++) {
+        var i = 0;
+
+        for (i; i < this.ignoreTargets.length; i++) {
             if (e.getTarget(this.ignoreTargets[i])) {
                 return false;
             }
@@ -35,9 +39,11 @@ Ext.grid.RowSelectionModel.override({
             ids = [ids];
         }
         
-        var ds = this.grid.store;
+        var ds = this.grid.store,
+            i,
+            len;
         
-        for (var i = 0, len = ids.length; i < len; i++) {
+        for (i = 0, len = ids.length; i < len; i++) {
             this.selectRow(ds.indexOfId(ids[i]), true);
         }
     }

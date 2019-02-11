@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -52,7 +52,7 @@ namespace Ext.Net
 		[Description("")]
         public override string Build(bool selfRendering)
         {
-            return this.Build(RenderMode.Auto, null, null, selfRendering);
+            return this.Build(RenderMode.Auto, null, null, selfRendering, false);
         }
 
 		/// <summary>
@@ -61,9 +61,9 @@ namespace Ext.Net
 		[Description("")]
         public virtual string Build(RenderMode mode, string element, bool selfRendering)
         {
-            return this.Build(mode, element, null, selfRendering);
+            return this.Build(mode, element, null, selfRendering, false);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -75,6 +75,22 @@ namespace Ext.Net
         [Description("")]
         public virtual string Build(RenderMode mode, string element, int? index, bool selfRendering)
         {
+            return this.Build(mode, element, index, selfRendering, false);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="element"></param>
+        /// <param name="index"></param>
+        /// <param name="selfRendering"></param>
+        /// <returns></returns>
+        [Description("")]
+        public virtual string Build(RenderMode mode, string element, int? index, bool selfRendering, bool forceResources)
+        {
+            this.ForceResources = forceResources;
+
             if (this.script == null)
             {
                 Component cmp = this.Control as Component;
@@ -140,7 +156,7 @@ namespace Ext.Net
                     ResourceManager newMgr = new ResourceManager();
                     newMgr.RenderScripts = ResourceLocationType.None;
                     newMgr.RenderStyles = ResourceLocationType.None;
-                    newMgr.IDMode = IDMode.ExplicitClientID;
+                    newMgr.IDMode = IDMode.Client;
                     newMgr.IsDynamic = true;
                     pageHolder.Controls.Add(newMgr);
 
@@ -229,8 +245,10 @@ namespace Ext.Net
 
                         if (Object.ReferenceEquals(c, this.Control) && isLazy)
                         {
-                            string initScript = c.BuildInitScript();
+                            this.ScriptClientInitBag.Add(c.ClientInitID + "_BeforeScript", c.BeforeScript);
                             
+                            string initScript = c.BuildInitScript();                            
+
                             if (selfRendering)
                             {
                                 this.ScriptClientInitBag.Add(c.ClientInitID, initScript.ConcatWith(initScript.EndsWith(";") ? "" : ";", parent.ClientID.ConcatWith(methodTemplate, c.ClientID, ");")));
@@ -239,6 +257,8 @@ namespace Ext.Net
                             {
                                 this.ScriptClientInitBag.Add(c.ClientInitID, c.ParentComponentNotLayout.ClientID.ConcatWith(methodTemplate, initScript, ");"));
                             }
+
+                            this.ScriptClientInitBag.Add(c.ClientInitID + "_AfterScript", c.AfterScript);
                         }
                         else
                         {

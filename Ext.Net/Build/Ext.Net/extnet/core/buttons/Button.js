@@ -2,13 +2,18 @@
 // @source core/buttons/Button.js
 
 Ext.override(Ext.Button, {
-    
 	getPressedField : function () {
         if (!this.pressedField) {
             this.pressedField = new Ext.form.Hidden({ 
                 id   : this.id + "_Pressed", 
                 name : this.id + "_Pressed" 
             });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.pressedField);
         }
         return this.pressedField;
     },
@@ -40,6 +45,10 @@ Ext.override(Ext.Button, {
         if (!Ext.isEmpty(el)) {
             el.removeClass("x-btn-arrow" + bottom);
         }
+    },
+    
+    setTarget : function (target) {
+        this.target = target;
     }
 });
 
@@ -64,5 +73,15 @@ Ext.Button.prototype.onRender = Ext.Button.prototype.onRender.createSequence(fun
     
     if (this.menuArrow === false) {
         this.hideMenuArrow();
+    }
+    
+    if (this.navigateUrl) {
+        this.on("click", function () {
+            if (this.target) {
+                window.open(this.navigateUrl, this.target);
+            } else {
+                window.location = this.navigateUrl;
+            }
+        }, this);
     }
 });

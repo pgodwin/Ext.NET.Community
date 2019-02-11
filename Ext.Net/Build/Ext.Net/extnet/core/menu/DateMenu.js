@@ -28,6 +28,7 @@ Ext.override(Ext.menu.DateMenu, {
         
         Ext.menu.DateMenu.superclass.initComponent.call(this);
         this.relayEvents(this.picker, ["select"]);
+        this.on("show", this.picker.focus, this.picker);
         this.on("select", this.menuHide, this);
         
         if (this.handler) {

@@ -38,11 +38,19 @@ Ext.Editor.override({
             delete this.getTargetTask;
         }
         
+        this.target = Ext.net.getEl(target);
+        
         if (this.target && this.target.un && !Ext.isEmpty(this.activateEvent, false)) {
-            this.target.un(this.activateEvent, this.activateFn, this);
+            if (this.target.isComposite) {
+                this.target.each(function (item) {
+                    item.un(this.activateEvent, this.activateFn, item.dom);
+                }, this);
+            } else {
+                this.target.un(this.activateEvent, this.activateFn, this.target.dom);            
+            }
         }
         
-        this.initTargetEvents(target);            
+        this.initTargetEvents(this.target);            
     },
 
     initTargetEvents : function (targetEl) {
@@ -58,7 +66,13 @@ Ext.Editor.override({
         this.activateFn = activate;
         
         if (!Ext.isEmpty(this.activateEvent, false)) {
-            this.target.on(this.activateEvent, activate);            
+            if (this.target.isComposite) {
+                this.target.each(function (item) {
+                    item.on(this.activateEvent, this.activateFn, item.dom);
+                }, this);
+            } else {
+                this.target.on(this.activateEvent, this.activateFn, this.target.dom);            
+            }
         }
     },
     

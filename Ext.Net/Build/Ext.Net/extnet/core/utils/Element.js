@@ -33,7 +33,7 @@ Ext.Element.addMethods({
     },
     
     scrollEx : function (direction, distance, animate) {
-        this.scrollEx(direction, distance, animate);
+        this.scroll(direction, distance, animate);
         return this;
     },
     
@@ -66,7 +66,7 @@ Ext.Element.addMethods({
             el,
             mask;
 
-        if (!(/^body/i.test(dom.tagName) && me.getStyle("position") == "static") && !me.hasClass("x-page-mask")) {
+        if (!(/^body/i.test(dom.tagName) && me.getStyle("position") === "static") && !me.hasClass("x-page-mask")) {
             me.addClass("x-masked-relative");
         }
         
@@ -89,7 +89,7 @@ Ext.Element.addMethods({
         me.addClass("x-masked");
         mask.setDisplayed(true);
         
-        if (typeof msg == "string") {
+        if (typeof msg === "string") {
             var mm = dh.append(dom, {
                 cls : EXTELMASKMSG, 
                 cn  : {
@@ -105,7 +105,7 @@ Ext.Element.addMethods({
         }
         
         // ie will not expand full height automatically
-        if (Ext.isIE && !(Ext.isIE7 && Ext.isStrict) && me.getStyle("height") == "auto") {
+        if (Ext.isIE && !(Ext.isIE7 && Ext.isStrict) && me.getStyle("height") === "auto") {
             mask.setSize(undefined, me.getHeight());
         }
         

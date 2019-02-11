@@ -122,6 +122,33 @@
         var addToCache = function(c) {
             window.lookup.push(window[c]);
         };
+        
+        var rerenderNestedGrid = function(view, rowIndex, record){    
+            var grid = window["GridPanelRow_"+record.id];
+            if(grid && !grid.moved){
+                var ce = Ext.get(grid.getPositionEl()), 
+                    el = Ext.net.ResourceMgr.getAspForm() || Ext.getBody();                    
+                    
+                ce.addClass("x-hidden");
+                
+                el.dom.appendChild(ce.dom);
+                grid.moved = true;
+        
+                view.on("rowupdated", function(){
+                    if(!grid.moved){
+                        return;
+                    }
+                    var row = view.getRow(rowIndex),              
+                        body = Ext.DomQuery.selectNode(RowExpander1.rowBodySelector, row);                
+                
+                    Ext.fly("row-"+record.id).appendChild(ce.dom);
+                    ce.removeClass("x-hidden");  
+                    grid.moved = false;       
+                    body.rendered = true;   
+                    body.expanderRendered = true;        
+                }, view, {single:true});
+            }
+        };
     </script>
 </head>
 <body>
@@ -189,6 +216,9 @@
                     </DirectEvents>
                 </ext:RowExpander>
             </Plugins>
+            <Listeners>
+                <ViewReady Handler="this.view.on('beforerowupdate', rerenderNestedGrid);" />
+            </Listeners>
         </ext:GridPanel>
     </form>
 </body>

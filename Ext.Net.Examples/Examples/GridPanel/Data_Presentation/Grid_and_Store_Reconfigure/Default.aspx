@@ -51,6 +51,8 @@
          
         if(X.IsAjaxRequest)
         {
+            this.Store1.Set("sortInfo", null);
+            this.Store1.Set("multiSortInfo", null);
             this.GridPanel1.Reconfigure();
         }
     }
@@ -93,6 +95,8 @@
  
         if (X.IsAjaxRequest)
         {
+            this.Store1.Set("sortInfo", null);
+            this.Store1.Set("multiSortInfo", null);
             this.GridPanel1.Reconfigure();
         }
     }

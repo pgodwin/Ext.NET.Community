@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -288,12 +288,17 @@ namespace Ext.Net
 
             if (X.IsAjaxRequest)
             {
-                IXPostBackDataHandler ctrl = (IXPostBackDataHandler)component;
+                IXPostBackDataHandler ctrl = component as IXPostBackDataHandler;
 
                 if (ctrl != null && !ctrl.HasLoadPostData)
                 {
                     ctrl.LoadPostData(id, HttpContext.Current.Request.Params);
                 }
+            }
+
+            if (X.ResourceManager == null)
+            {
+                component.GenerateMethodsCalling = true;
             }
 
             component.AllowCallbackScriptMonitoring = true;

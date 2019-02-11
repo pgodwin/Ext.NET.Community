@@ -8,11 +8,15 @@ Ext.data.Record.id = function (rec) {
     return Ext.data.Record.AUTO_ID--;   
 };
 
-Ext.data.Record.prototype.commit = Ext.data.Record.prototype.commit.createSequence(function () {
+Ext.data.Record.prototype.commit = Ext.data.Record.prototype.commit.createInterceptor(function () {
     if (this.newRecord) {
         this.newRecord = false; 
     }
 });
+
+Ext.data.Record.prototype.isNew = function () {
+    return this.newRecord;
+};
 
 Ext.data.Store.override({
     metaId : function () {
@@ -38,7 +42,13 @@ Ext.net.Store = function (config) {
         "save",
         "saveexception",
         "commitdone",
-        "commitfailed");
+        "commitfailed"
+    );
+        
+    if (this.proxyId) {
+        this.storeId = this.proxyId;
+        Ext.StoreMgr.register(this);
+    }
 
     if (this.updateProxy) {
         this.relayEvents(this.updateProxy, ["saveexception"]);
@@ -84,8 +94,22 @@ Ext.net.Store = function (config) {
             this.fireEvent("save", store, result, res);
         }, this);
     }
+    
+    if (this.proxy instanceof Ext.data.PagingMemoryProxy && (this.autoLoad || this.deferLoad)) {        
+        this.deferAutoLoad = true;
+        this.autoLoad = false;        
+    }
+    
+    this.on("load", function () {
+        this.isLoaded = true;
+    }, this, { single : true });
 
     Ext.net.Store.superclass.constructor.call(this, config);
+    
+    if (this.deferAutoLoad) {
+        this.load(typeof this.deferAutoLoad === "object" ? this.deferAutoLoad : undefined);
+        this.deferAutoLoad = false;
+    }
 };
 
 Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
@@ -122,7 +146,10 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         //create a sorter function for each sorter field/direction combo
-        for (var i = 0, j = sorters.length; i < j; i++) {
+        var i,
+            j;
+
+        for (i = 0, j = sorters.length; i < j; i++) {
             if (sorters[i] && sorters[i].field) {
                 sortFns.push(this.createSortFunction(sorters[i].field, sorters[i].direction));
             }
@@ -134,7 +161,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
         //the direction modifier is multiplied with the result of the sorting functions to provide overall sort direction
         //(as opposed to direction per field)
-        var directionModifier = direction.toUpperCase() == "DESC" ? -1 : 1;
+        var directionModifier = direction.toUpperCase() === "DESC" ? -1 : 1;
 
         //create a function which ORs each sorter together to enable multi-sort
         var fn = function (r1, r2) {
@@ -142,7 +169,10 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
             //if we have more than one sorter, OR any additional sorter functions together
             if (sortFns.length > 1) {
-                for (var i = 1, j = sortFns.length; i < j; i++) {
+                var i,
+                    j;
+
+                for (i = 1, j = sortFns.length; i < j; i++) {
                     result = result || sortFns[i].call(this, r1, r2);
                 }
             }
@@ -150,7 +180,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             return directionModifier * result;
         };
         
-        if (this.isPaging && this.allData) {
+        if (this.isPagingStore() && this.allData) {
             this.data = this.allData;
             delete this.allData;
         }
@@ -187,14 +217,17 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             var sortInfo   = this.sortInfo || null;
             sorters = sorters || [{}];
             
-            if (sorters.length == 1) {
+            if (sorters.length === 1) {
                 if (!sorters[0].field) {
                     return;
                 }
                 this.sortInfo = {field: sorters[0].field, direction: sorters[0].direction};
             } else {
-                var field = [];
-                for (var i = 0, j = sorters.length; i < j; i++) {
+                var field = [],
+                    i,
+                    j;
+
+                for (i = 0, j = sorters.length; i < j; i++) {
                     if (sorters[i].field) {
                         field.push(sorters[i].field + ":" + (sorters[i].direction || "ASC"));
                     }
@@ -209,18 +242,6 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 this.sortInfo = sortInfo;
             }              
         }
-    },
-
-    destroy : function () {
-        if (window[this.storeId || this.id]) {
-            window[this.storeId || this.id] = null;
-        }
-        
-        if (window[this.storeId + "_Data" || this.id + "_Data"]) {
-            window[this.storeId + "_Data" || this.id + "_Data"] = null;
-        }
-        
-        Ext.net.Store.superclass.destroy.call(this);
     },
 
     addRecord : function (values, commit, clearFilter) {
@@ -243,9 +264,11 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
         values = values || {};
 
-        var f = this.recordType.prototype.fields, dv = {};
+        var f = this.recordType.prototype.fields, 
+            dv = {},
+            i = 0;
 
-        for (var i = 0; i < f.length; i++) {
+        for (i; i < f.length; i++) {
             dv[f.items[i].name] = f.items[i].defaultValue;
 
             if (!Ext.isEmpty(values[f.items[i].name])) {
@@ -287,10 +310,11 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if (commit) {
-            record.commit();
+            record.phantom = false;
+            record.commit();            
         }
         
-        if (!Ext.isDefined(this.writer) && this.modified.indexOf(record) == -1) {
+        if (!Ext.isDefined(this.writer) && this.modified.indexOf(record) === -1) {
             this.modified.push(record);
         }
 
@@ -298,7 +322,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     addField : function (field, index, clear) {
-        if (typeof field == "string") {
+        if (typeof field === "string") {
             field = { name: field };
         }
 
@@ -314,9 +338,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             this.recordType.prototype.fields.insert(index, field);
         }
 
-        if (typeof field.defaultValue != "undefined") {
+        if (typeof field.defaultValue !== "undefined") {
             this.each(function (r) {
-                if (typeof r.data[field.name] == "undefined") {
+                if (typeof r.data[field.name] === "undefined") {
                     r.data[field.name] = field.defaultValue;
                 }
             });
@@ -363,9 +387,10 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if (options.visibleOnly && options.grid) {
-            var cm = options.grid.getColumnModel();
+            var cm = options.grid.getColumnModel(),
+                i;
 
-            for (var i in data) {
+            for (i in data) {
                 var columnIndex = cm.findColumnIndex(i);
 
                 if (columnIndex > -1 && !cm.isHidden(columnIndex)) {
@@ -383,7 +408,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if ((options.dirtyCellsOnly === true || (options.dirtyCellsOnly !== false && this.saveAllFields === false)) && !isNew) {
-            for (var j in data) {
+            var j;
+
+            for (j in data) {
                 if (record.isModified(j)) {
                     newData[j] = data[j];
                 }
@@ -392,7 +419,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             data = newData;
         }
 
-        for (var k in data) {
+        var k;
+
+        for (k in data) {
             if (options.filterField && options.filterField(record, k, data[k]) === false) {
                 data[k] = undefined;
             }
@@ -413,12 +442,34 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 }
             }
         }
+        
+        if (options.mappings !== false && this.saveMappings !== false) {
+            var m,
+                map = record.fields.map, 
+                mappings = {};
+            
+            Ext.iterate(data, function (prop, value) {            
+                m = map[prop];
+
+                if (m) {
+                    mappings[m.mapping ? m.mapping : m.name] = value;
+                }
+            });
+ 
+            if (options.excludeId !== true) {
+                mappings[this.metaId()] = record.id; 
+            }
+
+            data = mappings;
+        }
 
         return data;
     },
     
     getFieldByName : function (name) {
-        for (var i = 0; i < this.fields.getCount(); i++) {
+        var i = 0;
+
+        for (i; i < this.fields.getCount(); i++) {
             var field = this.fields.get(i);
 
             if (name === (field.mapping || field.name)) {
@@ -443,12 +494,13 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
         for (i = 0; i < records.length; i++) {
             var obj = {}, dataR;
+            
+            dataR = Ext.apply(obj, records[i].data);
 
             if (this.metaId()) {
-                obj[this.metaId()] = records[i].id;
+                obj[this.metaId()] = options.excludeId === true ? undefined : records[i].id;
             }
-
-            dataR = Ext.apply(obj, records[i].data);
+                        
             dataR = this.prepareRecord(dataR, records[i], options);
 
             if (!Ext.isEmptyObj(dataR)) {
@@ -512,7 +564,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 this.dirtyWarningTitle,
                 this.dirtyWarningText,
                 function (btn, text) {
-                    return (btn == "yes") ? loadData(this, options) : false;
+                    return (btn === "yes") ? loadData(this, options) : false;
                 },
                 this
             );
@@ -523,7 +575,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
     save : function (options) {
         if (this.restful) {
-            Ext.net.Store.superclass.save.call(this);
+            Ext.net.Store.superclass.save.call(this, options);
             return;
         }
 
@@ -556,13 +608,15 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         if (d.length > 0) {
             json += '"Deleted":[';
 
-            var exists = false;
+            var exists = false,
+                i = 0;
 
-            for (var i = 0; i < d.length; i++) {
+            for (i; i < d.length; i++) {
                 var obj = {},
                     list = Ext.apply(obj, d[i].data);
 
-                if (this.metaId() && Ext.isEmpty(list[this.metaId()], false)) {
+                if (this.metaId()) {
+                    /*&& Ext.isEmpty(list[this.metaId()], false)*/
                     list[this.metaId()] = d[i].id;
                 }
 
@@ -582,25 +636,27 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         var jsonUpdated = "",
-            jsonCreated = "";
+            jsonCreated = "",
+            j = 0;
 
-        for (var j = 0; j < m.length; j++) {
+        for (j; j < m.length; j++) {
 
             var obj2 = {},
                 list2 = Ext.apply(obj2, m[j].data);
 
-            if (this.metaId() && Ext.isEmpty(list2[this.metaId()], false)) {
+            if (this.metaId()) {
+                /* && Ext.isEmpty(list2[this.metaId()], false)*/
                 list2[this.metaId()] = m[j].id;
             }
 
-            if (m[j].newRecord && this.skipIdForNewRecords !== false && !this.useIdConfirmation) {
+            list2 = this.prepareRecord(list2, m[j], options, m[j].isNew());
+            
+            if (m[j].isNew() && this.skipIdForNewRecords !== false && !this.useIdConfirmation) {
                 list2[this.metaId()] = undefined;
             }
 
-            list2 = this.prepareRecord(list2, m[j], options, m[j].newRecord);
-
             if (!Ext.isEmptyObj(list2)) {
-                if (m[j].newRecord) {
+                if (m[j].isNew()) {
                     jsonCreated += Ext.util.JSON.encode(list2) + ",";
                 } else {
                     jsonUpdated += Ext.util.JSON.encode(list2) + ",";
@@ -643,10 +699,11 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             return undefined;
         }
 
-        var m = this.modified, i;
+        var m = this.modified, 
+            i;
 
         for (i = 0; i < m.length; i++) {
-            if (m[i].data[this.metaId()] == id) {
+            if (m[i].data[this.metaId()] === id) {
                 return m[i];
             }
         }
@@ -689,7 +746,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             j;
 
         for (j = 0; j < m.length; j++) {
-            if (m[j].newRecord) {
+            if (m[j].isNew()) {
                 newRecordsExists = true;
                 break;
             }
@@ -710,24 +767,27 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
             if (!Ext.isEmpty(serviceResult.confirm)) {
                 var r = serviceResult.confirm,
-                failCount = 0;
+                    failCount = 0,
+                    i = 0;
 
-                for (var i = 0; i < r.length; i++) {
+                for (i; i < r.length; i++) {
                     if (r[i].s === false) {
                         failCount++;
                     } else {
                         var record = this.getById(r[i].oldId) || this.getByDataId(r[i].oldId);
 
                         if (record) {                            
-                            if (record.newRecord || false) {
+                            if (record.isNew()) {
                                 this.updateRecordId(record, r[i].newId || r[i].oldId);
                             }
-                            record.commit();
+                            record.phantom = false;
+                            record.commit();                            
                         } else {
-                            var d = this.deleted;
+                            var d = this.deleted,
+                                i2 = 0;
 
-                            for (var i2 = 0; i2 < d.length; i2++) {
-                                if (this.metaId() && d[i2].id == r[i].oldId) {
+                            for (i2; i2 < d.length; i2++) {
+                                if (this.metaId() && d[i2].id === r[i].oldId) {
                                     this.deleted.splice(i2, 1);
                                     failCount--;
                                     break;
@@ -791,7 +851,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     isPagingStore : function () {
-        return this.isPaging && this.applyPaging;
+        return !!(this.isPaging && this.applyPaging && this.openPage && this.findPage);
     },
 
     getDeletedRecords : function () {
@@ -805,7 +865,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             }, this);
         } 
         
-        if (!record.newRecord) {
+        if (!record.isNew()) {
             record.lastIndex = this.indexOf(record);
             this.deleted.push(record);
         }
@@ -814,19 +874,28 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     commitChanges : function () {
+        var i,
+            length;
+
+        for (i = 0, length = this.modified.length; i < length; i++) {
+            this.modified[i].phantom = false;
+        }
+        
         Ext.net.Store.superclass.commitChanges.call(this);
+
         this.deleted = [];
     },
 
     rejectChanges : function () {
         Ext.net.Store.superclass.rejectChanges.call(this);
 
-        var d = this.deleted.slice(0);
+        var d = this.deleted.slice(0),
+            i,
+            len;
 
         this.deleted = [];
-        //this.add(d);
 
-        for (var i = 0, len = d.length; i < len; i++) {
+        for (i = 0, len = d.length; i < len; i++) {
             this.insert(d[i].lastIndex || 0, d[i]);
             d[i].reject();
         }
@@ -850,6 +919,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 context.fireEvent("commitdone", context, options);
             }
         }
+        
         return null;
     },
 
@@ -1013,7 +1083,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if (Ext.isEmpty(this.updateProxy)) {
-            options = { params: {} };
+            options = { params: (options && options.params) ? options.params : {} };
 
             if (this.fireEvent("beforesave", this, options) !== false) {
 
@@ -1034,7 +1104,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 Ext.net.DirectEvent.request(config);
             }
         } else {
-            options = { params: {} };
+            options = { params: (options && options.params) ? options.params : {} };
 
             if (this.fireEvent("beforesave", this, options) !== false) {
                 var p = Ext.apply(options.params || {}, { data: data });
@@ -1143,11 +1213,14 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         if (dirtyConfirm && this.isDirty()) {
             Ext.MessageBox.confirm(
                 this.dirtyWarningTitle,
-                this.dirtyWarningText, function (btn, text) {
-                    if (btn == "yes") {
+                this.dirtyWarningText, 
+                function (btn, text) {
+                    if (btn === "yes") {
                         reload(this, options);
                     }
-                }, this);
+                }, 
+                this
+            );
         } else {
             reload(this, options);
         }
@@ -1157,8 +1230,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         return this.getRange(start, end);
     },
 
-    updateRecordId : function (id, newId) {
+    updateRecordId : function (id, newId, silent) {
         var record = (id instanceof Ext.data.Record) ? id : this.getById(id);
+
         if (Ext.isEmpty(record)) {
             throw new Ext.data.Store.Error("Record with id='" + id + "' not found");
         }
@@ -1166,13 +1240,16 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         record._phid = record.id;
 
         record.id = newId;
+
         if (this.metaId()) {
             record.data[this.metaId()] = record.id;
         }
 
         this.reMap(record);
 
-        this.fireEvent("update", this, record, Ext.data.Record.EDIT);
+        if (silent === false) {
+            this.fireEvent("update", this, record, Ext.data.Record.EDIT);
+        }
     },
 
     removeFromBatch : function (batch, action, data) {
@@ -1197,10 +1274,12 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     rejectDeleting : function () {
-        var d = this.deleted.slice(0);
+        var d = this.deleted.slice(0),
+            i = d.length - 1;
+
         this.deleted = [];
         
-        for (var i = d.length - 1; i >= 0; i--) {
+        for (i; i >= 0; i--) {
             this.insert(d[i].lastIndex || 0, d[i]);
             d[i].reject();
         }

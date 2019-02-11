@@ -10,11 +10,12 @@ Ext.apply(Ext.lib.Ajax, {
 		    name,
 		    data = [],
 		    type,
-		    submitDisabled = Ext.net && Ext.net.ResourceMgr && Ext.net.ResourceMgr.submitDisabled;
+		    submitDisabled = Ext.net && Ext.net.ResourceMgr && Ext.net.ResourceMgr.submitDisabled,
+            i = 0;
 
 		hasSubmit = form.ignoreAllSubmitFields || false;
 
-	    for (var i = 0; i < fElements.length; i++) {
+	    for (i; i < fElements.length; i++) {
 		    element = fElements[i];
 		    name = element.name;
 		    type = element.type;
@@ -34,12 +35,12 @@ Ext.apply(Ext.lib.Ajax, {
 					    }
 				    });
 			    } else if (!/file|undefined|reset|button/i.test(type)) {
-				    if (!(/radio|checkbox/i.test(type) && !element.checked) && !(type == "submit" && hasSubmit)) {
+				    if (!(/radio|checkbox/i.test(type) && !element.checked) && !(type === "submit" && hasSubmit)) {
 					    data.push(encoder(name));
 					    data.push("=");
 					    data.push(encoder(element.value));
 					    data.push("&");    
-					    if (type == "submit") {
+					    if (type === "submit") {
 					        hasSubmit = /submit/i.test(type);
                         }
                     }

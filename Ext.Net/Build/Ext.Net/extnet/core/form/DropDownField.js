@@ -147,12 +147,18 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
             delete this.bufferSize;
         }
         
-        //this.component.setPagePosition(this.component.el.getAlignToXY(this.wrap, this.componentAlign));
         var el = this.component.getPositionEl();
         el.setLeft(0);
         el.setTop(0);
+        if(Ext.isIE6 || Ext.isIE7){
+            this.component.show();
+        }
+        
         el.alignTo(this.wrap, this.componentAlign);
-        this.component.show();
+        
+        if(!(Ext.isIE6 || Ext.isIE7)){
+            this.component.show();
+        }
         
         if (this.allowBlur === false) {
             this.mon(Ext.getDoc(), { 
@@ -201,7 +207,7 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
     },
     
     checkTab : function (me, e) {
-        if (!this.isExpanded() && e.getKey() == e.TAB) {
+        if (!this.isExpanded() && e.getKey() === e.TAB) {
             this.triggerBlur();
         }
     },
@@ -211,12 +217,15 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
             this.component.destroy();
         }
         
+        if (this.underlyingValueField && this.underlyingValueField.rendered) {
+            this.underlyingValueField.destroy();
+        }
+        
         Ext.net.DropDownField.superclass.onDestroy.call(this);
     },
     
-    setValue : function (value, text, collapse) {
-              
-        if (this.mode == "text") {
+    setValue : function (value, text, collapse) {              
+        if (this.mode === "text") {
             collapse = text;
             text = value;
         }
@@ -235,8 +244,15 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
         return this;
     },
     
-    setRawValue : function (value, text) {
-        this.setValue(value, text, false);
+    setRawValue : function (value, text) {        
+        Ext.net.DropDownField.superclass.setRawValue.call(this, value);
+        this.getUnderlyingValueField().setValue(value);
+        
+        if (!this.isExpanded()) {
+            this.syncValue(value, text);
+        }
+        
+        return this;
     },
     
     initEvents : function () {
@@ -257,7 +273,7 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
             },
             scope   : this,
             doRelay : function (e, h, hname) {
-                if (hname == "down" || this.scope.isExpanded()) {
+                if (hname === "down" || this.scope.isExpanded()) {
                     var relay = Ext.KeyNav.prototype.doRelay.apply(this, arguments);
                     
                     if (!Ext.isIE && Ext.EventManager.useKeydown) {
@@ -280,7 +296,13 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
                 id    : this.id + "_Value",
                 name  : this.id + "_Value",
                 value : this.underlyingValue || ""
-            });            
+            });
+ 
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.underlyingValueField);			
         }
 
         return this.underlyingValueField;
@@ -298,17 +320,30 @@ Ext.net.DropDownField = Ext.extend(Ext.net.TriggerField, {
         return this.getValue();
     },
     
-    reset : function () {
-        this.setValue(this.originalValue, this.originalText, false);
+    reset : function () {        
+        if (this.isTextMode()) {
+            this.setValue(this.originalText, false);
+        } else {
+            this.setValue(this.originalValue, this.originalText, false);
+        }
+
         this.clearInvalid();
         this.applyEmptyText();
+    },
+    
+    isTextMode : function () {
+        return this.mode === "text";
     },
     
     initValue : function () {
         Ext.net.DropDownField.superclass.initValue.call(this);   
         
         if (this.text !== undefined) {
-            this.setValue(this.getValue(), this.text, false);
+            if (this.isTextMode()) {
+                this.setValue(this.text, false);
+            } else {
+                this.setValue(this.getValue(), this.text, false);
+            }            
         }
      
         this.originalText = this.getText();

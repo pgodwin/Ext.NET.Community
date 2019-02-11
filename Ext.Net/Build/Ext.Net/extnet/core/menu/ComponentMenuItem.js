@@ -51,7 +51,7 @@ Ext.extend(Ext.net.ComponentMenuItem, Ext.menu.BaseItem, {
             }, this);
         }, this);        
         
-        if (this.componentElement == "auto") {
+        if (this.componentElement === "auto") {
             this.componentElement = this.component.wrap ? "wrap" : "element";
         }
         

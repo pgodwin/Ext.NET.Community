@@ -8,11 +8,13 @@ Ext.layout.BoxLayout.override({
         var t   = ct.getLayoutTarget(),
             cti = ct.items.items,
             len = cti.length,
-
-            i, c, items = [];
+            i, 
+            c, 
+            items = [];
 
         for (i = 0; i < len; i++) {
-            if ((c = cti[i]).rendered && this.isValidParent(c, t) && c.hidden !== true/*  && c.collapsed !== true*/) {
+            if ((c = cti[i]).rendered && this.isValidParent(c, t) && c.hidden !== true) {
+                 /*  && c.collapsed !== true*/
                 items.push(c);
             }
         }
@@ -28,10 +30,12 @@ Ext.layout.VBoxLayout.override({
             item.height = item.getHeight();
             this.layout();
         }, this);
+
         c.on("beforeexpand", function (item) {
             item.height = item.oldHeight;
             this.layout();
         }, this);
+        
         Ext.layout.VBoxLayout.superclass.renderItem.apply(this, arguments);
     }
 });

@@ -21,12 +21,18 @@ Ext.grid.GroupingView.override({
         
         var r = [],
             g, 
-            gs = this.getGroups();
+            gs = this.getGroups(),
+            i = 0,
+            len;
         
-        for (var i = 0, len = gs.length; i < len; i++) {
+        for (i, len = gs.length; i < len; i++) {
             if (gs[i].childNodes.length > 1) {
                 g = gs[i].childNodes[1].childNodes;
-                for (var j = 0, jlen = g.length; j < jlen; j++) {
+                
+                var j,
+                    jlen;
+
+                for (j = 0, jlen = g.length; j < jlen; j++) {
                     r[r.length] = g[j];
                 }
             }

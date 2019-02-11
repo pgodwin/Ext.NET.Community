@@ -32,6 +32,7 @@ Ext.extend(Ext.net.MenuPanel, Ext.Panel, {
         var index = this.menu.items.indexOf(t),
             selIndex = this.getSelIndexField().getValue();
             
+        // do not replace == by ===
         if (selIndex.length > 0 && index == selIndex) {
             t.container.addClass("x-menu-item-active");
         }
@@ -44,6 +45,12 @@ Ext.extend(Ext.net.MenuPanel, Ext.Panel, {
     getSelIndexField : function () {
         if (!this.selIndexField) {
             this.selIndexField = new Ext.form.Hidden({ id : this.id + "_SelIndex", name : this.id + "_SelIndex" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selIndexField);	
         }
         
         return this.selIndexField;

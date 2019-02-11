@@ -164,28 +164,6 @@ namespace Ext.Net.Examples.SimpleTasks
             this.ctxMenu.LazyMode = LazyMode.Instance;
         }
 
-        public Store Store
-        {
-            get
-            {
-                return this.store;
-            }
-        }
-
-        protected override void OnPreRender(EventArgs e)
-        {
-            if (!Ext.Net.X.IsAjaxRequest)
-            {
-                this.StoreID = this.store.ID;
-            }
-
-            base.OnPreRender(e);
-        }
-
-        protected override void CheckStore()
-        {
-        }
-
         private void BuildHeaderRow()
         {
             GridView view = this.View[0];
@@ -397,7 +375,7 @@ namespace Ext.Net.Examples.SimpleTasks
                  }
              };
 
-            this.Controls.Add(this.store);
+            this.Store.Add(this.store);
         }
     }
 }

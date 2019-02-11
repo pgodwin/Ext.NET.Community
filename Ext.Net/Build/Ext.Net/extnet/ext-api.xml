@@ -387,11 +387,11 @@ of the field definition if it exists, or the field's ordinal position in the def
 <p>Example code:</p>
 <pre><code>
 var Employee = Ext.data.Record.create([
-    {name: 'name', mapping: 1},         // "mapping" only needed if an "id" field is present which
-    {name: 'occupation', mapping: 2}    // precludes using the ordinal position as the index.
+   {name: 'name', mapping: 1},         // "mapping" only needed if an "id" field is present which
+   {name: 'occupation', mapping: 2}    // precludes using the ordinal position as the index.
 ]);
 var myReader = new Ext.data.ArrayReader({
-    {@link #idIndex}: 0
+   {@link #idIndex}: 0
 }, Employee);
 </code></pre>
 <p>This would consume an Array like this:</p>
@@ -448,10 +448,10 @@ var store = new Ext.data.ArrayStore({
     idIndex: 0,  
     fields: [
        'company',
-       {name: 'price', type: 'float'},
-       {name: 'change', type: 'float'},
-       {name: 'pctChange', type: 'float'},
-       {name: 'lastChange', type: 'date', dateFormat: 'n/j h:ia'}
+      {name: 'price', type: 'float'},
+      {name: 'change', type: 'float'},
+      {name: 'pctChange', type: 'float'},
+      {name: 'lastChange', type: 'date', dateFormat: 'n/j h:ia'}
     ]
 });
 </code></pre></p>
@@ -724,16 +724,16 @@ config object to an {@link Ext.data.Connection}.</p>
 <p><b><u>Example 1</u></b></p>
 <pre><code>
 proxy: new Ext.data.ScriptTagProxy({
-    {@link Ext.data.Connection#url url}: 'http://extjs.com/forum/topics-remote.php'
+   {@link Ext.data.Connection#url url}: 'http://extjs.com/forum/topics-remote.php'
 }),
 </code></pre>
 <p><b><u>Example 2</u></b></p>
 <pre><code>
 proxy : new Ext.data.HttpProxy({
-    {@link Ext.data.Connection#method method}: 'GET',
-    {@link Ext.data.HttpProxy#prettyUrls prettyUrls}: false,
-    {@link Ext.data.Connection#url url}: 'local/default.php', // see options parameter for {@link Ext.Ajax#request}
-    {@link #api}: {
+   {@link Ext.data.Connection#method method}: 'GET',
+   {@link Ext.data.HttpProxy#prettyUrls prettyUrls}: false,
+   {@link Ext.data.Connection#url url}: 'local/default.php', // see options parameter for {@link Ext.Ajax#request}
+   {@link #api}: {
         // all actions except the following will use above url
         create  : 'local/new.php',
         update  : 'local/update.php'
@@ -1258,18 +1258,18 @@ function location(v, record) {
 }
 
 var Dude = Ext.data.Record.create([
-    {name: 'fullname',  convert: fullName},
-    {name: 'firstname', mapping: 'name.first'},
-    {name: 'lastname',  mapping: 'name.last'},
-    {name: 'city', defaultValue: 'homeless'},
+   {name: 'fullname',  convert: fullName},
+   {name: 'firstname', mapping: 'name.first'},
+   {name: 'lastname',  mapping: 'name.last'},
+   {name: 'city', defaultValue: 'homeless'},
     'state',
-    {name: 'location',  convert: location}
+   {name: 'location',  convert: location}
 ]);
 
 // create the data store
 var store = new Ext.data.Store({
     reader: new Ext.data.JsonReader(
-        {
+       {
             idProperty: 'key',
             root: 'daRoot',  
             totalProperty: 'total'
@@ -1279,15 +1279,15 @@ var store = new Ext.data.Store({
 });
 
 var myData = [
-    { key: 1,
+   { key: 1,
       name: { first: 'Fat',    last:  'Albert' }
       // notice no city, state provided in data object
     },
-    { key: 2,
+   { key: 2,
       name: { first: 'Barney', last:  'Rubble' },
       city: 'Bedrock', state: 'Stoneridge'
     },
-    { key: 3,
+   { key: 3,
       name: { first: 'Cliff',  last:  'Claven' },
       city: 'Boston',  state: 'MA'
     }
@@ -1344,7 +1344,7 @@ sort example:<pre><code>
 
 sortType: function (value) {
    switch (value.toLowerCase()) // native toLowerCase():
-   {
+  {
       case 'first': return 1;
       case 'second': return 2;
       default: return 3;
@@ -1505,17 +1505,17 @@ constructor.</p>
 <pre><code>
 var myReader = new Ext.data.JsonReader({
     // metadata configuration options:
-    {@link #idProperty}: 'id'          
-    {@link #root}: 'rows',             
-    {@link #totalProperty}: 'results', 
+   {@link #idProperty}: 'id'          
+   {@link #root}: 'rows',             
+   {@link #totalProperty}: 'results', 
     
     // the fields config option will internally create an {@link Ext.data.Record}
     // constructor that provides mapping for reading the record data objects
-    {@link Ext.data.DataReader#fields fields}: [
+   {@link Ext.data.DataReader#fields fields}: [
         // map Record&#39;s 'firstname' field to data object&#39;s key of same name    
-        {name: 'name'},
+       {name: 'name'},
         // map Record&#39;s 'job' field to data object&#39;s 'occupation' key
-        {name: 'job', mapping: 'occupation'}
+       {name: 'job', mapping: 'occupation'}
     ]    
 });
 </code></pre>
@@ -1524,8 +1524,8 @@ var myReader = new Ext.data.JsonReader({
     results: 2000, // Reader&#39;s configured {@link #totalProperty}
     rows: [        // Reader&#39;s configured {@link #root}
         // record data objects:
-        { {@link #idProperty id}: 1, firstname: 'Bill', occupation: 'Gardener' },         
-        { {@link #idProperty id}: 2, firstname: 'Ben' , occupation: 'Horticulturalist' },
+       { {@link #idProperty id}: 1, firstname: 'Bill', occupation: 'Gardener' },         
+       { {@link #idProperty id}: 2, firstname: 'Ben' , occupation: 'Horticulturalist' },
         ...
     ]
 }
@@ -1553,8 +1553,8 @@ example, the JSON data object might take the form:</p><pre><code>
         "{@link #totalProperty}": "results"
         "{@link #successProperty}": "success",
         "{@link Ext.data.DataReader#fields fields}": [
-            {"name": "name"},
-            {"name": "job", "mapping": "occupation"}
+           {"name": "name"},
+           {"name": "job", "mapping": "occupation"}
         ],
         // used by store to set its sortInfo
         "sortInfo":{
@@ -1574,8 +1574,8 @@ example, the JSON data object might take the form:</p><pre><code>
     // Reader&#39;s configured {@link #root}
     // (this data simulates 2 results {@link Ext.PagingToolbar per page})
     "rows": [ // <b>*Note:</b> this must be an Array 
-        { "id": 1, "name": "Bill", "occupation": "Gardener" },
-        { "id": 2, "name":  "Ben", "occupation": "Horticulturalist" }
+       { "id": 1, "name": "Bill", "occupation": "Gardener" },
+       { "id": 2, "name":  "Ben", "occupation": "Horticulturalist" }
     ]
 }
 </code></pre>
@@ -1697,8 +1697,8 @@ var store = new Ext.data.JsonStore({
 <p>This store is configured to consume a returned object of the form:<pre><code>
 {
     images: [
-        {name: 'Image one', url:'/GetImage.php?id=1', size:46.5, lastmod: new Date(2007, 10, 29)},
-        {name: 'Image Two', url:'/GetImage.php?id=2', size:43.2, lastmod: new Date(2007, 10, 30)}
+       {name: 'Image one', url:'/GetImage.php?id=1', size:46.5, lastmod: new Date(2007, 10, 29)},
+       {name: 'Image Two', url:'/GetImage.php?id=2', size:43.2, lastmod: new Date(2007, 10, 30)}
     ]
 }
 </code></pre>
@@ -2453,7 +2453,7 @@ store of the change (defaults to false)]]></Summary>
 <pre><code>
 // record has a field named 'firstname'
 var Employee = Ext.data.Record.{@link #create}([
-    {name: 'firstname'},
+   {name: 'firstname'},
     ...
 ]);
 
@@ -2715,13 +2715,13 @@ var myStore = new Ext.data.ArrayStore({
 <pre><code>
 // create a {@link Ext.data.Record Record} constructor:
 var rt = Ext.data.Record.create([
-    {name: 'fullname'},
-    {name: 'first'}
+   {name: 'fullname'},
+   {name: 'first'}
 ]);
 var myStore = new Ext.data.Store({
     // explicitly create reader
     reader: new Ext.data.ArrayReader(
-        {
+       {
             idIndex: 0  // id for each record will be the first element
         },
         rt // recordType
@@ -3461,8 +3461,8 @@ header in the HTTP response must be set to "text/xml" or "application/xml".</p>
 <p>Example code:</p>
 <pre><code>
 var Employee = Ext.data.Record.create([
-   {name: 'name', mapping: 'name'},     // "mapping" property not needed if it is the same as "name"
-   {name: 'occupation'}                 // This field will use "occupation" as the mapping.
+  {name: 'name', mapping: 'name'},     // "mapping" property not needed if it is the same as "name"
+  {name: 'occupation'}                 // This field will use "occupation" as the mapping.
 ]);
 var myReader = new Ext.data.XmlReader({
    totalRecords: "results", // The element which contains the total dataset size (optional)
@@ -3557,7 +3557,7 @@ var store = new Ext.data.XmlStore({
     fields: [
         // set up the fields mapping into the xml doc
         // The first needs mapping, the others are very basic
-        {name: 'Author', mapping: 'ItemAttributes > Author'},
+       {name: 'Author', mapping: 'ItemAttributes > Author'},
         'Title', 'Manufacturer', 'ProductGroup'
     ]
 });
@@ -5049,7 +5049,7 @@ Ext.Direct.addProvider(pollA);
 pollA.disconnect();
 
 Ext.Direct.addProvider(
-    {
+   {
         type:'polling',
         url: 'php/pollB.php',
         id: 'pollB-provider'
@@ -5118,7 +5118,7 @@ You should assign an id if you need to be able to access the provider later and 
 not have an object reference available, for example:
 <pre><code>
 Ext.Direct.addProvider(
-    {
+   {
         type: 'polling',
         url:  'php/poll.php',
         id:   'poll-provider'
@@ -5204,7 +5204,7 @@ the Provider is configured with:
 <pre><code>
 "actions":{ // each property within the 'actions' object represents a server side Class 
     "TestAction":[ // array of methods within each server side Class to be   
-    {              // stubbed out on client
+   {              // stubbed out on client
         "name":"doEcho", 
         "len":1            
     },{
@@ -5235,7 +5235,7 @@ TestAction.multiply(
         if (e.status) {
             var answer = Ext.encode(result); // 8
     
-        }else{
+        } else {
             var msg = e.message; // failure message
         }
     }
@@ -5472,7 +5472,7 @@ myFormPanel.getForm().load({
 The data packet sent to the server will resemble something like:
 <pre><code>
 [
-    {
+   {
         "action":"Profile","method":"getBasicInfo","type":"rpc","tid":2,
         "data":[34,"bar"] // note the order of the params
     }
@@ -5482,7 +5482,7 @@ The form will process a data packet returned by the server that is similar
 to the following format:
 <pre><code>
 [
-    {
+   {
         "action":"Profile","method":"getBasicInfo","type":"rpc","tid":2,
         "result":{
             "success":true,
@@ -5566,7 +5566,7 @@ to the following:
 <pre><code>
 // sample success packet (batched requests)
 [
-    {
+   {
         "action":"Profile","method":"updateBasicInfo","type":"rpc","tid":3,
         "result":{
             "success":true
@@ -5854,7 +5854,7 @@ new Ext.FormPanel({
     baseParams: {
         foo: 'bar'
     },
-    {@link url}: 'myProcess.php',
+   {@link url}: 'myProcess.php',
     items: [{
         xtype: 'textfield',
         name: 'userName'
@@ -6313,9 +6313,9 @@ var myCheckboxGroup = new Ext.form.CheckboxGroup({
     // Put all controls in a single column with width 100%
     columns: 1,
     items: [
-        {boxLabel: 'Item 1', name: 'cb-col-1'},
-        {boxLabel: 'Item 2', name: 'cb-col-2', checked: true},
-        {boxLabel: 'Item 3', name: 'cb-col-3'}
+       {boxLabel: 'Item 1', name: 'cb-col-1'},
+       {boxLabel: 'Item 2', name: 'cb-col-2', checked: true},
+       {boxLabel: 'Item 3', name: 'cb-col-3'}
     ]
 });
 </code></pre>]]></Summary>
@@ -6446,11 +6446,11 @@ Ext.util.Format.comboRenderer = function (combo) {
 
 // create the combo instance
 var combo = new Ext.form.ComboBox({
-    {@link #typeAhead}: true,
-    {@link #triggerAction}: 'all',
-    {@link #lazyRender}:true,
-    {@link #mode}: 'local',
-    {@link #store}: new Ext.data.ArrayStore({
+   {@link #typeAhead}: true,
+   {@link #triggerAction}: 'all',
+   {@link #lazyRender}:true,
+   {@link #mode}: 'local',
+   {@link #store}: new Ext.data.ArrayStore({
         id: 0,
         fields: [
             'myId',
@@ -6458,8 +6458,8 @@ var combo = new Ext.form.ComboBox({
         ],
         data: [[1, 'item1'], [2, 'item2']]
     }),
-    {@link #valueField}: 'myId',
-    {@link #displayField}: 'displayText'
+   {@link #valueField}: 'myId',
+   {@link #displayField}: 'displayText'
 });
 
 // snippet of column model used within grid
@@ -9162,11 +9162,11 @@ each record in the store is indexed into the ColumnModel.</p>
 <p><u>Initialization Method 1: an Array</u></p>
 <pre><code>
  var colModel = new Ext.grid.ColumnModel([
-    { header: "Ticker", width: 60, sortable: true},
-    { header: "Company Name", width: 150, sortable: true, id: 'company'},
-    { header: "Market Cap.", width: 100, sortable: true},
-    { header: "$ Sales", width: 100, sortable: true, renderer: money},
-    { header: "Employees", width: 100, sortable: true, resizable: false}
+   { header: "Ticker", width: 60, sortable: true},
+   { header: "Company Name", width: 150, sortable: true, id: 'company'},
+   { header: "Market Cap.", width: 100, sortable: true},
+   { header: "$ Sales", width: 100, sortable: true, renderer: money},
+   { header: "Employees", width: 100, sortable: true, resizable: false}
  ]);
  </code></pre>
 <p>The ColumnModel may be initialized with an Array of {@link Ext.grid.Column} column configuration
@@ -9188,11 +9188,11 @@ config property. The <tt><b>{@link #defaults}</b></tt> config property can be us
 for all columns, e.g.:</p><pre><code>
  var colModel = new Ext.grid.ColumnModel({
     columns: [
-        { header: "Ticker", width: 60, menuDisabled: false},
-        { header: "Company Name", width: 150, id: 'company'},
-        { header: "Market Cap."},
-        { header: "$ Sales", renderer: money},
-        { header: "Employees", resizable: false}
+       { header: "Ticker", width: 60, menuDisabled: false},
+       { header: "Company Name", width: 150, id: 'company'},
+       { header: "Market Cap."},
+       { header: "$ Sales", renderer: money},
+       { header: "Employees", resizable: false}
     ],
     defaults: {
         sortable: true,
@@ -9200,7 +9200,7 @@ for all columns, e.g.:</p><pre><code>
         width: 100
     },
     listeners: {
-        {@link #hiddenchange}: function (cm, colIndex, hidden) {
+       {@link #hiddenchange}: function (cm, colIndex, hidden) {
             saveConfig(colIndex, hidden);
         }
     }
@@ -9839,33 +9839,33 @@ in a tabular format of rows and columns. The GridPanel is composed of the follow
 <p>Example usage:</p>
 <pre><code>
 var grid = new Ext.grid.GridPanel({
-    {@link #store}: new {@link Ext.data.Store}({
-        {@link Ext.data.Store#autoDestroy autoDestroy}: true,
-        {@link Ext.data.Store#reader reader}: reader,
-        {@link Ext.data.Store#data data}: xg.dummyData
+   {@link #store}: new {@link Ext.data.Store}({
+       {@link Ext.data.Store#autoDestroy autoDestroy}: true,
+       {@link Ext.data.Store#reader reader}: reader,
+       {@link Ext.data.Store#data data}: xg.dummyData
     }),
-    {@link #colModel}: new {@link Ext.grid.ColumnModel}({
-        {@link Ext.grid.ColumnModel#defaults defaults}: {
+   {@link #colModel}: new {@link Ext.grid.ColumnModel}({
+       {@link Ext.grid.ColumnModel#defaults defaults}: {
             width: 120,
             sortable: true
         },
-        {@link Ext.grid.ColumnModel#columns columns}: [
-            {id: 'company', header: 'Company', width: 200, sortable: true, dataIndex: 'company'},
-            {header: 'Price', renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
-            {header: 'Change', dataIndex: 'change'},
-            {header: '% Change', dataIndex: 'pctChange'},
+       {@link Ext.grid.ColumnModel#columns columns}: [
+           {id: 'company', header: 'Company', width: 200, sortable: true, dataIndex: 'company'},
+           {header: 'Price', renderer: Ext.util.Format.usMoney, dataIndex: 'price'},
+           {header: 'Change', dataIndex: 'change'},
+           {header: '% Change', dataIndex: 'pctChange'},
             // instead of specifying renderer: Ext.util.Format.dateRenderer('m/d/Y') use xtype
-            {
+           {
                 header: 'Last Updated', width: 135, dataIndex: 'lastChange',
                 xtype: 'datecolumn', format: 'M d, Y'
             }
         ],
     }),
-    {@link #viewConfig}: {
-        {@link Ext.grid.GridView#forceFit forceFit}: true,
+   {@link #viewConfig}: {
+       {@link Ext.grid.GridView#forceFit forceFit}: true,
 
 //      Return CSS class to apply to rows depending upon data values
-        {@link Ext.grid.GridView#getRowClass getRowClass}: function (record, index) {
+       {@link Ext.grid.GridView#getRowClass getRowClass}: function (record, index) {
             var c = record.{@link Ext.data.Record#get get}('change');
             if (c < 0) {
                 return 'price-fall';
@@ -9874,7 +9874,7 @@ var grid = new Ext.grid.GridPanel({
             }
         }
     },
-    {@link #sm}: new Ext.grid.RowSelectionModel({singleSelect:true}),
+   {@link #sm}: new Ext.grid.RowSelectionModel({singleSelect:true}),
     width: 600,
     height: 300,
     frame: true,
@@ -10664,18 +10664,18 @@ var grid = new Ext.grid.GridPanel({
         reader: reader,
         data: xg.dummyData,
         sortInfo: {field: 'company', direction: 'ASC'},
-        {@link Ext.data.GroupingStore#groupOnSort groupOnSort}: true,
-        {@link Ext.data.GroupingStore#remoteGroup remoteGroup}: true,
-        {@link Ext.data.GroupingStore#groupField groupField}: 'industry'
+       {@link Ext.data.GroupingStore#groupOnSort groupOnSort}: true,
+       {@link Ext.data.GroupingStore#remoteGroup remoteGroup}: true,
+       {@link Ext.data.GroupingStore#groupField groupField}: 'industry'
     }),
     colModel: new {@link Ext.grid.ColumnModel}({
         columns:[
-            {id:'company',header: 'Company', width: 60, dataIndex: 'company'},
+           {id:'company',header: 'Company', width: 60, dataIndex: 'company'},
             // {@link Ext.grid.Column#groupable groupable}, {@link Ext.grid.Column#groupName groupName}, {@link Ext.grid.Column#groupRender groupRender} are also configurable at column level
-            {header: 'Price', renderer: Ext.util.Format.usMoney, dataIndex: 'price', {@link Ext.grid.Column#groupable groupable}: false},
-            {header: 'Change', dataIndex: 'change', renderer: Ext.util.Format.usMoney},
-            {header: 'Industry', dataIndex: 'industry'},
-            {header: 'Last Updated', renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
+           {header: 'Price', renderer: Ext.util.Format.usMoney, dataIndex: 'price', {@link Ext.grid.Column#groupable groupable}: false},
+           {header: 'Change', dataIndex: 'change', renderer: Ext.util.Format.usMoney},
+           {header: 'Industry', dataIndex: 'industry'},
+           {header: 'Last Updated', renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}
         ],
         defaults: {
             sortable: true,
@@ -10685,9 +10685,9 @@ var grid = new Ext.grid.GridPanel({
     }),
 
     view: new Ext.grid.GroupingView({
-        {@link Ext.grid.GridView#forceFit forceFit}: true,
+       {@link Ext.grid.GridView#forceFit forceFit}: true,
         // custom grouping text template to display the number of items per group
-        {@link #groupTextTpl}: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
+       {@link #groupTextTpl}: '{text} ({[values.rs.length]} {[values.rs.length > 1 ? "Items" : "Item"]})'
     }),
 
     frame:true,
@@ -10998,9 +10998,9 @@ an automatic row numbering column.
  // This is a typical column config with the first column providing row numbers
  var colModel = new Ext.grid.ColumnModel([
     new Ext.grid.RowNumberer(),
-    {header: "Name", width: 80, sortable: true},
-    {header: "Code", width: 50, sortable: true},
-    {header: "Description", width: 200, sortable: true}
+   {header: "Name", width: 80, sortable: true},
+   {header: "Code", width: 50, sortable: true},
+   {header: "Description", width: 200, sortable: true}
  ]);
  </code></pre>]]></Summary>
               <Constructor>
@@ -11548,36 +11548,36 @@ levels.</p>
 <p>Example usage:</p>
 <pre><code>
 var myBorderPanel = new Ext.Panel({
-    {@link Ext.Component#renderTo renderTo}: document.body,
-    {@link Ext.BoxComponent#width width}: 700,
-    {@link Ext.BoxComponent#height height}: 500,
-    {@link Ext.Panel#title title}: 'Border Layout',
-    {@link Ext.Container#layout layout}: 'border',
-    {@link Ext.Container#items items}: [{
-        {@link Ext.Panel#title title}: 'South Region is resizable',
-        {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}: 'south',     // position for region
-        {@link Ext.BoxComponent#height height}: 100,
-        {@link Ext.layout.BorderLayout.Region#split split}: true,         // enable resizing
-        {@link Ext.SplitBar#minSize minSize}: 75,         // defaults to {@link Ext.layout.BorderLayout.Region#minHeight 50} 
-        {@link Ext.SplitBar#maxSize maxSize}: 150,
-        {@link Ext.layout.BorderLayout.Region#margins margins}: '0 5 5 5'
+   {@link Ext.Component#renderTo renderTo}: document.body,
+   {@link Ext.BoxComponent#width width}: 700,
+   {@link Ext.BoxComponent#height height}: 500,
+   {@link Ext.Panel#title title}: 'Border Layout',
+   {@link Ext.Container#layout layout}: 'border',
+   {@link Ext.Container#items items}: [{
+       {@link Ext.Panel#title title}: 'South Region is resizable',
+       {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}: 'south',     // position for region
+       {@link Ext.BoxComponent#height height}: 100,
+       {@link Ext.layout.BorderLayout.Region#split split}: true,         // enable resizing
+       {@link Ext.SplitBar#minSize minSize}: 75,         // defaults to {@link Ext.layout.BorderLayout.Region#minHeight 50} 
+       {@link Ext.SplitBar#maxSize maxSize}: 150,
+       {@link Ext.layout.BorderLayout.Region#margins margins}: '0 5 5 5'
     },{
         // xtype: 'panel' implied by default
-        {@link Ext.Panel#title title}: 'West Region is collapsible',
-        {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}:'west',
-        {@link Ext.layout.BorderLayout.Region#margins margins}: '5 0 0 5',
-        {@link Ext.BoxComponent#width width}: 200,
-        {@link Ext.layout.BorderLayout.Region#collapsible collapsible}: true,   // make collapsible
-        {@link Ext.layout.BorderLayout.Region#cmargins cmargins}: '5 5 0 5', // adjust top margin when collapsed
-        {@link Ext.Component#id id}: 'west-region-container',
-        {@link Ext.Container#layout layout}: 'fit',
-        {@link Ext.Panel#unstyled unstyled}: true
+       {@link Ext.Panel#title title}: 'West Region is collapsible',
+       {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}:'west',
+       {@link Ext.layout.BorderLayout.Region#margins margins}: '5 0 0 5',
+       {@link Ext.BoxComponent#width width}: 200,
+       {@link Ext.layout.BorderLayout.Region#collapsible collapsible}: true,   // make collapsible
+       {@link Ext.layout.BorderLayout.Region#cmargins cmargins}: '5 5 0 5', // adjust top margin when collapsed
+       {@link Ext.Component#id id}: 'west-region-container',
+       {@link Ext.Container#layout layout}: 'fit',
+       {@link Ext.Panel#unstyled unstyled}: true
     },{
-        {@link Ext.Panel#title title}: 'Center Region',
-        {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}: 'center',     // center region is required, no width/height specified
-        {@link Ext.Component#xtype xtype}: 'container',
-        {@link Ext.Container#layout layout}: 'fit',
-        {@link Ext.layout.BorderLayout.Region#margins margins}: '5 5 0 0'
+       {@link Ext.Panel#title title}: 'Center Region',
+       {@link Ext.layout.BorderLayout.Region#BorderLayout.Region region}: 'center',     // center region is required, no width/height specified
+       {@link Ext.Component#xtype xtype}: 'container',
+       {@link Ext.Container#layout layout}: 'fit',
+       {@link Ext.layout.BorderLayout.Region#margins margins}: '5 5 0 0'
     }]
 });
 </code></pre>
@@ -11953,14 +11953,14 @@ var card = new Ext.Panel({
     },
     // just an example of one possible navigation scheme, using buttons
     bbar: [
-        {
+       {
             id: 'move-prev',
             text: 'Back',
             handler: navHandler.createDelegate(this, [-1]),
             disabled: true
         },
         '->', // greedy spacer so that the buttons are aligned to each side
-        {
+       {
             id: 'move-next',
             text: 'Next',
             handler: navHandler.createDelegate(this, [1])
@@ -12200,7 +12200,7 @@ var form = new Ext.form.FormPanel({
             fieldLabel: 'First Name',
             name: 'first',
             allowBlank: false,
-            {@link Ext.Component#labelSeparator labelSeparator}: ':' // override labelSeparator layout config
+           {@link Ext.Component#labelSeparator labelSeparator}: ':' // override labelSeparator layout config
         },{
             fieldLabel: 'Last Name',
             name: 'last'
@@ -12216,16 +12216,16 @@ var form = new Ext.form.FormPanel({
         }
     ],
     buttons: [
-        {text: 'Save'},
-        {text: 'Cancel'}
+       {text: 'Save'},
+       {text: 'Cancel'}
     ],
     layoutConfig: {
-        {@link #labelSeparator}: '~' // superseded by assignment below
+       {@link #labelSeparator}: '~' // superseded by assignment below
     },
     // config options applicable to container when layout='form':
     hideLabels: false,
     labelAlign: 'left',   // or 'right' or 'top'
-    {@link Ext.form.FormPanel#labelSeparator labelSeparator}: '>>', // takes precedence over layoutConfig value
+   {@link Ext.form.FormPanel#labelSeparator labelSeparator}: '>>', // takes precedence over layoutConfig value
     labelWidth: 65,       // defaults to 100
     labelPad: 8           // defaults to 5, must specify labelWidth to be honored
 });
@@ -16425,12 +16425,12 @@ Example usage:<br>
 // Define the shared action.  Each component below will have the same
 // display text and icon, and will display the same message on click.
 var action = new Ext.Action({
-    {@link #text}: 'Do something',
-    {@link #handler}: function () {
+   {@link #text}: 'Do something',
+   {@link #handler}: function () {
         Ext.Msg.alert('Click', 'You did something.');
     },
-    {@link #iconCls}: 'do-something',
-    {@link #itemId}: 'myAction'
+   {@link #iconCls}: 'do-something',
+   {@link #itemId}: 'myAction'
 });
 
 var panel = new Ext.Panel({
@@ -16440,7 +16440,7 @@ var panel = new Ext.Panel({
     tbar: [
         // Add the action directly to a toolbar as a menu button
         action,
-        {
+       {
             text: 'Action Menu',
             // Add the action to a menu as a text item
             menu: [action]
@@ -17386,7 +17386,7 @@ var p = new Ext.Panel({
     html: 'whatever',
     tbar: [{
         xtype: 'buttongroup',
-        {@link #columns}: 3,
+       {@link #columns}: 3,
         title: 'Clipboard',
         items: [{
             text: 'Paste',
@@ -17510,93 +17510,93 @@ xtype like {@link #getXType} and {@link #isXType}. This is the list of all valid
 <pre>
 xtype            Class
 -------------    ------------------
-box              {@link Ext.BoxComponent}
-button           {@link Ext.Button}
-buttongroup      {@link Ext.ButtonGroup}
-colorpalette     {@link Ext.ColorPalette}
-component        {@link Ext.Component}
-container        {@link Ext.Container}
-cycle            {@link Ext.CycleButton}
-dataview         {@link Ext.DataView}
-datepicker       {@link Ext.DatePicker}
-editor           {@link Ext.Editor}
-editorgrid       {@link Ext.grid.EditorGridPanel}
-flash            {@link Ext.FlashComponent}
-grid             {@link Ext.grid.GridPanel}
-listview         {@link Ext.ListView}
-panel            {@link Ext.Panel}
-progress         {@link Ext.ProgressBar}
-propertygrid     {@link Ext.grid.PropertyGrid}
-slider           {@link Ext.Slider}
-spacer           {@link Ext.Spacer}
-splitbutton      {@link Ext.SplitButton}
-tabpanel         {@link Ext.TabPanel}
-treepanel        {@link Ext.tree.TreePanel}
-viewport         {@link Ext.ViewPort}
-window           {@link Ext.Window}
+box             {@link Ext.BoxComponent}
+button          {@link Ext.Button}
+buttongroup     {@link Ext.ButtonGroup}
+colorpalette    {@link Ext.ColorPalette}
+component       {@link Ext.Component}
+container       {@link Ext.Container}
+cycle           {@link Ext.CycleButton}
+dataview        {@link Ext.DataView}
+datepicker      {@link Ext.DatePicker}
+editor          {@link Ext.Editor}
+editorgrid      {@link Ext.grid.EditorGridPanel}
+flash           {@link Ext.FlashComponent}
+grid            {@link Ext.grid.GridPanel}
+listview        {@link Ext.ListView}
+panel           {@link Ext.Panel}
+progress        {@link Ext.ProgressBar}
+propertygrid    {@link Ext.grid.PropertyGrid}
+slider          {@link Ext.Slider}
+spacer          {@link Ext.Spacer}
+splitbutton     {@link Ext.SplitButton}
+tabpanel        {@link Ext.TabPanel}
+treepanel       {@link Ext.tree.TreePanel}
+viewport        {@link Ext.ViewPort}
+window          {@link Ext.Window}
 
 Toolbar components
 ---------------------------------------
-paging           {@link Ext.PagingToolbar}
-toolbar          {@link Ext.Toolbar}
-tbbutton         {@link Ext.Toolbar.Button}        (deprecated; use button)
-tbfill           {@link Ext.Toolbar.Fill}
-tbitem           {@link Ext.Toolbar.Item}
-tbseparator      {@link Ext.Toolbar.Separator}
-tbspacer         {@link Ext.Toolbar.Spacer}
-tbsplit          {@link Ext.Toolbar.SplitButton}   (deprecated; use splitbutton)
-tbtext           {@link Ext.Toolbar.TextItem}
+paging          {@link Ext.PagingToolbar}
+toolbar         {@link Ext.Toolbar}
+tbbutton        {@link Ext.Toolbar.Button}        (deprecated; use button)
+tbfill          {@link Ext.Toolbar.Fill}
+tbitem          {@link Ext.Toolbar.Item}
+tbseparator     {@link Ext.Toolbar.Separator}
+tbspacer        {@link Ext.Toolbar.Spacer}
+tbsplit         {@link Ext.Toolbar.SplitButton}   (deprecated; use splitbutton)
+tbtext          {@link Ext.Toolbar.TextItem}
 
 Menu components
 ---------------------------------------
-menu             {@link Ext.menu.Menu}
-colormenu        {@link Ext.menu.ColorMenu}
-datemenu         {@link Ext.menu.DateMenu}
-menubaseitem     {@link Ext.menu.BaseItem}
-menucheckitem    {@link Ext.menu.CheckItem}
-menuitem         {@link Ext.menu.Item}
-menuseparator    {@link Ext.menu.Separator}
-menutextitem     {@link Ext.menu.TextItem}
+menu            {@link Ext.menu.Menu}
+colormenu       {@link Ext.menu.ColorMenu}
+datemenu        {@link Ext.menu.DateMenu}
+menubaseitem    {@link Ext.menu.BaseItem}
+menucheckitem   {@link Ext.menu.CheckItem}
+menuitem        {@link Ext.menu.Item}
+menuseparator   {@link Ext.menu.Separator}
+menutextitem    {@link Ext.menu.TextItem}
 
 Form components
 ---------------------------------------
-form             {@link Ext.FormPanel}
-checkbox         {@link Ext.form.Checkbox}
-checkboxgroup    {@link Ext.form.CheckboxGroup}
-combo            {@link Ext.form.ComboBox}
-datefield        {@link Ext.form.DateField}
-displayfield     {@link Ext.form.DisplayField}
-field            {@link Ext.form.Field}
-fieldset         {@link Ext.form.FieldSet}
-hidden           {@link Ext.form.Hidden}
-htmleditor       {@link Ext.form.HtmlEditor}
-label            {@link Ext.form.Label}
-numberfield      {@link Ext.form.NumberField}
-radio            {@link Ext.form.Radio}
-radiogroup       {@link Ext.form.RadioGroup}
-textarea         {@link Ext.form.TextArea}
-textfield        {@link Ext.form.TextField}
-timefield        {@link Ext.form.TimeField}
-trigger          {@link Ext.form.TriggerField}
+form            {@link Ext.FormPanel}
+checkbox        {@link Ext.form.Checkbox}
+checkboxgroup   {@link Ext.form.CheckboxGroup}
+combo           {@link Ext.form.ComboBox}
+datefield       {@link Ext.form.DateField}
+displayfield    {@link Ext.form.DisplayField}
+field           {@link Ext.form.Field}
+fieldset        {@link Ext.form.FieldSet}
+hidden          {@link Ext.form.Hidden}
+htmleditor      {@link Ext.form.HtmlEditor}
+label           {@link Ext.form.Label}
+numberfield     {@link Ext.form.NumberField}
+radio           {@link Ext.form.Radio}
+radiogroup      {@link Ext.form.RadioGroup}
+textarea        {@link Ext.form.TextArea}
+textfield       {@link Ext.form.TextField}
+timefield       {@link Ext.form.TimeField}
+trigger         {@link Ext.form.TriggerField}
 
 Chart components
 ---------------------------------------
-chart            {@link Ext.chart.Chart}
-barchart         {@link Ext.chart.BarChart}
-cartesianchart   {@link Ext.chart.CartesianChart}
-columnchart      {@link Ext.chart.ColumnChart}
-linechart        {@link Ext.chart.LineChart}
-piechart         {@link Ext.chart.PieChart}
+chart           {@link Ext.chart.Chart}
+barchart        {@link Ext.chart.BarChart}
+cartesianchart  {@link Ext.chart.CartesianChart}
+columnchart     {@link Ext.chart.ColumnChart}
+linechart       {@link Ext.chart.LineChart}
+piechart        {@link Ext.chart.PieChart}
 
 Store xtypes
 ---------------------------------------
-arraystore       {@link Ext.data.ArrayStore}
-directstore      {@link Ext.data.DirectStore}
-groupingstore    {@link Ext.data.GroupingStore}
-jsonstore        {@link Ext.data.JsonStore}
-simplestore      {@link Ext.data.SimpleStore}      (deprecated; use arraystore)
-store            {@link Ext.data.Store}
-xmlstore         {@link Ext.data.XmlStore}
+arraystore      {@link Ext.data.ArrayStore}
+directstore     {@link Ext.data.DirectStore}
+groupingstore   {@link Ext.data.GroupingStore}
+jsonstore       {@link Ext.data.JsonStore}
+simplestore     {@link Ext.data.SimpleStore}      (deprecated; use arraystore)
+store           {@link Ext.data.Store}
+xmlstore        {@link Ext.data.XmlStore}
 </pre>]]></Summary>
           <Constructor>
             <Parameters>
@@ -17810,19 +17810,19 @@ avoiding potential conflicts with {@link Ext.ComponentMgr} which requires a <b>u
 <code>{@link #id}</code>.</p>
 <pre><code>
 var c = new Ext.Panel({ //
-    {@link Ext.BoxComponent#height height}: 300,
-    {@link #renderTo}: document.body,
-    {@link Ext.Container#layout layout}: 'auto',
-    {@link Ext.Container#items items}: [
-        {
+   {@link Ext.BoxComponent#height height}: 300,
+   {@link #renderTo}: document.body,
+   {@link Ext.Container#layout layout}: 'auto',
+   {@link Ext.Container#items items}: [
+       {
             itemId: 'p1',
-            {@link Ext.Panel#title title}: 'Panel 1',
-            {@link Ext.BoxComponent#height height}: 150
+           {@link Ext.Panel#title title}: 'Panel 1',
+           {@link Ext.BoxComponent#height height}: 150
         },
-        {
+       {
             itemId: 'p2',
-            {@link Ext.Panel#title title}: 'Panel 2',
-            {@link Ext.BoxComponent#height height}: 150
+           {@link Ext.Panel#title title}: 'Panel 2',
+           {@link Ext.BoxComponent#height height}: 150
         }
     ]
 })
@@ -17851,7 +17851,7 @@ new Ext.FormPanel({
     layoutConfig: {
         labelSeparator: '~'   // layout config has lowest priority (defaults to ':')
     },
-    {@link Ext.layout.FormLayout#labelSeparator labelSeparator}: '>>',     // config at container level
+   {@link Ext.layout.FormLayout#labelSeparator labelSeparator}: '>>',     // config at container level
     items: [{
         xtype: 'textfield',
         fieldLabel: 'Field 1',
@@ -19036,8 +19036,8 @@ or an instantiated Component. The server might return this for example:</p><pre>
         }, [
            'customer',
            'invNo',
-           {name: 'date', type: 'date', dateFormat: 'm/d/Y'},
-           {name: 'value', type: 'float'}
+          {name: 'date', type: 'date', dateFormat: 'm/d/Y'},
+          {name: 'value', type: 'float'}
         ])
     });
 
@@ -19046,10 +19046,10 @@ or an instantiated Component. The server might return this for example:</p><pre>
         bbar: new Ext.PagingToolbar(store),
         store: store,
         columns: [
-            {header: "Customer", width: 250, dataIndex: 'customer', sortable: true},
-            {header: "Invoice Number", width: 120, dataIndex: 'invNo', sortable: true},
-            {header: "Invoice Date", width: 100, dataIndex: 'date', renderer: formatDate, sortable: true},
-            {header: "Value", width: 120, dataIndex: 'value', renderer: 'usMoney', sortable: true}
+           {header: "Customer", width: 250, dataIndex: 'customer', sortable: true},
+           {header: "Invoice Number", width: 120, dataIndex: 'invNo', sortable: true},
+           {header: "Invoice Date", width: 100, dataIndex: 'date', renderer: formatDate, sortable: true},
+           {header: "Value", width: 120, dataIndex: 'value', renderer: 'usMoney', sortable: true}
         ],
     });
     store.load();
@@ -19087,7 +19087,7 @@ defaults: {               // defaults are applied to items, not the container
     autoScroll:true
 },
 items: [
-    {
+   {
         xtype: 'panel',   // defaults <b>do not</b> have precedence over
         id: 'panel1',     // options in config objects, so the defaults
         autoScroll: false // will not be applied here, panel1 will be autoScroll:false
@@ -19649,8 +19649,8 @@ var store = new Ext.data.JsonStore({
     root: 'images',
     fields: [
         'name', 'url',
-        {name:'size', type: 'float'},
-        {name:'lastmod', type:'date', dateFormat:'timestamp'}
+       {name:'size', type: 'float'},
+       {name:'lastmod', type:'date', dateFormat:'timestamp'}
     ]
 });
 store.load();
@@ -20363,12 +20363,12 @@ var pollProv = new Ext.direct.PollingProvider({
 }); 
 
 Ext.Direct.addProvider(
-    {
+   {
         "type":"remoting",       // create a {@link Ext.direct.RemotingProvider} 
         "url":"php\/router.php", // url to connect to the Ext.Direct server-side router.
         "actions":{              // each property within the actions object represents a Class 
             "TestAction":[       // array of methods within each server side Class   
-            {
+           {
                 "name":"doEcho", // name of method
                 "len":1
             },{
@@ -20483,9 +20483,9 @@ var spec = {
     cls: 'my-list',
     // append children after creating
     children: [     // may also specify 'cn' instead of 'children'
-        {tag: 'li', id: 'item0', html: 'List Item 0'},
-        {tag: 'li', id: 'item1', html: 'List Item 1'},
-        {tag: 'li', id: 'item2', html: 'List Item 2'}
+       {tag: 'li', id: 'item0', html: 'List Item 0'},
+       {tag: 'li', id: 'item1', html: 'List Item 1'},
+       {tag: 'li', id: 'item2', html: 'List Item 2'}
     ]
 };
 var list = dh.append(
@@ -20497,8 +20497,8 @@ var list = dh.append(
 specification objects. This can be used to insert multiple sibling nodes into an existing
 container very efficiently. For example, to add more list items to the example above:<pre><code>
 dh.append('my-ul', [
-    {tag: 'li', id: 'item3', html: 'List Item 3'},
-    {tag: 'li', id: 'item4', html: 'List Item 4'}
+   {tag: 'li', id: 'item3', html: 'List Item 3'},
+   {tag: 'li', id: 'item4', html: 'List Item 4'}
 ]);
 </code></pre></p>
 
@@ -20512,7 +20512,7 @@ var list = dh.append('my-div', {tag: 'ul', cls: 'my-list'});
 // get template
 var tpl = dh.createTemplate({tag: 'li', id: 'item{0}', html: 'List Item {0}'});
 
-for(var i = 0; i < 5, i++) {
+for (var i = 0; i < 5, i++) {
     tpl.append(list, [i]); // use template to append to the actual node
 }
 </code></pre></p>
@@ -20715,10 +20715,10 @@ a function which returns such a specification.]]></Summary>
                 if (!/tag|children|cn|html|style/.test(attr)) {
 	                if (attr == 'cls') {
 	                    el.className = val;
-	                }else{
+	                } else {
                         if (useSet) {
                             el.setAttribute(attr, val);
-                        }else{
+                        } else {
                             el[attr] = val;
                         }
 	                }
@@ -21227,10 +21227,10 @@ Option    Default   Description
 <pre><code>
 // Element animation options object
 var opt = {
-    {@link Ext.Fx#duration duration}: 1,
-    {@link Ext.Fx#easing easing}: 'elasticIn',
-    {@link Ext.Fx#callback callback}: this.foo,
-    {@link Ext.Fx#scope scope}: this
+   {@link Ext.Fx#duration duration}: 1,
+   {@link Ext.Fx#easing easing}: 'elasticIn',
+   {@link Ext.Fx#callback callback}: this.foo,
+   {@link Ext.Fx#scope scope}: this
 };
 // animation with some options set
 el.setWidth(100, opt);
@@ -21310,7 +21310,7 @@ these properties:</p><div><ul class="mdetail-params">
 var el = Ext.get('complexEl');
 el.animate(
     // animation control object
-    {
+   {
         borderWidth: {to: 3, from: 0},
         opacity: {to: .3, from: 1},
         height: {to: 50, from: el.getHeight()},
@@ -21329,7 +21329,7 @@ el.animate(
 <pre><code>
 el.animate(
     // animation control object
-    {
+   {
         color: { to: '#06e' },
         backgroundColor: { to: '#e06' }
     },
@@ -21347,7 +21347,7 @@ way points during transit.</p>
 <pre><code>
 el.animate(
     // animation control object
-    {
+   {
         borderWidth: {to: 3, from: 0},
         opacity: {to: .3, from: 1},
         height: {to: 50, from: el.getHeight()},
@@ -21373,7 +21373,7 @@ el.animate(
 <pre><code>
 el.animate(
     // animation control object
-    {
+   {
         scroll: {to: [400, 300]}
     },
     0.35,      // animation duration
@@ -24403,7 +24403,7 @@ search as a number or element (defaults to 10 || document.body)]]></Summary>
                 me.target = E.getTarget(e);
                 // same for XY
                 me.xy = E.getXY(e);
-            }else{
+            } else {
                 me.button = -1;
                 me.shiftKey = false;
                 me.ctrlKey = false;
@@ -25133,7 +25133,7 @@ var map = new Ext.KeyMap("my-element", {
 
 // map multiple keys to multiple actions by strings and array of codes
 var map = new Ext.KeyMap("my-element", [
-    {
+   {
         key: [10,13],
         fn: function () { alert("Return was pressed"); }
     }, {
@@ -25364,13 +25364,13 @@ width and number of columns</li>
 // consume JSON of this form:
 {
    "images":[
-      {
+     {
          "name":"dance_fever.jpg",
          "size":2067,
          "lastmod":1236974993000,
          "url":"images\/thumbs\/dance_fever.jpg"
       },
-      {
+     {
          "name":"zack_sink.jpg",
          "size":2303,
          "lastmod":1236974993000,
@@ -25383,8 +25383,8 @@ var store = new Ext.data.JsonStore({
     root: 'images',
     fields: [
         'name', 'url',
-        {name:'size', type: 'float'},
-        {name:'lastmod', type:'date', dateFormat:'timestamp'}
+       {name:'size', type: 'float'},
+       {name:'lastmod', type:'date', dateFormat:'timestamp'}
     ]
 });
 store.load();
@@ -25948,7 +25948,7 @@ Ext.QuickTips.init(); // to display button quicktips
 
 var myStore = new Ext.data.Store({
     reader: new Ext.data.JsonReader({
-        {@link Ext.data.JsonReader#totalProperty totalProperty}: 'results', 
+       {@link Ext.data.JsonReader#totalProperty totalProperty}: 'results', 
         ...
     }),
     ...
@@ -25960,10 +25960,10 @@ var grid = new Ext.grid.GridPanel({
     ...
     store: myStore,
     bbar: new Ext.PagingToolbar({
-        {@link #store}: myStore,       // grid and PagingToolbar using same store
-        {@link #displayInfo}: true,
-        {@link #pageSize}: myPageSize,
-        {@link #prependButtons}: true,
+       {@link #store}: myStore,       // grid and PagingToolbar using same store
+       {@link #displayInfo}: true,
+       {@link #pageSize}: myPageSize,
+       {@link #prependButtons}: true,
         items: [
             'text 1'
         ]
@@ -25987,7 +25987,7 @@ store.load({
 <p>If using {@link Ext.data.Store#autoLoad store's autoLoad} configuration:</p>
 <pre><code>
 var myStore = new Ext.data.Store({
-    {@link Ext.data.Store#autoLoad autoLoad}: {params:{start: 0, limit: 25}},
+   {@link Ext.data.Store#autoLoad autoLoad}: {params:{start: 0, limit: 25}},
     ...
 });
 </code></pre>
@@ -25998,10 +25998,10 @@ var myStore = new Ext.data.Store({
     "success": true,
     "results": 2000, 
     "rows": [ // <b>*Note:</b> this must be an Array 
-        { "id":  1, "name": "Bill", "occupation": "Gardener" },
-        { "id":  2, "name":  "Ben", "occupation": "Horticulturalist" },
+       { "id":  1, "name": "Bill", "occupation": "Gardener" },
+       { "id":  2, "name":  "Ben", "occupation": "Horticulturalist" },
         ...
-        { "id": 25, "name":  "Sue", "occupation": "Botanist" }
+       { "id": 25, "name":  "Sue", "occupation": "Botanist" }
     ]
 }
 </code></pre>
@@ -26274,12 +26274,12 @@ replaced by <code>{@link #baseCls}</code>):</p>
 Panel      Default  Default             Custom      Additional       Additional
 Element    element  class               element     class            style
 ========   ==========================   =========   ==============   ===========
-{@link #header}     div      {@link #baseCls}+'-header'   {@link #headerCfg}   headerCssClass   headerStyle
-{@link #bwrap}      div      {@link #baseCls}+'-bwrap'     {@link #bwrapCfg}    bwrapCssClass    bwrapStyle
-+ tbar     div      {@link #baseCls}+'-tbar'       {@link #tbarCfg}     tbarCssClass     tbarStyle
-+ {@link #body}     div      {@link #baseCls}+'-body'       {@link #bodyCfg}     {@link #bodyCssClass}     {@link #bodyStyle}
-+ bbar     div      {@link #baseCls}+'-bbar'       {@link #bbarCfg}     bbarCssClass     bbarStyle
-+ {@link #footer}   div      {@link #baseCls}+'-footer'   {@link #footerCfg}   footerCssClass   footerStyle
+{@link #header}     div     {@link #baseCls}+'-header'  {@link #headerCfg}   headerCssClass   headerStyle
+{@link #bwrap}      div     {@link #baseCls}+'-bwrap'    {@link #bwrapCfg}    bwrapCssClass    bwrapStyle
++ tbar     div     {@link #baseCls}+'-tbar'      {@link #tbarCfg}     tbarCssClass     tbarStyle
++ {@link #body}     div     {@link #baseCls}+'-body'      {@link #bodyCfg}    {@link #bodyCssClass}    {@link #bodyStyle}
++ bbar     div     {@link #baseCls}+'-bbar'      {@link #bbarCfg}     bbarCssClass     bbarStyle
++ {@link #footer}   div     {@link #baseCls}+'-footer'  {@link #footerCfg}   footerCssClass   footerStyle
 </pre>
 <p>Configuring a Custom element may be used, for example, to force the {@link #body} Element
 to use a different form of markup than is created by default. An example of this might be
@@ -27905,8 +27905,8 @@ new Ext.SplitButton({
    	menu: new Ext.menu.Menu({
         items: [
         	// these items will render as dropdown menu items when the arrow is clicked:
-	        {text: 'Item 1', handler: item1Handler},
-	        {text: 'Item 2', handler: item2Handler}
+	       {text: 'Item 1', handler: item1Handler},
+	       {text: 'Item 2', handler: item2Handler}
         ]
    	})
 });
@@ -28063,8 +28063,8 @@ var tabs = new Ext.TabPanel({
     renderTo: 'my-tabs',
     activeTab: 0,
     items:[
-        {contentEl:'tab1', title:'Tab 1'},
-        {contentEl:'tab2', title:'Tab 2'}
+       {contentEl:'tab1', title:'Tab 1'},
+       {contentEl:'tab2', title:'Tab 2'}
     ]
 });
 
@@ -28465,7 +28465,7 @@ var t = new Ext.Template(
     '&lt;span class="{cls}"&gt;{name} {value}&lt;/span&gt;',
   '&lt;/div&gt;',
   // a configuration object:
-  {
+ {
     compiled: true,   // {@link #compile} immediately
     disableFormats: true // See Notes below.
   } 
@@ -28504,7 +28504,7 @@ var t = new Ext.Template(
     '&lt;div name="{id}"&gt;',
         '&lt;span class="{cls}"&gt;{name} {value}&lt;/span&gt;',
     '&lt;/div&gt;',
-    {
+   {
         compiled: true,      // {@link #compile} immediately
         disableFormats: true // reduce <code>{@link #apply}</code> time since no formatting
     }    
@@ -28748,9 +28748,9 @@ or implicitly via their xtypes, and can be <tt>{@link #add}</tt>ed dynamically.<
 <p>Some items have shortcut strings for creation:</p>
 <pre>
 <u>Shortcut</u>  <u>xtype</u>          <u>Class</u>                  <u>Description</u>
-'->'      'tbfill'       {@link Ext.Toolbar.Fill}       begin using the right-justified button container
-'-'       'tbseparator'  {@link Ext.Toolbar.Separator}  add a vertical separator bar between toolbar items
-' '       'tbspacer'     {@link Ext.Toolbar.Spacer}     add horiztonal space between elements
+'->'      'tbfill'      {@link Ext.Toolbar.Fill}       begin using the right-justified button container
+'-'       'tbseparator' {@link Ext.Toolbar.Separator}  add a vertical separator bar between toolbar items
+' '       'tbspacer'    {@link Ext.Toolbar.Spacer}     add horiztonal space between elements
 </pre>
 
 Example usage of various elements:
@@ -28760,17 +28760,17 @@ var tb = new Ext.Toolbar({
     width: 600,
     height: 100,
     items: [
-        {
+       {
             // xtype: 'button', // default for Toolbars, same as 'tbbutton'
             text: 'Button'
         },
-        {
+       {
             xtype: 'splitbutton', // same as 'tbsplitbutton'
             text: 'Split Button'
         },
         // begin using the right-justified button container
         '->', // same as {xtype: 'tbfill'}, // Ext.Toolbar.Fill
-        {
+       {
             xtype: 'textfield',
             name: 'field1',
             emptyText: 'enter search term'
@@ -28778,9 +28778,9 @@ var tb = new Ext.Toolbar({
         // add a vertical separator bar between toolbar items
         '-', // same as {xtype: 'tbseparator'} to create Ext.Toolbar.Separator
         'text 1', // same as {xtype: 'tbtext', text: 'text1'} to create Ext.Toolbar.TextItem
-        {xtype: 'tbspacer'},// same as ' ' to create Ext.Toolbar.Spacer
+       {xtype: 'tbspacer'},// same as ' ' to create Ext.Toolbar.Spacer
         'text 2',
-        {xtype: 'tbspacer', width: 50}, // add a 50px space
+       {xtype: 'tbspacer', width: 50}, // add a 50px space
         'text 3'
     ]
 });
@@ -28986,7 +28986,7 @@ the right-justified button container.
 new Ext.Panel({
     tbar : [
         'Item 1',
-        {xtype: 'tbfill'}, // or '->'
+       {xtype: 'tbfill'}, // or '->'
         'Item 2'
     ]
 });
@@ -29019,7 +29019,7 @@ get some basic common toolbar item functionality.]]></Summary>
 new Ext.Panel({
     tbar : [
         'Item 1',
-        {xtype: 'tbseparator'}, // or '-'
+       {xtype: 'tbseparator'}, // or '-'
         'Item 2'
     ]
 });
@@ -29041,10 +29041,10 @@ By default a 2px wide space is added via css specification:<pre><code>
 new Ext.Panel({
     tbar : [
         'Item 1',
-        {xtype: 'tbspacer'}, // or ' '
+       {xtype: 'tbspacer'}, // or ' '
         'Item 2',
         // space width is also configurable via javascript
-        {xtype: 'tbspacer', width: 50}, // add a 50px space
+       {xtype: 'tbspacer', width: 50}, // add a 50px space
         'Item 3'
     ]
 });
@@ -29064,7 +29064,7 @@ new Ext.Panel({
 <pre><code>
 new Ext.Panel({
     tbar : [
-        {xtype: 'tbtext', text: 'Item 1'} // or simply 'Item 1'
+       {xtype: 'tbtext', text: 'Item 1'} // or simply 'Item 1'
     ]
 });
 </code></pre>]]></Summary>
@@ -30346,7 +30346,7 @@ var tpl = new Ext.XTemplate(
       '&lt;p>{name} is a baby!&lt;/p>',
     '&lt;/tpl>',
   '&lt;/tpl>&lt;/p>',
-  {
+ {
     // XTemplate configuration:
     compiled: true,
     disableFormats: true,

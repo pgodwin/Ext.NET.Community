@@ -7,31 +7,34 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Ext.NET Examples</title>
+    <title>LoadMask during Page_Load - Ext.NET Examples</title>
     <link href="../../../../resources/css/examples.css" rel="stylesheet" type="text/css" />    
 </head>
 <body>
     <form runat="server">
-        <ext:ResourceManager ID="ResourceManager1" runat="server" />
+        <ext:ResourceManager runat="server" />
         
-        <h1>Demonstrates how to show standart load mask while iframe loading.</h1>   
+        <h1>Configure LoadMask for AutoLoad</h1>
+        
+        <p>Demonstrates how to configure a LoadMask to render while an external page is loading.</p>
                 
         <ext:Window 
             ID="Window1" 
             runat="server" 
-            Width="500" 
+            Width="500"
             Height="470" 
-            Icon="Link"
-            Title="IFrame panel" 
-            ShowOnLoad="true" 
-            CenterOnLoad="true"
-            Closable="false">
-            <AutoLoad Url="http://www.ext.net" Mode="IFrame" ShowMask="true" MaskMsg = "My custom loading message..." />
+            Title="Example">
+            <AutoLoad 
+                Url="http://www.ext.net/" 
+                Mode="IFrame" 
+                ShowMask="true" 
+                MaskMsg="Custom Loading Message..." 
+                />
             <TopBar>
                 <ext:Toolbar runat="server">
                     <Items>
                         <ext:ToolbarFill />
-                        <ext:Button runat="server" Text="Load Google">
+                        <ext:Button runat="server" Text="Load Google" Icon="Application">
                             <Listeners>
                                 <Click Handler="#{Window1}.load('http://www.google.com/');" />
                             </Listeners>

@@ -19,7 +19,7 @@ Ext.form.ComboBox.prototype.onRender = Ext.form.ComboBox.prototype.onRender.crea
     
     this.on("focus", function (el) {
         this.oldValue = this.getValue();        
-        var t = this.getEl().dom.value.trim();        
+        var t = this.getEl().dom.value ? this.getEl().dom.value.trim() : "";        
         this.oldText = (t === this.emptyText) ? "" : t;
     });
 });
@@ -52,7 +52,7 @@ Ext.form.ComboBox.override({
             me = t;
         }
         
-        if (e.getKey() == e.TAB) {
+        if (e.getKey() === e.TAB) {
             /*|| this.inEditor*/
             if (this.isExpanded()) {
                 this.onViewClick(false); 
@@ -77,10 +77,14 @@ Ext.form.ComboBox.override({
     },
 
     doMerge : function () {
-        for (var mi = this.mergeItems.getCount() - 1; mi > -1; mi--) {
-            var f = this.store.recordType.prototype.fields, dv = [];
+        var mi;
+
+        for (mi = this.mergeItems.getCount() - 1; mi > -1; mi--) {
+            var f = this.store.recordType.prototype.fields, 
+                dv = [],
+                i = 0;
             
-            for (var i = 0; i < f.length; i++) {
+            for (i; i < f.length; i++) {
                 dv[f.items[i].name] = f.items[i].defaultValue;
             }
             
@@ -88,7 +92,7 @@ Ext.form.ComboBox.override({
                 dv[this.displayField] = this.mergeItems.getAt(mi).data.text;
             }
             
-            if (!Ext.isEmpty(this.valueField, false) && this.displayField != this.valueField) {
+            if (!Ext.isEmpty(this.valueField, false) && this.displayField !== this.valueField) {
                 dv[this.valueField] = this.mergeItems.getAt(mi).data.value;
             }
             
@@ -114,17 +118,20 @@ Ext.form.ComboBox.override({
         this.store.clearFilter(true);
         values = values || {};
         
-        var f = this.store.recordType.prototype.fields, dv = {};
+        var f = this.store.recordType.prototype.fields, 
+            dv = {},
+            i = 0;
         
-        for (var i = 0; i < f.length; i++) {
+        for (i; i < f.length; i++) {
             dv[f.items[i].name] = f.items[i].defaultValue;
         }
         
-        var record = new this.store.recordType(dv, values[this.store.metaId()]);
+        var record = new this.store.recordType(dv, values[this.store.metaId()]),
+            v;
         
         this.store.insert(rowIndex, record);        
         
-        for (var v in values) {
+        for (v in values) {
             record.set(v, values[v]);
         }
         
@@ -136,9 +143,11 @@ Ext.form.ComboBox.override({
     },
 
     insertItem : function (rowIndex, text, value) {
-        var f = this.store.recordType.prototype.fields, dv = {};
+        var f = this.store.recordType.prototype.fields, 
+            dv = {},
+            i = 0;
         
-        for (var i = 0; i < f.length; i++) {
+        for (i; i < f.length; i++) {
             dv[f.items[i].name] = f.items[i].defaultValue;
         }
 
@@ -146,7 +155,7 @@ Ext.form.ComboBox.override({
             dv[this.displayField] = text;
         }
 
-        if (!Ext.isEmpty(this.valueField, false) && this.displayField != this.valueField) {
+        if (!Ext.isEmpty(this.valueField, false) && this.displayField !== this.valueField) {
             dv[this.valueField] = value;
         }
 
@@ -186,6 +195,12 @@ Ext.form.ComboBox.override({
     getSelectionField : function () {
         if (!this.selectedIndexField) {
             this.selectedIndexField = new Ext.form.Hidden({ id : this.id + "_SelIndex", name : this.id + "_SelIndex" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectedIndexField);
         }
         
         return this.selectedIndexField;
@@ -222,6 +237,7 @@ Ext.form.ComboBox.override({
         
         if (this.store.getCount() > 0) {
             this.store.each(function (r) {
+                // do not replace == by ===
                 if (r.data[prop] == text) {
                     record = r;
                     return false;
@@ -239,6 +255,7 @@ Ext.form.ComboBox.override({
             
             if (this.store.snapshot.getCount() > 0) {
                 this.store.snapshot.each(function (r) {
+                    // do not replace == by ===
                     if (r.data[prop] == value) {
                         record = r;
                         return false;
@@ -276,7 +293,7 @@ Ext.form.ComboBox.override({
             this.fireEvent("select", this, record, index);
 
             this.oldValue = this.getValue();
-            var t = this.getEl().dom.value.trim();
+            var t = this.getEl().dom.value ? this.getEl().dom.value.trim() : "";
             this.oldText = (t === this.emptyText) ? "" : t;
         }
     },
@@ -296,10 +313,10 @@ Ext.form.ComboBox.override({
     },
     
     checkOnBlur : function () {
-        var t = this.getEl().dom.value.trim(), v = this.getValue();
+        var t = this.getEl().dom.value ? this.getEl().dom.value.trim() : "", v = this.getValue();
 
         if (this.oldValue !== v || (t !== this.oldText && t !== this.emptyText)) {
-            if (!Ext.isEmpty(this.selValue) && this.selText != t && this.selValue == this.getValue()) {
+            if (!Ext.isEmpty(this.selValue) && this.selText !== t && this.selValue === this.getValue()) {
                 this.hiddenField.value = "";
             }
 
@@ -375,6 +392,18 @@ Ext.form.ComboBox.override({
         this.selectByIndex(index, this.fireSelectOnLoad);
         this.clearInvalid();
     },
-
+    
+    onLoad : Ext.form.ComboBox.prototype.onLoad.createInterceptor(function () {
+        if (this.mode === "single") {
+            this.mode = "local";
+        }
+    }),
+    
+    initList : Ext.form.ComboBox.prototype.initList.createSequence(function () {
+        if (this.mode === "single" && this.store.isLoaded) {
+            this.mode = "local";
+        }
+    }),
+    
     doForce : Ext.emptyFn
 });

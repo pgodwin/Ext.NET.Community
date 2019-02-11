@@ -92,8 +92,8 @@ function createConsole() {
 //
 //     handleResize();
 
-    function handleResize() {
-        var b = Ext.getBody()
+    function handleResize(){
+        var b = Ext.getBody();
         var size = b.getViewSize();
         if (size.height < b.dom.scrollHeight) {
             size.width -= 18;
@@ -174,10 +174,6 @@ Ext.apply(Ext.debug, {
         }
         return v;
     }
-});
-
-Ext.onReady(function () {
-    Ext.debug.showConsole();
 });
 
 })();
@@ -323,7 +319,8 @@ Ext.debug.DomTree = Ext.extend(Ext.tree.TreePanel, {
             return s;
         }
 
-        function onNodeSelect(t, n, last) {
+        /*
+        function onNodeSelect(t, n, last){
             return;
             if (last && last.unframe) {
                 last.unframe();
@@ -379,6 +376,7 @@ Ext.debug.DomTree = Ext.extend(Ext.tree.TreePanel, {
             stylesGrid.treeNode = n;
             stylesGrid.view.fitColumns();
         }
+        */
 
         this.loader = new Ext.tree.TreeLoader();
         this.loader.load = function (n, cb) {
@@ -480,7 +478,7 @@ Ext.debug.ComponentInspector = Ext.extend(Ext.tree.TreePanel, {
                 if (c.id != this.id && c.id != this.bottomToolbar.id) {
                     var newNode = this.createNode(n,c);
                     if (!newNode.leaf) {
-                        this.parseChildItems(newNode)
+                        this.parseChildItems(newNode);
                     }
                 }
             }
@@ -515,7 +513,7 @@ Ext.debug.ComponentInspector = Ext.extend(Ext.tree.TreePanel, {
         this.parseRootNode();
         var ci = Ext.getCmp('x-debug-compinfo');
         if (ci) {
-            ci.message('refreshed component tree - '+Ext.ComponentMgr.all.length)
+            ci.message('refreshed component tree - '+Ext.ComponentMgr.all.length);
         }
     }
 });
@@ -603,8 +601,8 @@ Ext.debug.ColumnNodeUI = Ext.extend(Ext.tree.TreeNodeUI, {
              '<li class="x-tree-node"><div ext:tree-node-id="',n.id,'" class="x-tree-node-el x-tree-node-leaf ', a.cls,'">',
                 '<div class="x-tree-col" style="width:',c.width-bw,'px;">',
                     '<span class="x-tree-node-indent">',this.indentMarkup,"</span>",
-                    '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow">',
-                    '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',(a.icon ? " x-tree-node-inline-icon" : ""),(a.iconCls ? " "+a.iconCls : ""),'" unselectable="on">',
+                    '<img src="', this.emptyIcon, '" class="x-tree-ec-icon x-tree-elbow"/>',
+                    '<img src="', a.icon || this.emptyIcon, '" class="x-tree-node-icon',(a.icon ? " x-tree-node-inline-icon" : ""),(a.iconCls ? " "+a.iconCls : ""),'" unselectable="on"/>',
                     '<a hidefocus="on" class="x-tree-node-anchor" href="',a.href ? a.href : "#",'" tabIndex="1" ',
                     a.hrefTarget ? ' target="'+a.hrefTarget+'"' : "", '>',
                     '<span unselectable="on">', n.text || (c.renderer ? c.renderer(a[c.dataIndex], n, a) : a[c.dataIndex]),"</span></a>",

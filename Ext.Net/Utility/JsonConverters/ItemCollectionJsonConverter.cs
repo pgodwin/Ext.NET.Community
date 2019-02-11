@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -67,10 +67,10 @@ namespace Ext.Net
                 if (items.Count == 1 && !CanBeSingleItemArray(items[0]))
                 {
                     Control item = (Control)items[0];
-                    
-                    PanelBase tab = item as PanelBase;
 
-                    if (!item.Visible || (tab != null && tab.Hidden && tab.ParentComponent is TabPanel))
+                    PanelBase pnl = item as PanelBase;
+
+                    if (!item.Visible || (pnl != null && pnl.Hidden && pnl.ParentComponent is TabPanel))
                     {
                         writer.WriteNull();
                         return;
@@ -84,10 +84,10 @@ namespace Ext.Net
 
                     foreach (Observable item in items)
                     {
-                        PanelBase tab = item as PanelBase;
-                        bool isTab = tab != null && tab.ParentComponent is TabPanel;
+                        PanelBase pnl = item as PanelBase;
+                        bool isTab = pnl != null && pnl.ParentComponent is TabPanel;
 
-                        if (item.Visible && (!isTab || !tab.Hidden))
+                        if (item.Visible && (!isTab || !pnl.Hidden))
                         {
                             visible = true;
                         }
@@ -99,10 +99,11 @@ namespace Ext.Net
 
                         foreach (Observable item in items)
                         {
-                            PanelBase tab = item as PanelBase;
-                            bool isTab = tab != null && tab.ParentComponent is TabPanel;
+                            PanelBase pnl = item as PanelBase;
 
-                            if (item.Visible && (!isTab || !tab.Hidden))
+                            bool isTab = pnl != null && pnl.ParentComponent is TabPanel;
+
+                            if (item.Visible && (!isTab || !pnl.Hidden))
                             {
                                 writer.WriteRawValue(this.Format(item));
                             }

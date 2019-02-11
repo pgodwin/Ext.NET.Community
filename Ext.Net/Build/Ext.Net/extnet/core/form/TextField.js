@@ -12,7 +12,7 @@ Ext.override(Ext.form.TextField, {
         Ext.form.TextField.superclass.afterRender.call(this);
 
         if (this.maxLength !== Number.MAX_VALUE && this.truncate === true) {
-            this.el.dom.setAttribute("maxlength", this.maxLength);
+            this.setMaxLength(this.maxLength);
         }
 
         if (this.iconCls) {
@@ -20,6 +20,11 @@ Ext.override(Ext.form.TextField, {
             delete this.iconCls;
             this.setIconCls(iconCls);
         }
+    },
+    
+    setMaxLength : function (val) {
+        this.el.dom.setAttribute("maxlength", val);
+        this.maxLength = val;
     },
     
     isIconIgnore : function () {
@@ -73,7 +78,7 @@ Ext.override(Ext.form.TextField, {
         
         var k = e.getKey();
         
-        if ((Ext.isGecko || Ext.isOpera) && (e.isNavKeyPress() || k == e.BACKSPACE || (k == e.DELETE && e.button == -1))) {
+        if ((Ext.isGecko || Ext.isOpera) && (e.isNavKeyPress() || k === e.BACKSPACE || (k === e.DELETE && e.button === -1))) {
             return;
         }
         

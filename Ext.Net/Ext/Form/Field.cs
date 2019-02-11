@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -80,7 +80,7 @@ namespace Ext.Net
                     return this.ID;
                 }
 
-                return this.Name.IsEmpty() ? this.ClientID : this.Name;
+                return this.Name.IsEmpty() ? this.ConfigID : this.Name;
             }
         }
 
@@ -740,7 +740,6 @@ namespace Ext.Net
         /// A value to initialize this field with.
         /// </summary>
         [Meta]
-        [ConfigOption]
         [DirectEventUpdate(MethodName = "SetValueProxy")]
         [Category("5. Field")]
         [DefaultValue(null)]
@@ -759,6 +758,24 @@ namespace Ext.Net
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        [ConfigOption("value")]
+        [DefaultValue(null)]
+        protected internal virtual object ValueProxy
+        {
+            get
+            {
+                if (!this.IsEmpty)
+                {
+                    return this.Value;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
         /// The raw data value which may or may not be a valid, defined value. To return a normalized value see Value property.
         /// </summary>
         [Meta]
@@ -771,8 +788,7 @@ namespace Ext.Net
         {
             get
             {
-                object obj = this.ViewState["RawValue"];
-                return (obj == null) ? null : obj;
+                return this.ViewState["RawValue"];
             }
             set
             {
@@ -1114,7 +1130,7 @@ namespace Ext.Net
                 }
             }
 
-            ResourceManager.ServiceResponse = new { success, message, value };
+            ResourceManager.ServiceResponse = new { valid=success, message, value };
         }
 
         private bool hasLoadPostData = false;
@@ -1281,6 +1297,26 @@ namespace Ext.Net
         public virtual void AlignIndicator()
         {
             this.Call("alignIndicator");
+        }
+
+        /// <summary>
+        /// this method is used with remote validation only
+        /// </summary>
+        [Meta]
+        [Description("")]
+        public virtual void MarkAsValid()
+        {
+            this.Call("markAsValid");
+        }
+
+        /// <summary>
+        /// this method is used with remote validation only
+        /// </summary>
+        [Meta]
+        [Description("")]
+        public virtual void MarkAsValid(bool abortRequest)
+        {
+            this.Call("markAsValid", abortRequest);
         }
     }
 }

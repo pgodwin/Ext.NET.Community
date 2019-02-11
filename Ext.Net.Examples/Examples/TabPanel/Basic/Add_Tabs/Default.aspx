@@ -10,7 +10,7 @@
     <title></title>
     <link href="../../../../resources/css/examples.css" rel="stylesheet" type="text/css" />
     
-     <script type="text/javascript">
+    <script type="text/javascript">
         var addTab = function (tabPanel, id, url) {
             var tab = tabPanel.getComponent(id);
 
@@ -42,44 +42,44 @@
 </head>
 <body>
     <form runat="server">
-        <ext:ResourceManager ID="ResourceManager1" runat="server" />
+        <ext:ResourceManager runat="server" />
         
-        <ext:Window runat="server" Width="700" Height="500" Icon="Link" Title="Adding tab">
+        <ext:Window 
+            runat="server" 
+            Title="Adding tab"
+            Width="700" 
+            Height="500" 
+            Icon="Link" 
+            Layout="border">
             <Items>
-                <ext:BorderLayout runat="server">
-                    <West>
-                        <ext:MenuPanel ID="MenuPanel1" runat="server" Width="200">
-                            <Menu runat="server">
-                                <Items>
-                                    <ext:MenuItem ID="idClt_item" runat="server" Text="Ext.Net">
-                                        <Listeners>
-                                            <Click Handler="addTab(#{TabPanel1}, 'idClt', 'http://www.ext.net');" />
-                                        </Listeners>
-                                    </ext:MenuItem>
-                                    
-                                    <ext:MenuSeparator />
-                                    
-                                    <ext:MenuItem ID="idGgl_item" runat="server" Text="Google">
-                                        <Listeners>
-                                            <Click Handler="addTab(#{TabPanel1}, 'idGgl', 'http://www.google.com');" />
-                                        </Listeners>
-                                    </ext:MenuItem>
-                                    
-                                    <ext:MenuSeparator />
-                                    
-                                    <ext:MenuItem ID="idExt_item" runat="server" Text="ExtJS">
-                                        <Listeners>
-                                            <Click Handler="addTab(#{TabPanel1}, 'idExt', 'http://www.extjs.com');" />
-                                        </Listeners>
-                                    </ext:MenuItem>
-                                </Items>
-                            </Menu>
-                        </ext:MenuPanel>
-                    </West>
-                    <Center>
-                        <ext:TabPanel ID="TabPanel1" runat="server" />                               
-                    </Center>
-                </ext:BorderLayout>
+                <ext:MenuPanel ID="MenuPanel1" runat="server" Width="200" Region="West">
+                    <Menu runat="server">
+                        <Items>
+                            <ext:MenuItem runat="server" Text="Ext.Net">
+                                <Listeners>
+                                    <Click Handler="addTab(#{TabPanel1}, 'idClt', 'http://www.ext.net');" />
+                                </Listeners>
+                            </ext:MenuItem>
+                            
+                            <ext:MenuSeparator />
+                            
+                            <ext:MenuItem runat="server" Text="Google">
+                                <Listeners>
+                                    <Click Handler="addTab(#{TabPanel1}, 'idGgl', 'http://www.google.com');" />
+                                </Listeners>
+                            </ext:MenuItem>
+                            
+                            <ext:MenuSeparator />
+                            
+                            <ext:MenuItem runat="server" Text="Sencha">
+                                <Listeners>
+                                    <Click Handler="addTab(#{TabPanel1}, 'idExt', 'http://www.sencha.com');" />
+                                </Listeners>
+                            </ext:MenuItem>
+                        </Items>
+                    </Menu>
+                </ext:MenuPanel>
+                <ext:TabPanel ID="TabPanel1" runat="server" Region="Center" />
             </Items>
         </ext:Window>
     </form>

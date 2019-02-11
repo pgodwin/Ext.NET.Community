@@ -11,11 +11,41 @@
 
 // @source data/HttpProxy.js
 
-Ext.data.HttpProxy.prototype.doRequest = Ext.data.HttpProxy.prototype.doRequest.createInterceptor(function (action, rs, params, reader, callback, scope, arg) {
+Ext.data.HttpProxy.prototype.doRequest = function (action, rs, params, reader, cb, scope, arg) {
+    var o = {
+        method : (this.api[action]) ? this.api[action].method : undefined,
+        request : {
+            callback: cb,
+            scope: scope,
+            arg: arg
+        },
+        reader : reader,
+        callback : this.createCallback(action, rs),
+        scope : this
+    };
+
     if (this.conn.json) {
-        this.conn.jsonData = params;
+        o.jsonData = params;
+    } else if (params.jsonData) {
+        o.jsonData = params.jsonData;
+    } else if (params.xmlData) {
+        o.xmlData = params.xmlData;
+    } else {
+        o.params = params || {};
     }
-});
+
+    this.conn.url = this.buildUrl(action, rs);
+
+    if (this.useAjax) {
+
+        Ext.applyIf(o, this.conn);
+        this.activeRequest[action] = Ext.Ajax.request(o);
+    } else {
+        this.conn.request(o);
+    }
+
+    this.conn.url = null;
+};
 
 // @source data/HttpWriteProxy.js
 
@@ -105,7 +135,7 @@ Ext.extend(Ext.net.HttpWriteProxy, Ext.data.HttpProxy, {
                 
                 result = { 
                     success : success, 
-                    msg     : q.selectValue("Msg", root, ""),
+                    msg     : q.selectValue("Message", root, ""),
                     data    : data
                 };
             }
@@ -117,8 +147,14 @@ Ext.extend(Ext.net.HttpWriteProxy, Ext.data.HttpProxy, {
             return;
         }
         
-        this.fireEvent("save", this, o, o.request.arg);
-        o.request.callback.call(o.request.scope, result, o.request.arg, true);
+        if(result.success){
+            this.fireEvent("save", this, o, o.request.arg);
+        }
+        else{
+            this.fireEvent("saveexception", this, o, response, { message : result.msg });
+        }
+        
+        o.request.callback.call(o.request.scope, result, o.request.arg, result.success);
     }
 });
 
@@ -134,11 +170,15 @@ Ext.data.Record.id = function (rec) {
     return Ext.data.Record.AUTO_ID--;   
 };
 
-Ext.data.Record.prototype.commit = Ext.data.Record.prototype.commit.createSequence(function () {
+Ext.data.Record.prototype.commit = Ext.data.Record.prototype.commit.createInterceptor(function () {
     if (this.newRecord) {
         this.newRecord = false; 
     }
 });
+
+Ext.data.Record.prototype.isNew = function () {
+    return this.newRecord;
+};
 
 Ext.data.Store.override({
     metaId : function () {
@@ -164,7 +204,13 @@ Ext.net.Store = function (config) {
         "save",
         "saveexception",
         "commitdone",
-        "commitfailed");
+        "commitfailed"
+    );
+        
+    if (this.proxyId) {
+        this.storeId = this.proxyId;
+        Ext.StoreMgr.register(this);
+    }
 
     if (this.updateProxy) {
         this.relayEvents(this.updateProxy, ["saveexception"]);
@@ -210,8 +256,22 @@ Ext.net.Store = function (config) {
             this.fireEvent("save", store, result, res);
         }, this);
     }
+    
+    if (this.proxy instanceof Ext.data.PagingMemoryProxy && (this.autoLoad || this.deferLoad)) {        
+        this.deferAutoLoad = true;
+        this.autoLoad = false;        
+    }
+    
+    this.on("load", function () {
+        this.isLoaded = true;
+    }, this, { single : true });
 
     Ext.net.Store.superclass.constructor.call(this, config);
+    
+    if (this.deferAutoLoad) {
+        this.load(typeof this.deferAutoLoad === "object" ? this.deferAutoLoad : undefined);
+        this.deferAutoLoad = false;
+    }
 };
 
 Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
@@ -248,7 +308,10 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         //create a sorter function for each sorter field/direction combo
-        for (var i = 0, j = sorters.length; i < j; i++) {
+        var i,
+            j;
+
+        for (i = 0, j = sorters.length; i < j; i++) {
             if (sorters[i] && sorters[i].field) {
                 sortFns.push(this.createSortFunction(sorters[i].field, sorters[i].direction));
             }
@@ -260,7 +323,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
         //the direction modifier is multiplied with the result of the sorting functions to provide overall sort direction
         //(as opposed to direction per field)
-        var directionModifier = direction.toUpperCase() == "DESC" ? -1 : 1;
+        var directionModifier = direction.toUpperCase() === "DESC" ? -1 : 1;
 
         //create a function which ORs each sorter together to enable multi-sort
         var fn = function (r1, r2) {
@@ -268,7 +331,10 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
             //if we have more than one sorter, OR any additional sorter functions together
             if (sortFns.length > 1) {
-                for (var i = 1, j = sortFns.length; i < j; i++) {
+                var i,
+                    j;
+
+                for (i = 1, j = sortFns.length; i < j; i++) {
                     result = result || sortFns[i].call(this, r1, r2);
                 }
             }
@@ -276,7 +342,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             return directionModifier * result;
         };
         
-        if (this.isPaging && this.allData) {
+        if (this.isPagingStore() && this.allData) {
             this.data = this.allData;
             delete this.allData;
         }
@@ -313,14 +379,17 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             var sortInfo   = this.sortInfo || null;
             sorters = sorters || [{}];
             
-            if (sorters.length == 1) {
+            if (sorters.length === 1) {
                 if (!sorters[0].field) {
                     return;
                 }
                 this.sortInfo = {field: sorters[0].field, direction: sorters[0].direction};
             } else {
-                var field = [];
-                for (var i = 0, j = sorters.length; i < j; i++) {
+                var field = [],
+                    i,
+                    j;
+
+                for (i = 0, j = sorters.length; i < j; i++) {
                     if (sorters[i].field) {
                         field.push(sorters[i].field + ":" + (sorters[i].direction || "ASC"));
                     }
@@ -335,18 +404,6 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 this.sortInfo = sortInfo;
             }              
         }
-    },
-
-    destroy : function () {
-        if (window[this.storeId || this.id]) {
-            window[this.storeId || this.id] = null;
-        }
-        
-        if (window[this.storeId + "_Data" || this.id + "_Data"]) {
-            window[this.storeId + "_Data" || this.id + "_Data"] = null;
-        }
-        
-        Ext.net.Store.superclass.destroy.call(this);
     },
 
     addRecord : function (values, commit, clearFilter) {
@@ -369,9 +426,11 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
         values = values || {};
 
-        var f = this.recordType.prototype.fields, dv = {};
+        var f = this.recordType.prototype.fields, 
+            dv = {},
+            i = 0;
 
-        for (var i = 0; i < f.length; i++) {
+        for (i; i < f.length; i++) {
             dv[f.items[i].name] = f.items[i].defaultValue;
 
             if (!Ext.isEmpty(values[f.items[i].name])) {
@@ -413,10 +472,11 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if (commit) {
-            record.commit();
+            record.phantom = false;
+            record.commit();            
         }
         
-        if (!Ext.isDefined(this.writer) && this.modified.indexOf(record) == -1) {
+        if (!Ext.isDefined(this.writer) && this.modified.indexOf(record) === -1) {
             this.modified.push(record);
         }
 
@@ -424,7 +484,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     addField : function (field, index, clear) {
-        if (typeof field == "string") {
+        if (typeof field === "string") {
             field = { name: field };
         }
 
@@ -440,9 +500,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             this.recordType.prototype.fields.insert(index, field);
         }
 
-        if (typeof field.defaultValue != "undefined") {
+        if (typeof field.defaultValue !== "undefined") {
             this.each(function (r) {
-                if (typeof r.data[field.name] == "undefined") {
+                if (typeof r.data[field.name] === "undefined") {
                     r.data[field.name] = field.defaultValue;
                 }
             });
@@ -489,9 +549,10 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if (options.visibleOnly && options.grid) {
-            var cm = options.grid.getColumnModel();
+            var cm = options.grid.getColumnModel(),
+                i;
 
-            for (var i in data) {
+            for (i in data) {
                 var columnIndex = cm.findColumnIndex(i);
 
                 if (columnIndex > -1 && !cm.isHidden(columnIndex)) {
@@ -509,7 +570,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if ((options.dirtyCellsOnly === true || (options.dirtyCellsOnly !== false && this.saveAllFields === false)) && !isNew) {
-            for (var j in data) {
+            var j;
+
+            for (j in data) {
                 if (record.isModified(j)) {
                     newData[j] = data[j];
                 }
@@ -518,7 +581,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             data = newData;
         }
 
-        for (var k in data) {
+        var k;
+
+        for (k in data) {
             if (options.filterField && options.filterField(record, k, data[k]) === false) {
                 data[k] = undefined;
             }
@@ -539,12 +604,34 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 }
             }
         }
+        
+        if (options.mappings !== false && this.saveMappings !== false) {
+            var m,
+                map = record.fields.map, 
+                mappings = {};
+            
+            Ext.iterate(data, function (prop, value) {            
+                m = map[prop];
+
+                if (m) {
+                    mappings[m.mapping ? m.mapping : m.name] = value;
+                }
+            });
+ 
+            if (options.excludeId !== true) {
+                mappings[this.metaId()] = record.id; 
+            }
+
+            data = mappings;
+        }
 
         return data;
     },
     
     getFieldByName : function (name) {
-        for (var i = 0; i < this.fields.getCount(); i++) {
+        var i = 0;
+
+        for (i; i < this.fields.getCount(); i++) {
             var field = this.fields.get(i);
 
             if (name === (field.mapping || field.name)) {
@@ -569,12 +656,13 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
         for (i = 0; i < records.length; i++) {
             var obj = {}, dataR;
+            
+            dataR = Ext.apply(obj, records[i].data);
 
             if (this.metaId()) {
-                obj[this.metaId()] = records[i].id;
+                obj[this.metaId()] = options.excludeId === true ? undefined : records[i].id;
             }
-
-            dataR = Ext.apply(obj, records[i].data);
+                        
             dataR = this.prepareRecord(dataR, records[i], options);
 
             if (!Ext.isEmptyObj(dataR)) {
@@ -638,7 +726,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 this.dirtyWarningTitle,
                 this.dirtyWarningText,
                 function (btn, text) {
-                    return (btn == "yes") ? loadData(this, options) : false;
+                    return (btn === "yes") ? loadData(this, options) : false;
                 },
                 this
             );
@@ -649,7 +737,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
     save : function (options) {
         if (this.restful) {
-            Ext.net.Store.superclass.save.call(this);
+            Ext.net.Store.superclass.save.call(this, options);
             return;
         }
 
@@ -682,13 +770,15 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         if (d.length > 0) {
             json += '"Deleted":[';
 
-            var exists = false;
+            var exists = false,
+                i = 0;
 
-            for (var i = 0; i < d.length; i++) {
+            for (i; i < d.length; i++) {
                 var obj = {},
                     list = Ext.apply(obj, d[i].data);
 
-                if (this.metaId() && Ext.isEmpty(list[this.metaId()], false)) {
+                if (this.metaId()) {
+                    
                     list[this.metaId()] = d[i].id;
                 }
 
@@ -708,25 +798,27 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         var jsonUpdated = "",
-            jsonCreated = "";
+            jsonCreated = "",
+            j = 0;
 
-        for (var j = 0; j < m.length; j++) {
+        for (j; j < m.length; j++) {
 
             var obj2 = {},
                 list2 = Ext.apply(obj2, m[j].data);
 
-            if (this.metaId() && Ext.isEmpty(list2[this.metaId()], false)) {
+            if (this.metaId()) {
+                
                 list2[this.metaId()] = m[j].id;
             }
 
-            if (m[j].newRecord && this.skipIdForNewRecords !== false && !this.useIdConfirmation) {
+            list2 = this.prepareRecord(list2, m[j], options, m[j].isNew());
+            
+            if (m[j].isNew() && this.skipIdForNewRecords !== false && !this.useIdConfirmation) {
                 list2[this.metaId()] = undefined;
             }
 
-            list2 = this.prepareRecord(list2, m[j], options, m[j].newRecord);
-
             if (!Ext.isEmptyObj(list2)) {
-                if (m[j].newRecord) {
+                if (m[j].isNew()) {
                     jsonCreated += Ext.util.JSON.encode(list2) + ",";
                 } else {
                     jsonUpdated += Ext.util.JSON.encode(list2) + ",";
@@ -769,10 +861,11 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             return undefined;
         }
 
-        var m = this.modified, i;
+        var m = this.modified, 
+            i;
 
         for (i = 0; i < m.length; i++) {
-            if (m[i].data[this.metaId()] == id) {
+            if (m[i].data[this.metaId()] === id) {
                 return m[i];
             }
         }
@@ -815,7 +908,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             j;
 
         for (j = 0; j < m.length; j++) {
-            if (m[j].newRecord) {
+            if (m[j].isNew()) {
                 newRecordsExists = true;
                 break;
             }
@@ -836,24 +929,27 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 
             if (!Ext.isEmpty(serviceResult.confirm)) {
                 var r = serviceResult.confirm,
-                failCount = 0;
+                    failCount = 0,
+                    i = 0;
 
-                for (var i = 0; i < r.length; i++) {
+                for (i; i < r.length; i++) {
                     if (r[i].s === false) {
                         failCount++;
                     } else {
                         var record = this.getById(r[i].oldId) || this.getByDataId(r[i].oldId);
 
                         if (record) {                            
-                            if (record.newRecord || false) {
+                            if (record.isNew()) {
                                 this.updateRecordId(record, r[i].newId || r[i].oldId);
                             }
-                            record.commit();
+                            record.phantom = false;
+                            record.commit();                            
                         } else {
-                            var d = this.deleted;
+                            var d = this.deleted,
+                                i2 = 0;
 
-                            for (var i2 = 0; i2 < d.length; i2++) {
-                                if (this.metaId() && d[i2].id == r[i].oldId) {
+                            for (i2; i2 < d.length; i2++) {
+                                if (this.metaId() && d[i2].id === r[i].oldId) {
                                     this.deleted.splice(i2, 1);
                                     failCount--;
                                     break;
@@ -917,7 +1013,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     isPagingStore : function () {
-        return this.isPaging && this.applyPaging;
+        return !!(this.isPaging && this.applyPaging && this.openPage && this.findPage);
     },
 
     getDeletedRecords : function () {
@@ -931,7 +1027,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
             }, this);
         } 
         
-        if (!record.newRecord) {
+        if (!record.isNew()) {
             record.lastIndex = this.indexOf(record);
             this.deleted.push(record);
         }
@@ -940,19 +1036,28 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     commitChanges : function () {
+        var i,
+            length;
+
+        for (i = 0, length = this.modified.length; i < length; i++) {
+            this.modified[i].phantom = false;
+        }
+        
         Ext.net.Store.superclass.commitChanges.call(this);
+
         this.deleted = [];
     },
 
     rejectChanges : function () {
         Ext.net.Store.superclass.rejectChanges.call(this);
 
-        var d = this.deleted.slice(0);
+        var d = this.deleted.slice(0),
+            i,
+            len;
 
         this.deleted = [];
-        //this.add(d);
 
-        for (var i = 0, len = d.length; i < len; i++) {
+        for (i = 0, len = d.length; i < len; i++) {
             this.insert(d[i].lastIndex || 0, d[i]);
             d[i].reject();
         }
@@ -976,6 +1081,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 context.fireEvent("commitdone", context, options);
             }
         }
+        
         return null;
     },
 
@@ -1139,7 +1245,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         }
 
         if (Ext.isEmpty(this.updateProxy)) {
-            options = { params: {} };
+            options = { params: (options && options.params) ? options.params : {} };
 
             if (this.fireEvent("beforesave", this, options) !== false) {
 
@@ -1160,7 +1266,7 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
                 Ext.net.DirectEvent.request(config);
             }
         } else {
-            options = { params: {} };
+            options = { params: (options && options.params) ? options.params : {} };
 
             if (this.fireEvent("beforesave", this, options) !== false) {
                 var p = Ext.apply(options.params || {}, { data: data });
@@ -1269,11 +1375,14 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         if (dirtyConfirm && this.isDirty()) {
             Ext.MessageBox.confirm(
                 this.dirtyWarningTitle,
-                this.dirtyWarningText, function (btn, text) {
-                    if (btn == "yes") {
+                this.dirtyWarningText, 
+                function (btn, text) {
+                    if (btn === "yes") {
                         reload(this, options);
                     }
-                }, this);
+                }, 
+                this
+            );
         } else {
             reload(this, options);
         }
@@ -1283,8 +1392,9 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         return this.getRange(start, end);
     },
 
-    updateRecordId : function (id, newId) {
+    updateRecordId : function (id, newId, silent) {
         var record = (id instanceof Ext.data.Record) ? id : this.getById(id);
+
         if (Ext.isEmpty(record)) {
             throw new Ext.data.Store.Error("Record with id='" + id + "' not found");
         }
@@ -1292,13 +1402,16 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
         record._phid = record.id;
 
         record.id = newId;
+
         if (this.metaId()) {
             record.data[this.metaId()] = record.id;
         }
 
         this.reMap(record);
 
-        this.fireEvent("update", this, record, Ext.data.Record.EDIT);
+        if (silent === false) {
+            this.fireEvent("update", this, record, Ext.data.Record.EDIT);
+        }
     },
 
     removeFromBatch : function (batch, action, data) {
@@ -1323,10 +1436,12 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
     },
 
     rejectDeleting : function () {
-        var d = this.deleted.slice(0);
+        var d = this.deleted.slice(0),
+            i = d.length - 1;
+
         this.deleted = [];
         
-        for (var i = d.length - 1; i >= 0; i--) {
+        for (i; i >= 0; i--) {
             this.insert(d[i].lastIndex || 0, d[i]);
             d[i].reject();
         }
@@ -1338,6 +1453,28 @@ Ext.extend(Ext.net.Store, Ext.data.GroupingStore, {
 Ext.ns("Ext.ux.data");
 
 Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
+    reMap : function(record) {
+        if (Ext.isArray(record)) {
+            for (var i = 0, len = record.length; i < len; i++) {
+                this.reMap(record[i]);
+            }
+        } else {
+            delete this.data.map[record._phid];
+            this.data.map[record.id] = record;
+            var index = this.data.keys.indexOf(record._phid);
+            this.data.keys.splice(index, 1, record.id);
+            
+            if(this.allData){
+                delete this.allData.map[record._phid];
+                this.allData.map[record.id] = record;
+                index = this.allData.keys.indexOf(record._phid);
+                this.allData.keys.splice(index, 1, record.id);
+            }           
+            
+            delete record._phid;
+        }
+    },
+    
     destroy : function () {
         if (window[this.storeId || this.id]) {
             window[this.storeId || this.id] = null;
@@ -1426,7 +1563,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
         this.totalLength--;
         // *** end ***
         
-        if (!record.newRecord) {
+        if (!record.isNew()) {
             record.lastIndex = index;
             this.deleted.push(record);
         }
@@ -1541,7 +1678,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
         } else {
             if (this.writer.listful === true && this.restful !== true) {
                 rs = (Ext.isArray(rs)) ? rs : [rs];
-            } else if (Ext.isArray(rs) && rs.length == 1) {
+            } else if (Ext.isArray(rs) && rs.length === 1) {
                 rs = rs.shift();
             }
             
@@ -1605,8 +1742,10 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             if (this.pruneModifiedRecords) {
                 this.modified = [];
             }
+
+            var i = 0;
             
-            for (var i = 0, len = r.length; i < len; i++) {
+            for (i, len = r.length; i < len; i++) {
                 r[i].join(this);
             }
             
@@ -1687,10 +1826,15 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     },
     
     collect : function (dataIndex, allowNull, bypassFilter) {
-        var d = (bypassFilter === true ? this.snapshot || this.allData || this.data: this.data).items;
-        var v, sv, r = [], l = {};
+        var d = (bypassFilter === true ? this.snapshot || this.allData || this.data : this.data).items,
+            v, 
+            sv, 
+            r = [], 
+            l = {},
+            i = 0,
+            len;
         
-        for (var i = 0, len = d.length; i < len; i++) {
+        for (i, len = d.length; i < len; i++) {
             v = d[i].data[dataIndex];
             sv = String(v);
         
@@ -1721,7 +1865,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             start = params[pn.start],
             limit = params[pn.limit];
             
-        if ((typeof start != "number") || (typeof limit != "number")) {
+        if ((typeof start !== "number") || (typeof limit !== "number")) {
             delete this.start;
             delete this.limit;
             this.lastParams = params;
@@ -1744,7 +1888,9 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             return false;
         }
         
-        for (var param in params) {
+        var param;
+
+        for (param in params) {
             if (params.hasOwnProperty(param) && (params[param] !== lastParams[param])) {
                 return false;
             }
@@ -1762,7 +1908,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     applyPaging : function () {
         var start = this.start, limit = this.limit;
         
-        if ((typeof start == "number") && (typeof limit == "number")) {
+        if ((typeof start === "number") && (typeof limit === "number")) {
             var allData = this.data, data = new Ext.util.MixedCollection(allData.allowFunctions, allData.getKey);
             
             if (start > allData.getCount()) {
@@ -1771,10 +1917,12 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
             
             data.items = allData.items.slice(start, start + limit);
             data.keys = allData.keys.slice(start, start + limit);
-            var len = data.length = data.items.length;
-            var map = {};
+
+            var len = data.length = data.items.length,
+                map = {},
+                i = 0;
             
-            for (var i = 0; i < len; i++) {
+            for (i; i < len; i++) {
                 var item = data.items[i];
                 map[data.getKey(item)] = item;
             }
@@ -1790,7 +1938,7 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     },
 
     findPage : function (record) {
-        if ((typeof this.limit == "number")) {
+        if ((typeof this.limit === "number")) {
             return Math.ceil((this.allData || this.data).indexOf(record) / this.limit);
         }
 
@@ -1798,11 +1946,12 @@ Ext.ux.data.PagingStore = Ext.extend(Ext.net.Store, {
     },
 
     openPage : function (pageIndex, callback) {
-        if ((typeof pageIndex != "number")) {
+        if ((typeof pageIndex !== "number")) {
             pageIndex = this.findPage(pageIndex);
         }
 
-        this.load({ params : {
+        this.load({ 
+            params : {
                 start : (pageIndex - 1) * this.limit, 
                 limit : this.limit
             }, 
@@ -1822,27 +1971,33 @@ Ext.ux.PagingToolbar = Ext.extend(Ext.PagingToolbar, {
         this.cursor = (o.params && o.params[p.start]) ? o.params[p.start] : 0;
         this.onChange();
     },
+    
     onChange : function () {
         // *** add ***
         var t = this.store.getTotalCount(),
             s = this.pageSize;
-            
+
         if (t === 0) {
             this.cursor = 0;
         } else if (this.cursor >= t) {
-            this.cursor = Math.ceil((t + 1) / s) * s;
+            this.cursor = (Math.ceil(t / s) - 1) * s;
         }
-        
         // *** end ***
+
         var d = this.getPageData(),
             ap = d.activePage,
             ps = d.pages;
+
+        // *** add ***    
+        ap = ap > ps ? ps : ap;
+        // *** end ***
+
         this.afterTextItem.setText(String.format(this.afterPageText, d.pages));
         this.inputItem.setValue(ap);
-        this.first.setDisabled(ap == 1);
-        this.prev.setDisabled(ap == 1);
-        this.next.setDisabled(ap == ps);
-        this.last.setDisabled(ap == ps);
+        this.first.setDisabled(ap === 1);
+        this.prev.setDisabled(ap === 1);
+        this.next.setDisabled(ap === ps);
+        this.last.setDisabled(ap === ps);
         this.refresh.enable();
         this.updateInfo();
         this.fireEvent("change", this, d);
@@ -1971,7 +2126,9 @@ Ext.net.SaveMask.prototype = {
 
 Ext.grid.CellSelectionModel.prototype.handleMouseDown = Ext.grid.CellSelectionModel.prototype.handleMouseDown.createInterceptor(function (g, row, cell, e) {
     if (this.ignoreTargets) {
-        for (var i = 0; i < this.ignoreTargets.length; i++) {
+        var i = 0;
+
+        for (i; i < this.ignoreTargets.length; i++) {
             if (e.getTarget(this.ignoreTargets[i])) {
                 return false;
             }
@@ -1985,7 +2142,9 @@ Ext.grid.RowSelectionModel.prototype.handleMouseDown = Ext.grid.RowSelectionMode
     }
     
     if (this.ignoreTargets) {
-        for (var i = 0; i < this.ignoreTargets.length; i++) {
+        var i = 0;
+
+        for (i; i < this.ignoreTargets.length; i++) {
             if (e.getTarget(this.ignoreTargets[i])) {
                 return false;
             }
@@ -2003,9 +2162,11 @@ Ext.grid.RowSelectionModel.override({
             ids = [ids];
         }
         
-        var ds = this.grid.store;
+        var ds = this.grid.store,
+            i,
+            len;
         
-        for (var i = 0, len = ids.length; i < len; i++) {
+        for (i = 0, len = ids.length; i < len; i++) {
             this.selectRow(ds.indexOfId(ids[i]), true);
         }
     }
@@ -2024,12 +2185,14 @@ Ext.net.GridPanel = function (config) {
 };
 
 Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
-    clearEditorFilter: true,
-    selectionSavingBuffer: 0,
+    clearEditorFilter     : true,
+    selectionSavingBuffer : 0,
 
-    getFilterPlugin: function () {
+    getFilterPlugin : function () {
         if (this.plugins && Ext.isArray(this.plugins)) {
-            for (var i = 0; i < this.plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < this.plugins.length; i++) {
                 if (this.plugins[i].isGridFiltersPlugin) {
                     return this.plugins[i];
                 }
@@ -2041,9 +2204,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    getRowEditor: function () {
+    getRowEditor : function () {
         if (this.plugins && Ext.isArray(this.plugins)) {
-            for (var i = 0; i < this.plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < this.plugins.length; i++) {
                 if (this.plugins[i].isRowEditor) {
                     return this.plugins[i];
                 }
@@ -2055,9 +2220,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    getRowExpander: function () {
+    getRowExpander : function () {
         if (this.plugins && Ext.isArray(this.plugins)) {
-            for (var i = 0; i < this.plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < this.plugins.length; i++) {
                 if (this.plugins[i].id === "expander") {
                     return this.plugins[i];
                 }
@@ -2069,7 +2236,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    doSelection: function () {
+    doSelection : function () {
         var data = this.selModel.selectedData,
             silent = true;
 
@@ -2100,9 +2267,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                 }
             } else if (this.selModel.selectRow && data.length > 0) {
                 var records = [],
-                    record;
+                    record,
+                    i = 0;
 
-                for (var i = 0; i < data.length; i++) {
+                for (i; i < data.length; i++) {
                     if (!Ext.isEmpty(data[i].recordID)) {
                         record = this.store.getById(data[i].recordID);
 
@@ -2142,17 +2310,19 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    updateSelectedRows: function () {
-        var records = [];
+    updateSelectedRows : function () {
+        var records = [],
+            id;
 
         if (this.selectionMemory) {
-            for (var id in this.selectedIds) {
+            for (id in this.selectedIds) {
                 records.push({ RecordID: this.selectedIds[id].id, RowIndex: this.selectedIds[id].index });
             }
         } else {
-            var selectedRecords = this.selModel.getSelections();
+            var selectedRecords = this.selModel.getSelections(),
+                i = 0;
 
-            for (var i = 0; i < selectedRecords.length; i++) {
+            for (i; i < selectedRecords.length; i++) {
                 records.push({ RecordID: selectedRecords[i].id, RowIndex: this.store.indexOfId(selectedRecords[i].id) });
             }
         }
@@ -2160,13 +2330,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.hField.setValue(Ext.encode(records));
     },
 
-    updateCellSelection: function (sm, selection) {
+    updateCellSelection : function (sm, selection) {
         if (selection === null) {
             this.hField.setValue("");
         }
     },
 
-    cellSelect: function (sm, rowIndex, colIndex) {
+    cellSelect : function (sm, rowIndex, colIndex) {
         var r = this.store.getAt(rowIndex),
             selection = {
                 record: r,
@@ -2182,7 +2352,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
     selectionMemory: true,
 
     //private
-    removeOrphanColumnPlugins: function (column) {
+    removeOrphanColumnPlugins : function (column) {
         var p,
             i = 0;
 
@@ -2199,16 +2369,17 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                 } else {
                     i++;
                 }
-            }
-            else {
+            } else {
                 i++;
             }
         }
     },
 
-    addColumnPlugins: function (plugins, init) {
+    addColumnPlugins : function (plugins, init) {
         if (Ext.isArray(plugins)) {
-            for (var i = 0; i < plugins.length; i++) {
+            var i = 0;
+
+            for (i; i < plugins.length; i++) {
 
                 this.plugins.push(plugins[i]);
 
@@ -2225,9 +2396,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    initColumnPlugins: function (plugins, init) {
+    initColumnPlugins : function (plugins, init) {
         var cp = [],
-            p;
+            p,
+            i = 0;
 
         this.initGridPlugins();
 
@@ -2235,7 +2407,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             this.removeOrphanColumnPlugins();
         }
 
-        for (var i = 0; i < plugins.length; i++) {
+        for (i; i < plugins.length; i++) {
             p = this.getColumnModel().config[plugins[i]];
             p.isColumnPlugin = true;
             cp.push(p);
@@ -2243,7 +2415,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.addColumnPlugins(cp, init);
     },
 
-    initGridPlugins: function () {
+    initGridPlugins : function () {
         if (Ext.isEmpty(this.plugins)) {
             this.plugins = [];
         } else if (!Ext.isArray(this.plugins)) {
@@ -2251,7 +2423,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    initSelectionData: function () {
+    initSelectionData : function () {
         if (this.store) {
             if (this.store.getCount() > 0) {
                 this.doSelection();
@@ -2261,7 +2433,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    initComponent: function () {
+    initComponent : function () {
         Ext.net.GridPanel.superclass.initComponent.call(this);
 
         this.initGridPlugins();
@@ -2274,9 +2446,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             this.plugins.push(new Ext.ux.grid.ColumnHeaderGroup({ rows: this.getView().headerGroupRows }));
         }
 
-        var cm = this.getColumnModel();
+        var cm = this.getColumnModel(),
+            j = 0;
 
-        for (var j = 0; j < cm.config.length; j++) {
+        for (j; j < cm.config.length; j++) {
             var column = cm.config[j];
 
             if (column.commands) {
@@ -2307,10 +2480,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
 
         if (this.getView().headerRows) {
-            for (var rowIndex = 0; rowIndex < this.view.headerRows.length; rowIndex++) {
-                var cols = this.view.headerRows[rowIndex].columns;
+            var rowIndex = 0;
 
-                for (var colIndex = 0; colIndex < cols.length; colIndex++) {
+            for (rowIndex; rowIndex < this.view.headerRows.length; rowIndex++) {
+                var cols = this.view.headerRows[rowIndex].columns,
+                    colIndex = 0;
+
+                for (colIndex; colIndex < cols.length; colIndex++) {
                     var col = cols[colIndex];
 
                     if (Ext.isEmpty(col.component)) {
@@ -2330,28 +2506,31 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             this.colModel.on("hiddenchange", this.onHeaderRowHiddenChange, this);
 
             Ext.apply(this.getView(), {
-                onColumnMove: function (cm, oldIndex, newIndex) {
-                    for (var rowIndex = 0; rowIndex < this.headerRows.length; rowIndex++) {
+                onColumnMove : function (cm, oldIndex, newIndex) {
+                    var rowIndex = 0;
+
+                    for (rowIndex; rowIndex < this.headerRows.length; rowIndex++) {
                         var cols = this.headerRows[rowIndex].columns,
-                            tmp = cols[newIndex],
                             c = cols[oldIndex];
-                        cols[newIndex] = c;
-                        cols[oldIndex] = tmp;
+                        cols.splice(oldIndex, 1);
+                        cols.splice(newIndex, 0, c);
                     }
                     this.constructor.prototype.onColumnMove.call(this, cm, oldIndex, newIndex);
                 },
 
-                updateHeaders: function () {
-                    var col;
+                updateHeaders : function () {
+                    var col, div;
 
                     if (this.headerControlsInsideGrid) {
                         var el = Ext.net.ResourceMgr.getAspForm() || Ext.getBody(),
-                            ce;
+                            ce,
+                            i = 0;
 
-                        for (var i = 0; i < this.headerRows.length; i++) {
-                            var c1 = this.headerRows[i].columns;
+                        for (i; i < this.headerRows.length; i++) {
+                            var c1 = this.headerRows[i].columns,
+                                j = 0;
 
-                            for (var j = 0; j < c1.length; j++) {
+                            for (j; j < c1.length; j++) {
                                 col = c1[j];
 
                                 if (col.component) {
@@ -2379,13 +2558,15 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                     this.constructor.prototype.updateHeaders.call(this);
 
                     if (this.headerRows) {
-                        for (var ii = 0; ii < this.headerRows.length; ii++) {
-                            var c2 = this.headerRows[ii].columns,
-                                tr = this.mainHd.child("tr.x-grid3-hd-row-r" + ii);
+                        var ii = 0;
 
-                            for (var jj = 0; jj < c2.length; jj++) {
-                                col = c2[jj],
-                                    div;
+                        for (ii; ii < this.headerRows.length; ii++) {
+                            var c2 = this.headerRows[ii].columns,
+                                tr = this.mainHd.child("tr.x-grid3-hd-row-r" + ii),
+                                jj = 0;
+
+                            for (jj; jj < c2.length; jj++) {
+                                col = c2[jj];
 
                                 if (!Ext.isEmpty(col.component)) {
                                     div = Ext.fly(tr.dom.cells[jj]).child("div.x-grid3-hd-inner");
@@ -2414,9 +2595,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
                         this.grid.syncHeaders.defer(100, this.grid);
 
-                        var cm = this.grid.getColumnModel();
+                        var cm = this.grid.getColumnModel(),
+                            k = 0;
 
-                        for (var k = 0; k < cm.columns.length; k++) {
+                        for (k; k < cm.columns.length; k++) {
                             if (cm.isHidden(k)) {
                                 this.grid.onHeaderRowHiddenChange(cm, k, true);
                             }
@@ -2441,18 +2623,18 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
     
 
-    clearMemory: function () {
+    clearMemory : function () {
         delete this.selModel.selectedData;
         this.selectedIds = {};
         this.hField.setValue("");
     },
 
-    memoryReConfigure: function () {
+    memoryReConfigure : function () {
         this.store.on("clear", this.onMemoryClear, this);
         this.store.on("datachanged", this.memoryRestoreState, this);
     },
 
-    onMemorySelect: function (sm, idx, rec) {
+    onMemorySelect : function (sm, idx, rec) {
         if (this.getSelectionModel().singleSelect) {
             this.clearMemory();
         }
@@ -2463,12 +2645,16 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.onMemorySelectId(sm, absIndex, id);
     },
 
-    onMemorySelectId: function (sm, index, id) {
-        var obj = { id: id, index: index };
+    onMemorySelectId : function (sm, index, id) {
+        var obj = { 
+            id    : id, 
+            index : index 
+        };
+        
         this.selectedIds[id] = obj;
     },
 
-    getPagingToolbar: function () {
+    getPagingToolbar : function () {
         var bar = this.getBottomToolbar();
 
         if (bar && bar.getPageData) {
@@ -2484,7 +2670,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return null;
     },
 
-    getAbsoluteIndex: function (pageIndex) {
+    getAbsoluteIndex : function (pageIndex) {
         var absIndex = pageIndex,
             bar = this.getPagingToolbar();
 
@@ -2495,26 +2681,26 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return absIndex;
     },
 
-    onMemoryDeselect: function (sm, idx, rec) {
+    onMemoryDeselect : function (sm, idx, rec) {
         delete this.selectedIds[this.getRecId(rec)];
     },
 
-    onStoreRemove: function (store, rec, idx) {
+    onStoreRemove : function (store, rec, idx) {
         this.onMemoryDeselect(null, idx, rec);
     },
 
-    memoryRestoreState: function () {
+    memoryRestoreState : function () {
         if (this.store !== null) {
             var i = 0,
                 sel = [],
                 all = true,
                 silent = true;
-            
+
             if (this.selModel.isLocked()) {
                 this.wasLocked = true;
                 this.selModel.unlock();
-            }  
-                                
+            }
+
             this.store.each(function (rec) {
                 var id = this.getRecId(rec);
 
@@ -2552,14 +2738,14 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                     this.selModel.uncheckHeader();
                 }
             }
-            
+
             if (this.wasLocked) {
                 this.selModel.lock();
-            }  
+            }
         }
     },
 
-    getRecId: function (rec) {
+    getRecId : function (rec) {
         var id = rec.get(this.memoryIDField);
 
         if (Ext.isEmpty(id)) {
@@ -2569,21 +2755,26 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return id;
     },
 
-    onMemoryClear: function () {
+    onMemoryClear : function () {
         this.selectedIds = {};
     },
 
     
 
-    getSelectionModelField: function () {
+    getSelectionModelField : function () {
         if (!this.selectionModelField) {
             this.selectionModelField = new Ext.form.Hidden({ id: this.id + "_SM", name: this.id + "_SM" });
+            this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectionModelField);
         }
 
         return this.selectionModelField;
     },
 
-    initSelection: function () {
+    initSelection : function () {
         this.hField = this.getSelectionModelField();
 
         if (this.selModel.select) {
@@ -2596,7 +2787,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    getKeyMap: function () {
+    getKeyMap : function () {
         if (!this.keyMap) {
             this.keyMap = new Ext.KeyMap(this.view.el, this.keys);
         }
@@ -2604,7 +2795,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return this.keyMap;
     },
 
-    onRender: function (ct, position) {
+    onRender : function (ct, position) {
         Ext.net.GridPanel.superclass.onRender.call(this, ct, position);
 
         this.getSelectionModelField().render(this.el.parent() || this.el);
@@ -2618,10 +2809,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.relayEvents(this.store, ["commitdone", "commitfailed"]);
     },
 
-    onHeaderRowHiddenChange: function (cm, colIndex, hidden) {
-        var display = hidden ? "none" : "";
+    onHeaderRowHiddenChange : function (cm, colIndex, hidden) {
+        var display = hidden ? "none" : "",
+            rowIndex = 0;
 
-        for (var rowIndex = 0; rowIndex < this.view.headerRows.length; rowIndex++) {
+        for (rowIndex; rowIndex < this.view.headerRows.length; rowIndex++) {
             var tr = this.view.mainHd.child("tr.x-grid3-hd-row-r" + rowIndex);
 
             if (tr && tr.dom.cells.length > colIndex) {
@@ -2632,11 +2824,14 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.syncHeaders.defer(100, this);
     },
 
-    syncHeaders: function () {
-        for (var rowIndex = 0; rowIndex < this.view.headerRows.length; rowIndex++) {
-            var cols = this.view.headerRows[rowIndex].columns;
+    syncHeaders : function () {
+        var rowIndex = 0;
 
-            for (var colIndex = 0; colIndex < cols.length; colIndex++) {
+        for (rowIndex; rowIndex < this.view.headerRows.length; rowIndex++) {
+            var cols = this.view.headerRows[rowIndex].columns,
+                colIndex = 0;
+
+            for (colIndex; colIndex < cols.length; colIndex++) {
                 var col = cols[colIndex],
                     cmp;
 
@@ -2665,7 +2860,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    onRowContextMenu: function (grid, rowIndex, e) {
+    onRowContextMenu : function (grid, rowIndex, e) {
         e.stopEvent();
 
         if (!this.selModel.isSelected(rowIndex)) {
@@ -2676,7 +2871,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.showContextMenu(e, rowIndex);
     },
 
-    showContextMenu: function (e, rowIndex) {
+    showContextMenu : function (e, rowIndex) {
         e.stopEvent();
 
         if (rowIndex === undefined) {
@@ -2688,11 +2883,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    reload: function (options) {
+    reload : function (options) {
         this.store.reload(options);
     },
 
-    isDirty: function () {
+    isDirty : function () {
         if (this.store.modified.length > 0 || this.store.deleted.length > 0) {
             return true;
         }
@@ -2700,25 +2895,25 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return false;
     },
 
-    hasSelection: function () {
+    hasSelection : function () {
         return this.selModel.hasSelection();
     },
 
-    addRecord: function (values, commit, clearFilter) {
+    addRecord : function (values, commit, clearFilter) {
         var rowIndex = this.store.data.length;
 
         this.insertRecord(rowIndex, values, commit, clearFilter);
         return rowIndex;
     },
 
-    addRecordEx: function (values, commit, clearFilter) {
+    addRecordEx : function (values, commit, clearFilter) {
         var rowIndex = this.store.data.length,
             record = this.insertRecord(rowIndex, values, commit, clearFilter);
 
         return { index: rowIndex, record: record };
     },
 
-    insertRecord: function (rowIndex, values, commit, clearFilter) {
+    insertRecord : function (rowIndex, values, commit, clearFilter) {
         if (arguments.length === 0) {
             this.insertRecord(0, {});
             this.getView().focusRow(0);
@@ -2730,11 +2925,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return this.store.insertRecord(rowIndex, values, false, commit, clearFilter);
     },
 
-    deleteRecord: function (record) {
+    deleteRecord : function (record) {
         this.store.remove(record);
     },
 
-    deleteSelected: function () {
+    deleteSelected : function () {
         var s = this.selModel.getSelections(),
             i;
 
@@ -2743,13 +2938,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    clear: function () {
+    clear : function () {
         this.store.removeAll();
     },
 
     saveMask: false,
 
-    initEvents: function () {
+    initEvents : function () {
         Ext.net.GridPanel.superclass.initEvents.call(this);
 
         if (this.saveMask) {
@@ -2758,7 +2953,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    reconfigure: function (store, colModel) {
+    reconfigure : function (store, colModel) {
         Ext.net.GridPanel.superclass.reconfigure.call(this, store, colModel);
 
         if (this.saveMask) {
@@ -2768,7 +2963,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    onDestroy: function () {
+    onDestroy : function () {
         if (this.rendered) {
             if (this.saveMask) {
                 this.saveMask.destroy();
@@ -2778,7 +2973,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         Ext.net.GridPanel.superclass.onDestroy.call(this);
     },
 
-    insertColumn: function (index, newCol) {
+    insertColumn : function (index, newCol) {
         var c = this.getColumnModel().config,
             cfg;
 
@@ -2791,7 +2986,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, new Ext.grid.ColumnModel(cfg));
     },
 
-    addColumn: function (newCol) {
+    addColumn : function (newCol) {
         var c = this.getColumnModel().config,
             cfg;
 
@@ -2802,7 +2997,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, new Ext.grid.ColumnModel(cfg));
     },
 
-    removeColumn: function (index) {
+    removeColumn : function (index) {
         var c = this.getColumnModel().config,
             cfg;
 
@@ -2815,7 +3010,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, new Ext.grid.ColumnModel(cfg));
     },
 
-    reconfigureColumns: function (cfg) {
+    reconfigureColumns : function (cfg) {
         var oldCM = this.getColumnModel(),
             newCM,
             specialCols = ["checker", "expander"],
@@ -2823,6 +3018,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
         cfg = Ext.apply(cfg.columns ? cfg : { columns: cfg }, { events: oldCM.events, directEvents: oldCM.directEvents, defaultSortable: oldCM.defaultSortable });
 
+        Ext.each(cfg.columns, function (col) {
+            if (col.id === "expander") {
+                specialCols.remove("expander");
+                return false;
+            }
+        });
+        
         for (i = 0; i < specialCols.length; i++) {
             var specCol = oldCM.getColumnById(specialCols[i]);
 
@@ -2840,11 +3042,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.reconfigure(this.store, newCM);
     },
 
-    load: function (options) {
+    load : function (options) {
         this.store.load(options);
     },
 
-    save: function (options) {
+    save : function (options) {
         if (options && options.visibleOnly) {
             options.grid = this;
         }
@@ -2860,9 +3062,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
     //    - dirtyCellsOnly
     //    - dirtyRowsOnly
     //    - currentPageOnly
+    //    - excludeId
     //    - filterRecord - function (record) - return false to exclude the record
     //    - filterField - function (record, fieldName, value) - return false to exclude the field for particular record
-    getRowsValues: function (config) {
+    getRowsValues : function (config) {
         config = config || {};
 
         this.stopEditing(false);
@@ -2874,7 +3077,10 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
         if (this.selectionMemory && config.selectedOnly && !config.currentPageOnly && this.store.isPagingStore()) {
             records = [];
-            for (var id in this.selectedIds) {
+
+            var id;
+
+            for (id in this.selectedIds) {
                 record = this.store.getById(this.selectedIds[id].id);
 
                 if (!Ext.isEmpty(record)) {
@@ -2887,7 +3093,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             var obj = {}, dataR;
 
             if (this.store.metaId()) {
-                obj[this.store.metaId()] = records[i].id;
+                obj[this.store.metaId()] = config.excludeId === true ? undefined : records[i].id;
             }
 
             dataR = Ext.apply(obj, records[i].data);
@@ -2902,7 +3108,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         return values;
     },
 
-    serialize: function (config) {
+    serialize : function (config) {
         return Ext.encode(this.getRowsValues(config));
     },
 
@@ -2912,10 +3118,11 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
     //   - dirtyCellsOnly
     //   - dirtyRowsOnly
     //   - currentPageOnly
+    //   - excludeId
     //   - encode
     //    - filterRecord - function (record) - return false to exclude the record
     //    - filterField - function (record, fieldName, value) - return false to exclude the field for particular record
-    submitData: function (config) {
+    submitData : function (config) {
         config = config || {};
         config.selectedOnly = config.selectedOnly || false;
         encode = config.encode;
@@ -2928,12 +3135,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
 
         if (encode) {
             values = Ext.util.Format.htmlEncode(values);
+            delete config.encode;
         }
 
-        this.store.submitData(values);
+        this.store.submitData(values, config);
     },
 
-    onEditComplete: function (ed, value, startValue) {
+    onEditComplete : function (ed, value, startValue) {
         Ext.net.GridPanel.superclass.onEditComplete.call(this, ed, value, startValue);
 
         ed.field.reset();
@@ -2946,7 +3154,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         this.fireEvent("editcompleted", ed, value, startValue);
     },
 
-    stopEditing: function (cancel) {
+    stopEditing : function (cancel) {
         var ae = this.activeEditor;
 
         Ext.net.GridPanel.superclass.stopEditing.call(this, cancel);
@@ -2956,7 +3164,7 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
         }
     },
 
-    startEditing: function (row, col) {
+    startEditing : function (row, col) {
         this.stopEditing();
 
         if (this.colModel.isCellEditable(col, row)) {
@@ -2964,13 +3172,13 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
             var r = this.store.getAt(row),
                 field = this.colModel.getDataIndex(col),
                 e = {
-                    grid: this,
-                    record: r,
-                    field: field,
-                    value: r.data[field],
-                    row: row,
-                    column: col,
-                    cancel: false
+                    grid   : this,
+                    record : r,
+                    field  : field,
+                    value  : r.data[field],
+                    row    : row,
+                    column : col,
+                    cancel : false
                 };
 
             if (this.fireEvent("beforeedit", e) !== false && !e.cancel) {
@@ -2984,31 +3192,31 @@ Ext.extend(Ext.net.GridPanel, Ext.grid.EditorGridPanel, {
                 if (!ed.rendered) {
                     ed.parentEl = this.view.getEditorParent(ed);
                     ed.on({
-                        scope: this,
-                        render: {
-                            fn: function (c) {
+                        scope  : this,
+                        render : {
+                            fn : function (c) {
                                 c.field.focus(false, true);
                             },
-                            single: true,
-                            scope: this
+                            single : true,
+                            scope  : this
                         },
-                        specialkey: function (field, e) {
+                        specialkey : function (field, e) {
                             this.getSelectionModel().onEditorKey(field, e);
                         },
-                        complete: this.onEditComplete,
-                        canceledit: this.stopEditing.createDelegate(this, [true])
-                    });
+                        complete   : this.onEditComplete,
+                        canceledit : this.stopEditing.createDelegate(this, [true])
+                    });                    
                 }
 
                 Ext.apply(ed, {
-                    row: row,
-                    col: col,
-                    record: r
+                    row    : row,
+                    col    : col,
+                    record : r
                 });
 
                 this.lastEdit = {
-                    row: row,
-                    col: col
+                    row : row,
+                    col : col
                 };
 
                 this.activeEditor = ed;
@@ -3052,12 +3260,18 @@ Ext.grid.GroupingView.override({
         
         var r = [],
             g, 
-            gs = this.getGroups();
+            gs = this.getGroups(),
+            i = 0,
+            len;
         
-        for (var i = 0, len = gs.length; i < len; i++) {
+        for (i, len = gs.length; i < len; i++) {
             if (gs[i].childNodes.length > 1) {
                 g = gs[i].childNodes[1].childNodes;
-                for (var j = 0, jlen = g.length; j < jlen; j++) {
+                
+                var j,
+                    jlen;
+
+                for (j = 0, jlen = g.length; j < jlen; j++) {
                     r[r.length] = g[j];
                 }
             }
@@ -3188,8 +3402,11 @@ Ext.extend(Ext.data.PagingMemoryProxy, Ext.data.MemoryProxy, {
         }
 
         if (params.gridfilters !== undefined) {
-            var r = [];
-            for (var i = 0, len = result.records.length; i < len; i++) {
+            var r = [],
+                i,
+                len;
+
+            for (i = 0, len = result.records.length; i < len; i++) {
                 if (params.gridfilters.call(this, result.records[i])) {
                     r.push(result.records[i]);
                 }
@@ -3200,7 +3417,7 @@ Ext.extend(Ext.data.PagingMemoryProxy, Ext.data.MemoryProxy, {
 
 
         if (params.sort !== undefined) {
-            var dir = String(params.dir).toUpperCase() == "DESC" ? -1 : 1,
+            var dir = String(params.dir).toUpperCase() === "DESC" ? -1 : 1,
                 st = scope.fields.get(params.sort).sortType,
                 fn = function (r1, r2) {
                     var v1 = st(r1), v2 = st(r2);
@@ -3210,7 +3427,7 @@ Ext.extend(Ext.data.PagingMemoryProxy, Ext.data.MemoryProxy, {
             result.records.sort(function (a, b) {
                 var v = 0;
                 
-                v = (typeof (a) == "object") ? fn(a.data[params.sort], b.data[params.sort]) * dir : fn(a, b) * dir;
+                v = (typeof (a) === "object") ? fn(a.data[params.sort], b.data[params.sort]) * dir : fn(a, b) * dir;
                 
                 if (v === 0) {
                     v = (a.index < b.index ? -1 : 1);
@@ -3264,8 +3481,17 @@ Ext.PagingToolbar.prototype.onRender = Ext.PagingToolbar.prototype.onRender.crea
     }
 });
 
+Ext.PagingToolbar.prototype.initComponent = Ext.PagingToolbar.prototype.initComponent.createSequence(function () {
+    if (this.ownerCt instanceof Ext.net.GridPanel) {
+        this.ownerCt.on("viewready", this.fixFirstLayout, this, {single : true});
+    } else {
+        this.on("afterlayout", this.fixFirstLayout, this, {single : true});
+    }
+});
+
 Ext.PagingToolbar.override({
     hideRefresh: false,
+    onFirstLayout : Ext.emptyFn,
     
     getActivePageField : function () {
         if (!this.activePageField) {
@@ -3273,10 +3499,22 @@ Ext.PagingToolbar.override({
                 id   : this.id + "_ActivePage", 
                 name : this.id + "_ActivePage" 
             });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.activePageField);
         }
         
         return this.activePageField;
-    }    
+    },
+    
+    fixFirstLayout : function () {
+        if (this.dsLoaded) {
+            this.onLoad.apply(this, this.dsLoaded);
+        }
+    }   
 });
 
 // @source data/PropertyGrid.js
@@ -3292,6 +3530,12 @@ Ext.net.PropertyGrid = Ext.extend(Ext.grid.PropertyGrid, {
     getDataField : function () {
         if (!this.dataField) {
             this.dataField = new Ext.form.Hidden({ id : this.id + "_Data", name : this.id + "_Data" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.dataField);
         }
         
         return this.dataField;
@@ -3507,8 +3751,8 @@ Ext.extend(Ext.net.PageProxy, Ext.data.DataProxy, {
     errorHandler : function (response, result, context, type, action, extraParams) {
         var p = context.proxy;
 
-        p.fireEvent("loadexception", p, p.ro, response);
-        p.fireEvent("exception", p, "response", "read", p.ro, response, {message : response.statusText});
+        p.fireEvent("loadexception", p, p.ro, response, {message : response.responseText});
+        p.fireEvent("exception", p, "response", "read", p.ro, response, {message : response.responseText});
         p.ro.request.callback.call(p.ro.request.scope, null, p.ro.request.arg, false);
 
         if (p.ro.request.scope.showWarningOnFailure) {
@@ -3549,7 +3793,7 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         Ext.grid.RowExpander.superclass.constructor.call(this);
 
         if (this.tpl) {
-            if (typeof this.tpl == "string") {
+            if (typeof this.tpl === "string") {
                 this.tpl = new Ext.Template(this.tpl);
             }
             
@@ -3565,11 +3809,6 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
 
         this.state = {};
         this.bodyContent = {};
-        
-        if (Ext.isEmpty(Ext.fly("Ext.grid.RowExpander_css"))) {
-            var css = ".x-grid3-row-expanded .x-grid3-row-expander {background-position:-21px 2px;} .x-grid3-row-collapsed .x-grid3-row-expander {background-position:4px 2px;} .x-grid3-row-expanded .x-grid3-row-body {display:block !important;} .x-grid3-row-collapsed .x-grid3-row-body {display:none !important;}";
-            Ext.util.CSS.createStyleSheet(css, "Ext.grid.RowExpander_css");
-        }
     },
     
     getExpanded : function () {
@@ -3719,11 +3958,13 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
     
     onEnter : function (e) {
-        var g = this.grid;
-        var sm = g.getSelectionModel();
-        var sels = sm.getSelections();
+        var g = this.grid,
+            sm = g.getSelectionModel(),
+            sels = sm.getSelections(),
+            i,
+            len;
         
-        for (var i = 0, len = sels.length; i < len; i++) {
+        for (i = 0, len = sels.length; i < len; i++) {
             var rowIdx = g.getStore().indexOf(sels[i]);
             this.toggleRow(rowIdx);
         }
@@ -3773,7 +4014,7 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     toggleRow : function (row) {
-        if (typeof row == "number") {
+        if (typeof row === "number") {
             row = this.grid.view.getRow(row);
         }
         
@@ -3785,20 +4026,24 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
             return;
         }
         
-        for (var i = 0; i < this.grid.store.getCount(); i++) {
+        var i = 0;
+
+        for (i; i < this.grid.store.getCount(); i++) {
             this.expandRow(i);
         }
     },
     
     collapseAll : function () {
-        for (var i = 0; i < this.grid.store.getCount(); i++) {
+        var i = 0;
+
+        for (i; i < this.grid.store.getCount(); i++) {
             this.collapseRow(i);
         }
         this.state = {};
     },
 
     expandRow : function (row) {
-        if (typeof row == "number") {
+        if (typeof row === "number") {
             row = this.grid.view.getRow(row);
         }
         
@@ -3807,7 +4052,6 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         }            
         
         var record = this.grid.store.getAt(row.rowIndex),
-            //body = Ext.DomQuery.selectNode("tr:nth(2) div.x-grid3-row-body", row);
             body = Ext.DomQuery.selectNode(this.rowBodySelector, row);
         
         if (this.beforeExpand(record, body, row.rowIndex)) {
@@ -3841,7 +4085,7 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
     },
 
     collapseRow : function (row) {
-        if (typeof row == "number") {
+        if (typeof row === "number") {
             row = this.grid.view.getRow(row);
         }
         
@@ -3850,13 +4094,29 @@ Ext.grid.RowExpander = Ext.extend(Ext.util.Observable, {
         } 
         
         var record = this.grid.store.getAt(row.rowIndex),
-            body = Ext.fly(row).child("tr:nth(1) div.x-grid3-row-body", true);
+            body = Ext.DomQuery.selectNode(this.rowBodySelector, row);
         
         if (this.fireEvent("beforecollapse", this, record, body, row.rowIndex) !== false) {
             this.state[record.id] = false;
             Ext.fly(row).replaceClass("x-grid3-row-expanded", "x-grid3-row-collapsed");
             this.fireEvent("collapse", this, record, body, row.rowIndex);
         }
+    },
+    
+    isCollapsed : function (row) {
+        if (typeof row === "number") {
+            row = this.grid.view.getRow(row);
+        }
+
+        return Ext.fly(row).hasClass("x-grid3-row-collapsed");
+    },
+    
+    isExpanded : function (row) {
+        if (typeof row === "number") {
+            row = this.grid.view.getRow(row);
+        }
+
+        return Ext.fly(row).hasClass("x-grid3-row-expanded");
     }
 });
 
@@ -3918,9 +4178,9 @@ Ext.grid.CheckColumn.prototype = {
             
             if (this.singleSelect) {
                 this.grid.store.each(function (record, i) {
-                    var value = (i == rIndex);
+                    var value = (i === rIndex);
 
-                    if (value != record.get(dataIndex)) {
+                    if (value !== record.get(dataIndex)) {
                         record.set(dataIndex, value);
                     }
                 });
@@ -3938,7 +4198,7 @@ Ext.grid.CheckColumn.prototype = {
     },
     
     destroy : function () {
-        if(this.grid){
+        if (this.grid) {
             this.grid.getView().mainBody.un("mousedown", this.onMouseDown, this);
         }
     },
@@ -4073,7 +4333,9 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
         }
         
         if (this.ignoreTargets) {
-            for (var i = 0; i < this.ignoreTargets.length; i++) {
+            var i = 0;
+
+            for (i; i < this.ignoreTargets.length; i++) {
                 if (e.getTarget(this.ignoreTargets[i])) {
                     return;
                 }
@@ -4081,9 +4343,9 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
         }
 
         if (e.button === 0 &&
-            (this.keepSelectionOnClick == "always" || t.className == "x-grid3-row-checker") &&
-            t.className != "x-grid3-row-expander" &&
-            !Ext.fly(t).hasClass("x-grid3-td-expander")) {
+                (this.keepSelectionOnClick === "always" || t.className === "x-grid3-row-checker") &&
+                t.className !== "x-grid3-row-expander" &&
+                !Ext.fly(t).hasClass("x-grid3-td-expander")) {
 
             e.stopEvent();
             var row = e.getTarget(".x-grid3-row"),
@@ -4095,7 +4357,7 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
 
             index = row.rowIndex;
 
-            if (this.keepSelectionOnClick == "withctrlkey") {
+            if (this.keepSelectionOnClick === "withctrlkey") {
                 if (this.isSelected(index)) {
                     this.deselectRow(index);
                 } else {
@@ -4172,7 +4434,7 @@ Ext.override(Ext.grid.CheckboxSelectionModel, {
     },
 
     onHdMouseDown: function (e, t) {
-        if (t.className == "x-grid3-hd-checker") {
+        if (t.className === "x-grid3-hd-checker") {
             e.stopEvent();
             var hd = Ext.fly(t.parentNode);
             var isChecked = hd.hasClass("x-grid3-hd-checker-on");
@@ -4251,7 +4513,7 @@ Ext.grid.ColumnModel.override({
             return false;
         }
     
-        if (typeof this.config[col].sortable == "undefined") {
+        if (typeof this.config[col].sortable === "undefined") {
             return this.defaultSortable;
         }
         
@@ -4289,14 +4551,15 @@ Ext.grid.GridView.prototype.afterRender = Ext.grid.GridView.prototype.afterRende
 Ext.grid.GridView.override({
     getCell: function (row, col) {
         var tds = this.getRow(row).getElementsByTagName("td"),
-            ind = -1;
+            ind = -1,
+            i = 0;
 
         if (tds) {
-            for (var i = 0; i < tds.length; i++) {
+            for (i; i < tds.length; i++) {
                 if (Ext.fly(tds[i]).hasClass("x-grid3-col x-grid3-cell")) {
                     ind++;
 
-                    if (ind == col) {
+                    if (ind === col) {
                         return tds[i];
                     }
                 }
@@ -4306,16 +4569,20 @@ Ext.grid.GridView.override({
     },
 
     getColumnData: function () {
-        var cs = [], cm = this.cm, colCount = cm.getColumnCount();
+        var cs = [], 
+            cm = this.cm, 
+            colCount = cm.getColumnCount(),
+            i = 0;
         
-        for (var i = 0; i < colCount; i++) {
+        for (i; i < colCount; i++) {
             var name = cm.getDataIndex(i);
+
             cs[i] = {
-                name: (!Ext.isDefined(name) ? this.ds.fields.get(i).name : name),
-                renderer: cm.getRenderer(i),
-                scope: cm.getRendererScope(i),
-                id: cm.getColumnId(i),
-                style: this.getColumnStyle(i)
+                name     : (!Ext.isDefined(name) ? this.ds.fields.get(i).name : name),
+                renderer : cm.getRenderer(i),
+                scope    : cm.getRendererScope(i),
+                id       : cm.getColumnId(i),
+                style    : this.getColumnStyle(i)
             };
             
             if (cs[i].scope && !cs[i].scope.grid) {
@@ -4360,6 +4627,11 @@ Ext.DataView.override({
     getSelectionField : function () {
         if (!this.selectionField) {
             this.selectionField = new Ext.form.Hidden({ id: this.id + "_SN", name: this.id + "_SN" });
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectionField);
         }
 
         return this.selectionField;
@@ -4368,9 +4640,10 @@ Ext.DataView.override({
     updateSelection : function () {
         var records = [];
 
-        var selectedRecords = this.getSelectedRecords();
+        var selectedRecords = this.getSelectedRecords(),
+            i = 0;
 
-        for (var i = 0; i < selectedRecords.length; i++) {
+        for (i; i < selectedRecords.length; i++) {
             if (!Ext.isEmpty(selectedRecords[i])) {
                 records.push({ RecordID: selectedRecords[i].id, RowIndex: this.store.indexOfId(selectedRecords[i].id) });
             }
@@ -4394,9 +4667,10 @@ Ext.DataView.override({
 
             if (data.length > 0) {
                 var indexes = [],
-                    record;
+                    record,
+                    i = 0;
 
-                for (var i = 0; i < data.length; i++) {
+                for (i; i < data.length; i++) {
                     if (!Ext.isEmpty(data[i].recordID)) {
                         record = this.store.getById(data[i].recordID);
                         
@@ -4474,7 +4748,7 @@ Ext.ListView.override({
     setColumnHeader : function (column, header) {
         if (Ext.isString(column)) {
             Ext.each(this.columns, function (c, i) {
-                if (c.dataIndex == column) {
+                if (c.dataIndex === column) {
                     column = i;
                     return false;
                 }
@@ -4487,9 +4761,9 @@ Ext.ListView.override({
 
 // @source data/CommandColumn.js
 
-Ext.grid.GridView.prototype.refreshRow = Ext.grid.GridView.prototype.refreshRow.createInterceptor(function (record) {
-    this.fireEvent("beforerowupdate", this, this.grid.store.indexOf(record), record);
-});
+//Ext.grid.GridView.prototype.refreshRow = Ext.grid.GridView.prototype.refreshRow.createInterceptor(function (record) {
+//    this.fireEvent("beforerowupdate", this, this.grid.store.indexOf(record), record);
+//});
 
 Ext.net.CommandColumn = function (config) {
     Ext.apply(this, config);
@@ -4518,9 +4792,9 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
         this.cache = [];
 
-        if (Ext.isEmpty(view.events) || Ext.isEmpty(view.events.beforerowupdated)) {
-            view.addEvents("beforerowupdated");
-        }
+//        if (Ext.isEmpty(view.events) || Ext.isEmpty(view.events.beforerowupdate)) {
+//            view.addEvents("beforerowupdate");
+//        }
         
         this.commands = this.commands || [];
 
@@ -4773,7 +5047,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
     getRecords : function (groupId) {
         if (groupId) {
             var records = this.grid.store.queryBy(function (r) {
-                    return r._groupId == groupId;
+                    return r._groupId === groupId;
                 });
 
             return records ? records.items : [];
@@ -4807,7 +5081,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
                 _group = this.grid.view.findGroup(div),
                 _groupId = _group ? _group.id.replace(/ext-gen[0-9]+-gp-/, "") : null;
 
-            if (_groupId == groupId) {
+            if (_groupId === groupId) {
                 var el = div.last();
 
                 if (!Ext.isEmpty(el)) {
@@ -4830,11 +5104,14 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
         }
 
         if (this.commands) {
-            for (var i = start; i < end; i++) {
+            var i = start;
+
+            for (i; i < end; i++) {
 
                 var toolbar = new Ext.Toolbar({
-                    items: this.commands,
-                    enableOverflow: false
+                    items          : this.commands,
+                    enableOverflow : false,
+                    buttonAlign    : this.buttonAlign
                 }),
                     div;
 
@@ -4875,7 +5152,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
                         if (!Ext.isEmpty(button.command, false)) {
                             button.on("click", function () {
-                                this.toolbar.grid.fireEvent("command", this.command, this.toolbar.record, this.toolbar.rowIndex);
+                                this.toolbar.grid.fireEvent("command", this.command, this.toolbar.record, this.toolbar.record.store.indexOf(this.toolbar.record));
                             }, button);
                         }
 
@@ -4918,7 +5195,7 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
                         }
                         if (pm && pm.shared && pm.ownerCt && pm.ownerCt.toolbar) {
                             var toolbar = pm.ownerCt.toolbar;
-                            toolbar.grid.fireEvent("command", this.command, toolbar.record, toolbar.rowIndex);
+                            toolbar.grid.fireEvent("command", this.command, toolbar.record, toolbar.record.store.indexOf(toolbar.record));
                         }
                     }, item);
 
@@ -4952,21 +5229,25 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
     },
 
     removeToolbar : function (view, rowIndex, record) {
-        for (var i = 0, l = this.cache.length; i < l; i++) {
-            if (this.cache[i].record && (this.cache[i].record.id == record.id)) {
+        var i,
+            l;
+
+        for (i = 0, l = this.cache.length; i < l; i++) {
+            if (this.cache[i].record && (this.cache[i].record.id === record.id)) {
                 try {
                     this.cache[i].destroy();
                     this.cache.remove(this.cache[i]);
-                }
-                catch (ex) {
-                }
+                } catch (ex) { }
                 break;
             }
         }
     },
 
     removeToolbars : function () {
-        for (var i = 0, l = this.cache.length; i < l; i++) {
+        var i,
+            l;
+
+        for (i = 0, l = this.cache.length; i < l; i++) {
             try {
                 this.cache[i].destroy();
             } catch (ex) { }
@@ -4991,9 +5272,10 @@ Ext.extend(Ext.net.CommandColumn, Ext.util.Observable, {
 
     getAllToolbars : function () {
         var tdCmd = this.select(),
-            toolbars = [];
+            toolbars = [],
+            i = 0;
 
-        for (var i = 0; i < tdCmd.length; i++) {
+        for (i; i < tdCmd.length; i++) {
             var div = Ext.fly(tdCmd[i]).first("div"),
                 el = div.first();
 
@@ -5029,7 +5311,7 @@ Ext.net.ImageCommandColumn = function (config) {
         this.id = Ext.id();
     }
 
-    this.renderer = this.renderer.createDelegate(this);
+    //this.renderer = this.renderer.createDelegate(this);
 
     Ext.net.ImageCommandColumn.superclass.constructor.call(this);    
 };
@@ -5047,9 +5329,17 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
         
         if (this.grid.rendered) {
             view.mainBody.on("click", this.onClick, this);
+
+            if (view.lockedBody) {
+                view.lockedBody.on("click", this.onClick, this);
+            }
         } else {
             this.grid.afterRender = grid.afterRender.createSequence(function () {
                 view.mainBody.on("click", this.onClick, this);
+
+                if (view.lockedBody) {
+                    view.lockedBody.on("click", this.onClick, this);
+                }
             }, this);
         }
         
@@ -5064,10 +5354,12 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
         } else {
             sm.handleMouseDown = sm.handleMouseDown.createInterceptor(this.handleMouseDown, this);
         }
+        
+        this.renderer = this.renderer.createDelegate(this);
 
         if (view.groupTextTpl && this.groupCommands) {
             view.processEvent = view.processEvent.createInterceptor(function (name, e) {
-                if (name == "mousedown" && e.getTarget(".group-row-imagecommand")) {
+                if (name === "mousedown" && e.getTarget(".group-row-imagecommand")) {
                     return false;
                 }
             });
@@ -5143,8 +5435,8 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
     },
     
     interceptMouse : function (name, e) {
-        if (name == "mousedown" && e.getTarget('.group-row-imagecommand', this.grid.view.mainBody) ||
-           e.getTarget('.row-imagecommand ', this.grid.view.mainBody)) {
+        if ((name === "mousedown" && e.getTarget(".group-row-imagecommand", this.grid.view.mainBody)) ||
+                e.getTarget(".row-imagecommand ", this.grid.view.mainBody)) {
             e.stopEvent();
             return false;
         }
@@ -5161,9 +5453,11 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
             if (this.prepareCommands) {                
                 commands = Ext.net.clone(this.commands);
                 this.prepareCommands(this.grid, commands, record, row);
-            }            
+            }
             
-            for (var i = 0; i < commands.length; i++) {
+            var i = 0;
+                        
+            for (i; i < commands.length; i++) {
                 var cmd = commands[i];
                 
                 cmd.tooltip = cmd.tooltip || {};
@@ -5271,7 +5565,7 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
     getRecords : function (groupId) {
         if (groupId) {
             var records = this.grid.store.queryBy(function (record) {
-                    return record._groupId == groupId;
+                    return record._groupId === groupId;
                 });
                 
             return records ? records.items : [];
@@ -5282,6 +5576,9 @@ Ext.extend(Ext.net.ImageCommandColumn, Ext.util.Observable, {
     
     destroy : function () {
         this.grid.getView().mainBody.un("click", this.onClick, this);
+        if (this.grid.getView().lockedBody) {
+            this.grid.getView().lockedBody.un("click", this.onClick, this);
+        }
     }
 });
 
@@ -5330,6 +5627,10 @@ Ext.extend(Ext.net.CellCommands, Ext.util.Observable, {
         
         this.grid.afterRender = grid.afterRender.createSequence(function () {
             view.mainBody.on("click", this.onClick, this);
+
+            if (view.lockedBody) {
+                view.lockedBody.on("click", this.onClick, this);
+            }
         }, this);
 
         var cm = this.grid.getColumnModel(),
@@ -5375,9 +5676,11 @@ Ext.extend(Ext.net.CellCommands, Ext.util.Observable, {
             if (column.prepareCommands) {                
                 commands = Ext.net.clone(column.commands);
                 column.prepareCommands(this.grid, commands, record, row, col, value);
-            }    
-                
-            for (var i = rightAlign ? (commands.length - 1) : 0; rightAlign ? (i >= 0) : (i < commands.length); rightAlign ? i-- : i++) {
+            }
+            
+            var i = rightAlign ? (commands.length - 1) : 0;
+                            
+            for (i; rightAlign ? (i >= 0) : (i < commands.length); rightAlign ? i-- : i++) {
                 var cmd = commands[i];
                 
                 cmd.tooltip = cmd.tooltip || {};
@@ -5411,7 +5714,7 @@ Ext.extend(Ext.net.CellCommands, Ext.util.Observable, {
                 commands   : preparedCommands,
                 value      : userRendererValue,
                 rightAlign : rightAlign,
-                rightValue : column.align == "right"
+                rightValue : column.align === "right"
             });
         } else {
             meta.css = meta.css || "";
@@ -5479,7 +5782,7 @@ Ext.grid.GridDragZone.override({
         if (rowIndex !== false) {
             var sm = this.grid.selModel;
         
-            if (!sm.isSelected(rowIndex) || e.hasModifier() || sm.keepSelectionOnClick == "always") {
+            if (!sm.isSelected(rowIndex) || e.hasModifier() || sm.keepSelectionOnClick === "always") {
                 sm.handleMouseDown(this.grid, rowIndex, e);
             }
         

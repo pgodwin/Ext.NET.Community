@@ -106,3 +106,4 @@ Ext.ux.ProgressBarPager  = Ext.extend(Object, {
 });
 Ext.preg('progressbarpager', Ext.ux.ProgressBarPager);
 
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

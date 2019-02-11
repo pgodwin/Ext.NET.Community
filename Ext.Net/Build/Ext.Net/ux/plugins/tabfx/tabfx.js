@@ -27,4 +27,6 @@ Ext.ux.plugins.TabFx = Ext.extend(Ext.TabPanel, {
             item[self.cfg.name].apply(item, Ext.isArray(self.cfg.args) ? self.cfg.args : []);
         };
     }
-});if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}
+});
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

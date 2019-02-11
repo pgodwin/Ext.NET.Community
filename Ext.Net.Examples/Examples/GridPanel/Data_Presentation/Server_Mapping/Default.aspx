@@ -7,8 +7,10 @@
 <script runat="server">
     protected void Page_Load(object sender, EventArgs e)
     {
-        this.Store1.DataSource = Employee.GetAll();
-        this.Store1.DataBind();
+        var store = this.GridPanel1.GetStore();
+        
+        store.DataSource = Employee.GetAll();
+        store.DataBind();
     }
 
     public class Employee
@@ -48,11 +50,11 @@
         public static List<Department> GetAll()
         {
             return new List<Department>
-                       {
-                           new Department { ID = 1, Name = "Department A" },
-                           new Department { ID = 2, Name = "Department B" },
-                           new Department { ID = 3, Name = "Department C" }
-                       };
+            {
+                new Department { ID = 1, Name = "Department A" },
+                new Department { ID = 2, Name = "Department B" },
+                new Department { ID = 3, Name = "Department C" }
+            };
         }
     }
 </script>
@@ -69,26 +71,27 @@
     <form runat="server">
         <ext:ResourceManager runat="server" />
         
-        <ext:Store ID="Store1" runat="server">
-            <Reader>
-                <ext:JsonReader IDProperty="ID">
-                    <Fields>
-                        <ext:RecordField Name="ID" Type="Int" />
-                        <ext:RecordField Name="Name" />
-                        <ext:RecordField Name="Surname" />
-                        <ext:RecordField Name="Department" ServerMapping="Department.Name" />
-                    </Fields>
-                </ext:JsonReader>
-            </Reader>
-        </ext:Store>
-        
-        <ext:GridPanel 
+        <ext:GridPanel
+            ID="GridPanel1"
+            runat="server"
             EnableViewState="true" 
             AutoHeight="true" 
-            runat="server"
-            StoreID="Store1" 
             Title="List" 
             Icon="Application">
+            <Store>
+                <ext:Store runat="server">
+                    <Reader>
+                        <ext:JsonReader IDProperty="ID">
+                            <Fields>
+                                <ext:RecordField Name="ID" Type="Int" />
+                                <ext:RecordField Name="Name" />
+                                <ext:RecordField Name="Surname" />
+                                <ext:RecordField Name="Department" ServerMapping="Department.Name" />
+                            </Fields>
+                        </ext:JsonReader>
+                    </Reader>
+                </ext:Store>
+            </Store>
             <ColumnModel runat="server">                
                 <Columns>
                     <ext:Column Header="ID" DataIndex="ID" />
@@ -98,7 +101,7 @@
                 </Columns>
             </ColumnModel>
             <SelectionModel>
-                <ext:RowSelectionModel ID="RowSelectionModel1" runat="server" />
+                <ext:RowSelectionModel runat="server" />
             </SelectionModel>
             <LoadMask Msg="Loading" ShowMask="true" />
         </ext:GridPanel>

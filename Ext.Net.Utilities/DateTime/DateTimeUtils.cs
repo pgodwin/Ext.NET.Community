@@ -106,12 +106,17 @@ namespace Ext.Net.Utilities
             return final.ToString();
         }
 
+        public static string ConvertNetToPHP(string format)
+        {
+            return DateTimeUtils.ConvertNetToPHP(format, CultureInfo.CurrentUICulture);
+        }
+
         /// <summary>
         /// Accepts a Unix/PHP date string format and returns a valid .NET date format
         /// </summary>
         /// <param name="format">The .NET format string</param>
         /// <returns>The format string converted to PHP format specifiers</returns>
-        public static string ConvertNetToPHP(string format)
+        public static string ConvertNetToPHP(string format, CultureInfo culture)
         {
             if (string.IsNullOrEmpty(format))
             {
@@ -124,16 +129,16 @@ namespace Ext.Net.Utilities
             switch (format.Trim())
             {
                 case "d":
-                    format = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+                    format = culture.DateTimeFormat.ShortDatePattern;
                     break;
                 case "D":
-                    format = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+                    format = culture.DateTimeFormat.LongDatePattern;
                     break;
                 case "t":
-                    format = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern;
+                    format = culture.DateTimeFormat.ShortTimePattern;
                     break;
                 case "T":
-                    format = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.LongTimePattern;
+                    format = culture.DateTimeFormat.LongTimePattern;
                     break;
             }
 
@@ -229,23 +234,14 @@ namespace Ext.Net.Utilities
 
         public static DateTimeFormatInfo ClientDateTimeFormatInfo()
         {
-            if (HttpContext.Current == null)
+            try
             {
-                return null;
+                return CultureInfo.CreateSpecificCulture(HttpContext.Current.Request.UserLanguages[0]).DateTimeFormat;
             }
-            string lang = HttpContext.Current.Request.UserLanguages[0];
-
-            if (lang != null)
+            catch
             {
-                if (lang.Length < 3)
-                {
-                    lang = lang + "-" + lang.ToUpper();
-                }
-
-                return new CultureInfo(lang).DateTimeFormat;
+                return CultureInfo.InvariantCulture.DateTimeFormat;
             }
-
-            return null;
         }
     }
 }

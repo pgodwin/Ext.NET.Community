@@ -240,8 +240,8 @@ Ext.ux.grid.BufferView = Ext.extend(Ext.grid.GridView, {
         Ext.ux.grid.BufferView.superclass.destroy.call(this);
     },
 
-	layout: function () {
-		Ext.ux.grid.BufferView.superclass.layout.call(this);
+    layout : function (initial) {
+        Ext.ux.grid.BufferView.superclass.layout.call(this, initial);
 		this.update();
 	}
 });

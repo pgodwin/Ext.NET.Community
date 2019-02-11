@@ -35,6 +35,12 @@ Ext.TabPanel.override({
                 name  : this.id + "_ActiveTab", 
                 value : this.id + ":" + (this.activeTab || 0)
             });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.activeTabField);	
         }
 
         return this.activeTabField;
@@ -61,9 +67,9 @@ Ext.TabPanel.override({
     },
 
     closeTab : function (tab, closeAction) {
-        if (typeof tab == "string") {
+        if (typeof tab === "string") {
             tab = this.getItem(tab);
-        } else if (typeof tab == "number") {
+        } else if (typeof tab === "number") {
             tab = this.items.get(tab);
         }
 
@@ -72,9 +78,9 @@ Ext.TabPanel.override({
         }
 
         var eventName = tab.closeAction || closeAction || "close",
-            destroy = eventName == "close";
+            destroy = (eventName === "close");
 
-        if (this.fireEvent("beforetab" + eventName, tab) === false) {
+        if (this.fireEvent("beforetab" + eventName, this, tab) === false) {
             return;
         }
 
@@ -86,11 +92,12 @@ Ext.TabPanel.override({
             tab.fireEvent("close", tab);
         }       
         
-        this.hideTabStripItem(tab);
-        
-        tab.addClass("x-hide-display");
-        
-        this.fireEvent("tabclose", tab);
+        if (!destroy) {
+            this.hideTabStripItem(tab);        
+            tab.addClass("x-hide-display");
+        }
+                
+        this.fireEvent("tabclose", this, tab);
         
         this.remove(tab, destroy);
         
@@ -103,9 +110,9 @@ Ext.TabPanel.override({
         var config = {};
 
         if (!Ext.isEmpty(index)) {
-            if (typeof index == "object") {
+            if (typeof index === "object") {
                 config = index;
-            } else if (typeof index == "number") {
+            } else if (typeof index === "number") {
                 config.index = index;
             } else {
                 config.activate = index;

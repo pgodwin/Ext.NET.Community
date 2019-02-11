@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -41,10 +41,10 @@ namespace Ext.Net
     public abstract partial class TriggerFieldBase : TextFieldBase
     {
         /// <summary>
-		/// 
-		/// </summary>
-		[Category("0. About")]
-		[Description("")]
+        /// 
+        /// </summary>
+        [Category("0. About")]
+        [Description("")]
         public override string XType
         {
             get
@@ -53,67 +53,49 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected override void OnPreRender(EventArgs e)
         {
             this.RegisterIcons();
             base.OnPreRender(e);
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         public virtual void RegisterIcons()
         {
-            if (!Ext.Net.X.IsAjaxRequest)
+            if (!Ext.Net.X.IsAjaxRequest || this.IsDynamic)
             {
-                this.RegisterIcon(this.TriggerIcon, false);
+                this.RegisterIcon(this.TriggerIcon);
 
                 foreach (FieldTrigger trigger in this.Triggers)
                 {
-                    this.RegisterIcon(trigger.Icon, false);
+                    this.RegisterIcon(trigger.Icon);
                 }
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         public void RegisterIcon(TriggerIcon icon)
         {
-            this.RegisterIcon(icon, true);
+            TriggerFieldBase.RegisterTriggerIcon(icon);
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public void RegisterIcon(TriggerIcon icon, bool force)
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
+        protected static void RegisterTriggerIcon(TriggerIcon icon)
         {
-            TriggerFieldBase.RegisterTriggerIcon(icon, force);
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        public static void RegisterTriggerIcon(TriggerIcon icon)
-        {
-            TriggerFieldBase.RegisterTriggerIcon(icon, true);
-        }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
-        protected static void RegisterTriggerIcon(TriggerIcon icon, bool force)
-        {
-            if (icon == TriggerIcon.Combo || 
+            if (icon == TriggerIcon.Combo ||
                 icon == TriggerIcon.Clear ||
                 icon == TriggerIcon.Date ||
                 icon == TriggerIcon.Search ||
@@ -144,16 +126,17 @@ namespace Ext.Net
             string url = rm.GetWebResourceUrl(string.Format(ResourceManager.ASSEMBLYSLUG + ".ux.extensions.triggerfield.images.{0}", urlName));
             string url1 = "";
             string css = ".x-form-field-wrap .{0}{{background-image:url({1});cursor:pointer;}}";
-            
+
             if (!RequestManager.IsWebKit && iconName.StartsWith("Simple"))
             {
                 url1 = rm.GetWebResourceUrl(string.Format(ResourceManager.ASSEMBLYSLUG + ".ux.extensions.triggerfield.images.{0}", iconName.ToCharacterSeparatedFileName('-', "").ConcatWith("-small.gif")));
                 css += " .x-small-editor .x-form-field-wrap .{0}{{background-image:url({2});cursor:pointer;}}";
             }
 
-            if (force && Ext.Net.X.IsAjaxRequest)
+            if (Ext.Net.X.IsAjaxRequest)
             {
-                CSS.CreateStyleSheet(css.FormatWith(key, url, url1), key);
+                //CSS.CreateStyleSheet(css.FormatWith(key, url, url1), key);
+                rm.AddScript("Ext.net.ResourceMgr.registerCssClass({0}, {1});", JSON.Serialize(key), JSON.Serialize(css.FormatWith(key, url, url1)));
             }
             else
             {
@@ -289,12 +272,12 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
+        /// <summary>
+        /// 
+        /// </summary>
         [ConfigOption("triggerClass")]
         [DefaultValue("")]
-		[Description("")]
+        [Description("")]
         protected virtual string TriggerIconClsProxy
         {
             get
@@ -308,19 +291,19 @@ namespace Ext.Net
             }
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected virtual void SetHideTrigger(bool hide)
         {
             this.AddScript("{0}.trigger.setDisplayed({1});", this.ClientID, JSON.Serialize(!hide));
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		[Description("")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Description("")]
         protected virtual void SetEditable(bool value)
         {
             this.Call("setEditable", value);

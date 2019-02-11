@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -55,6 +55,12 @@ namespace Ext.Net
         //        return this.Events.Count == 0 && this.Proxy.Count == 0;
         //    }
         //}
+
+        protected override void OnInit(System.EventArgs e)
+        {
+            base.OnInit(e);
+            this.EnsureReader();
+        }
         
         /// <summary>
         /// 
@@ -63,6 +69,12 @@ namespace Ext.Net
         protected override void OnBeforeClientInit(Observable sender)
         {
             base.OnBeforeClientInit(sender);
+
+            if (this.AutoLoad)
+            {
+                this.AutoLoad = false;
+                this.CustomConfig.Add(new ConfigItem("deferLoad", "true", ParameterMode.Raw));
+            }
 
             if (this.StandardFields)
             {
@@ -98,6 +110,16 @@ namespace Ext.Net
             {
                 this.ViewState["DateFormat"] = value;
             }
+        }
+
+        protected override string GetAjaxDataJson()
+        {
+            if (this.Proxy.Count == 0 && this.Events.Count > 0)
+            {
+                return JSON.Serialize(this.Events);
+            }
+
+            return base.GetAjaxDataJson();
         }
 
         /// <summary>

@@ -6,12 +6,6 @@ Ext.net.MultiCombo = Ext.extend(Ext.form.ComboBox, {
     wrapBySquareBrackets : false,
     valueField    : "value",
     selectionMode : "checkbox",
-    
-    registerStyles : function () {
-        if (!Ext.fly("mcombo-css")) {
-            Ext.util.CSS.createStyleSheet(".x-combo-list-item{border: 1px dotted white;} .x-multi-selected{border: 1px dotted black; cursor:pointer;} .x-mcombo-nimg-item img {height:16px;width:0px;float:left;} .x-mcombo-img-item img {width:16px;height:16px;float:left;background-color: transparent; background-position: -1px -1px !important; background-repeat:no-repeat !important;}", "mcombo-css");
-        }
-    },
 
     normalizeStringValues : function (s) {
 	    if (!Ext.isEmpty(s, false)) {
@@ -96,17 +90,15 @@ Ext.net.MultiCombo = Ext.extend(Ext.form.ComboBox, {
 	},	
 
     initComponent : function () {
-		this.registerStyles();
-
 		this.editable = false;
 
 		if (!this.tpl) {
 			this.tpl = '<tpl for="."><div class="x-combo-list-item {[this.getItemClass()]}">' +
-				       '<img src="' + Ext.BLANK_IMAGE_URL + '" class="{[this.getImgClass(values)]}" />' +
-				       '<div class="x-mcombo-text">{' + this.displayField + '}</div></div></tpl>';
+				'<img src="' + Ext.BLANK_IMAGE_URL + '" class="{[this.getImgClass(values)]}" />' +
+			    '<div class="x-mcombo-text">{' + this.displayField + '}</div></div></tpl>';
 
 	        this.tpl = new Ext.XTemplate(this.tpl, {
-	            getItemClass: (function () {
+	            getItemClass : (function () {
 	                if (this.selectionMode === "selection") {
 	                    return "x-mcombo-nimg-item";
 	                }
@@ -115,7 +107,7 @@ Ext.net.MultiCombo = Ext.extend(Ext.form.ComboBox, {
 
 	            }).createDelegate(this),
 
-	            getImgClass: (function (values) {
+	            getImgClass : (function (values) {
 	                if (this.selectionMode === "selection") {
 	                    return "";
 	                }
@@ -149,6 +141,7 @@ Ext.net.MultiCombo = Ext.extend(Ext.form.ComboBox, {
     clearValue : function () {
 		Ext.net.MultiCombo.superclass.clearValue.call(this);
 		this.checkedRecords = [];
+		delete this.selectionPredefined;
 		this.store.clearFilter();
 		this.store.fireEvent("datachanged", this.store);
 		this.saveSelection();
@@ -255,10 +248,10 @@ Ext.net.MultiCombo = Ext.extend(Ext.form.ComboBox, {
 	    if (this.selectionMode !== "checkbox") {
 	        this.view.overClass = "x-multi-selected";
 	        this.view.mon(this.view.getTemplateTarget(), {
-                    "mouseover": this.view.onMouseOver,
-                    "mouseout": this.view.onMouseOut,
-                    scope: this.view
-                });
+                "mouseover": this.view.onMouseOver,
+                "mouseout": this.view.onMouseOut,
+                scope: this.view
+            });
         }
 	},
 
@@ -480,6 +473,12 @@ Ext.net.MultiCombo = Ext.extend(Ext.form.ComboBox, {
     getSelectionField : function () {
         if (!this.selectionField) {
             this.selectionField = new Ext.form.Hidden({ id : this.id + "_Selection", name : this.id + "_Selection" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectionField);		
         }
 
         return this.selectionField;

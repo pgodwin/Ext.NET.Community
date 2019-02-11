@@ -12,14 +12,15 @@ Ext.grid.GridView.prototype.afterRender = Ext.grid.GridView.prototype.afterRende
 Ext.grid.GridView.override({
     getCell: function (row, col) {
         var tds = this.getRow(row).getElementsByTagName("td"),
-            ind = -1;
+            ind = -1,
+            i = 0;
 
         if (tds) {
-            for (var i = 0; i < tds.length; i++) {
+            for (i; i < tds.length; i++) {
                 if (Ext.fly(tds[i]).hasClass("x-grid3-col x-grid3-cell")) {
                     ind++;
 
-                    if (ind == col) {
+                    if (ind === col) {
                         return tds[i];
                     }
                 }
@@ -29,16 +30,20 @@ Ext.grid.GridView.override({
     },
 
     getColumnData: function () {
-        var cs = [], cm = this.cm, colCount = cm.getColumnCount();
+        var cs = [], 
+            cm = this.cm, 
+            colCount = cm.getColumnCount(),
+            i = 0;
         
-        for (var i = 0; i < colCount; i++) {
+        for (i; i < colCount; i++) {
             var name = cm.getDataIndex(i);
+
             cs[i] = {
-                name: (!Ext.isDefined(name) ? this.ds.fields.get(i).name : name),
-                renderer: cm.getRenderer(i),
-                scope: cm.getRendererScope(i),
-                id: cm.getColumnId(i),
-                style: this.getColumnStyle(i)
+                name     : (!Ext.isDefined(name) ? this.ds.fields.get(i).name : name),
+                renderer : cm.getRenderer(i),
+                scope    : cm.getRendererScope(i),
+                id       : cm.getColumnId(i),
+                style    : this.getColumnStyle(i)
             };
             
             if (cs[i].scope && !cs[i].scope.grid) {

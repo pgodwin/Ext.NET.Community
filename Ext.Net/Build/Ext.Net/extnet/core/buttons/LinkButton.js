@@ -32,7 +32,7 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
         }
         
         if (this.tooltip) {
-            if (typeof this.tooltip == "object") {
+            if (typeof this.tooltip === "object") {
                 Ext.QuickTips.register(Ext.apply({
                     target : textEl.id
                 }, this.tooltip));
@@ -51,9 +51,7 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
         }
 
         if (this.repeat) {
-            var repeater = new Ext.util.ClickRepeater(txt,
-                typeof this.repeat == "object" ? this.repeat : {}
-            );
+            var repeater = new Ext.util.ClickRepeater(txt, typeof this.repeat === "object" ? this.repeat : {});
             repeater.on("click", this.onClick, this);
         }
 
@@ -77,7 +75,7 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
 
     toggle : function (state) {
         state = state === undefined ? !this.pressed : state;
-        if (state != this.pressed) {
+        if (state !== this.pressed) {
             if (state) {
                 this.setDisabled(true);
                 this.disabled = false;
@@ -113,13 +111,13 @@ Ext.net.LinkButton = Ext.extend(Ext.Button, {
                 img.style.display = "none";
             }
 
-            if (this.iconAlign == "left") {
+            if (this.iconAlign === "left") {
                 el.appendChild(img);
             }
 
             el.appendChild(this.valueElement());
 
-            if (this.iconAlign == "right") {
+            if (this.iconAlign === "right") {
                 el.appendChild(img);
             }
 

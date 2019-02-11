@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -694,6 +694,35 @@ namespace Ext.Net
             }
         }
 
+        private JFunction resizeElement;
+
+        /// <summary>
+        /// Performs resizing of the associated Element. 
+        /// This method is called internally by this class, and should not be called by user code.
+        /// If a Resizable is being used to resize an Element which encapsulates a more complex UI component such as a Panel,
+        /// this method may be overridden by specifying an implementation as a config option to provide appropriate behaviour
+        /// at the end of the resize operation on mouseup, for example resizing the Panel, and relaying the Panel's content.
+        /// The new area to be resized to is available by examining the state of the proxy Element.
+        /// </summary>
+        [Meta]
+        [ConfigOption(JsonMode.Raw)]
+        [Category("3. Resizable")]
+        [PersistenceMode(PersistenceMode.InnerProperty)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        [Description("Performs resizing of the associated Element. ")]
+        public virtual JFunction ResizeElement
+        {
+            get
+            {
+                if (this.resizeElement == null)
+                {
+                    this.resizeElement = new JFunction();
+                }
+
+                return this.resizeElement;
+            }
+        }
+
         private ResizableListeners listeners;
 
         /// <summary>
@@ -744,6 +773,33 @@ namespace Ext.Net
 
                 return this.directEvents;
             }
+        }
+
+        /// <summary>
+        /// Destroys this resizable
+        /// </summary>
+        public virtual void Destroy()
+        {
+            this.Call("destroy");
+        }
+
+        /// <summary>
+        /// Destroys this resizable. If the element was wrapped and removeEl is not true then the element remains.
+        /// </summary>
+        /// <param name="removeEl">(optional) true to remove the element from the DOM</param>
+        public virtual void Destroy(bool removeEl)
+        {
+            this.Call("destroy", removeEl);
+        }
+
+        /// <summary>
+        /// Perform a manual resize and fires the 'resize' event.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public virtual void ResizeTo(int width, int height)
+        {
+            this.Call("resizeTo", width, height);
         }
     }
 }

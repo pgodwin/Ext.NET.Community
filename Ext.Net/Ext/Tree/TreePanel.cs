@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -352,6 +352,7 @@ namespace Ext.Net
             }
         }
 
+        bool initParams = false;
         /// <summary>
         /// 
         /// </summary>
@@ -360,6 +361,11 @@ namespace Ext.Net
         protected override void OnBeforeClientInit(Observable sender)
         {
             base.OnBeforeClientInit(sender);
+
+            if (this.initParams)
+            {
+                return;
+            }
 
             if (this.Loader.Primary != null && this.Loader.Primary.BaseParams.Count > 0)
             {
@@ -403,6 +409,8 @@ namespace Ext.Net
                     }
                 }
             }
+
+            this.initParams = true;
         }
 
         private string BuildRemoteParams(ParameterCollection parameters, string userHandler, bool isFn)
@@ -506,7 +514,7 @@ namespace Ext.Net
         protected override bool LoadPostData(string postDataKey, NameValueCollection postCollection)
         {
             bool result = base.LoadPostData(postDataKey, postCollection);
-            string val = postCollection[this.ClientID.ConcatWith("_SM")];
+            string val = postCollection[this.ConfigID.ConcatWith("_SM")];
 
             if (val != null && this.SelectionModel.Primary != null)
             {
@@ -522,7 +530,7 @@ namespace Ext.Net
                 }
             }
 
-            val = postCollection[this.ClientID.ConcatWith("_CheckNodes")];
+            val = postCollection[this.ConfigID.ConcatWith("_CheckNodes")];
             if (val != null)
             {
                 List<SubmittedNode> nodes = JSON.Deserialize<List<SubmittedNode>>(val, new CamelCasePropertyNamesContractResolver());
@@ -530,6 +538,27 @@ namespace Ext.Net
             }
 
             return result;
+        }
+
+        protected virtual void RegisterNodesIcons(TreeNodeCollection nodes)
+        {
+            if (ResourceManager.HasResourceManager)
+            {
+                foreach (TreeNodeBase node in nodes)
+                {
+                    if (node.Icon != Icon.None)
+                    {
+                        ResourceManager.GetInstance().RegisterIcon(node.Icon);
+                    }
+
+                    TreeNode treeNode = node as TreeNode;
+
+                    if (treeNode != null && treeNode.Nodes.Count > 0)
+                    {
+                        this.RegisterNodesIcons(treeNode.Nodes);
+                    }
+                }
+            }
         }
 
         /// <summary>

@@ -12,19 +12,19 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
         var i;
         
         if (this.imageUrl) {
-            i = new Ext.net.Image().src = this.imageUrl;
+            i = new Image().src = this.imageUrl;
         }
 
         if (this.overImageUrl) {
-            i = new Ext.net.Image().src = this.overImageUrl;
+            i = new Image().src = this.overImageUrl;
         }
 
         if (this.disabledImageUrl) {
-            i = new Ext.net.Image().src = this.disabledImageUrl;
+            i = new Image().src = this.disabledImageUrl;
         }
 
         if (this.pressedImageUrl) {
-            i = new Ext.net.Image().src = this.pressedImageUrl;
+            i = new Image().src = this.pressedImageUrl;
         }
     },
 
@@ -39,8 +39,7 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
             this.imgEl = Ext.get(img);
             this.el = this.imgEl;
 
-            if (!Ext.isEmpty(this.imgEl.getAttributeNS("", "width"), false) ||
-                !Ext.isEmpty(this.imgEl.getAttributeNS("", "height"), false)) {
+            if (!Ext.isEmpty(this.imgEl.getAttributeNS("", "width"), false) || !Ext.isEmpty(this.imgEl.getAttributeNS("", "height"), false)) {
                 img.removeAttribute("width");
                 img.removeAttribute("height");
             }
@@ -71,9 +70,7 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
             }
 
             if (this.repeat) {
-                var repeater = new Ext.util.ClickRepeater(this.imgEl,
-                    typeof this.repeat == "object" ? this.repeat : {}
-                );
+                var repeater = new Ext.util.ClickRepeater(this.imgEl, typeof this.repeat === "object" ? this.repeat : {});
                 repeater.on("click", this.onClick, this);
             }
 
@@ -92,7 +89,7 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
         }
 
         if (this.tooltip) {
-            if (typeof this.tooltip == "object") {
+            if (typeof this.tooltip === "object") {
                 Ext.QuickTips.register(Ext.apply({
                     target : this.imgEl.id
                 }, this.tooltip));
@@ -125,7 +122,7 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
     toggle : function (state) {
         state = state === undefined ? !this.pressed : state;
         
-        if (state != this.pressed) {
+        if (state !== this.pressed) {
             if (state) {
                 if (this.pressedImageUrl) {
                     this.imgEl.dom.src = this.pressedImageUrl;
@@ -216,8 +213,7 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
     setImageUrl : function (image) {
         this.imageUrl = image;
         
-        if ((!this.disabled || Ext.isEmpty(this.disabledImageUrl, false)) && 
-            (!this.pressed || Ext.isEmpty(this.pressedImageUrl, false))) {
+        if ((!this.disabled || Ext.isEmpty(this.disabledImageUrl, false)) && (!this.pressed || Ext.isEmpty(this.pressedImageUrl, false))) {
             this.imgEl.dom.src = image;
         } else {
             new Image().src = image;
@@ -237,9 +233,7 @@ Ext.net.ImageButton = Ext.extend(Ext.Button, {
     setOverImageUrl : function (image) {
         this.overImageUrl = image;
         
-        if ((!this.disabled || Ext.isEmpty(this.disabledImageUrl, false)) &&
-            this.monitoringMouseOver &&
-            (!this.pressed || Ext.isEmpty(this.pressedImageUrl, false))) {
+        if ((!this.disabled || Ext.isEmpty(this.disabledImageUrl, false)) && this.monitoringMouseOver && (!this.pressed || Ext.isEmpty(this.pressedImageUrl, false))) {
             this.imgEl.dom.src = image;
         } else {
             new Image().src = image;

@@ -481,11 +481,9 @@ TODO: lazy rendering
             var start,
                 store = this.grid.store;
             this.deferredUpdate.cancel();
-            if (this.toolbar) {
-                start = store.paramNames.start;
-                if (store.lastOptions && store.lastOptions.params && store.lastOptions.params[start]) {
-                    store.lastOptions.params[start] = 0;
-                }
+            start = store.paramNames.start;
+            if (store.lastOptions && store.lastOptions.params && store.lastOptions.params[start]) {
+                store.lastOptions.params[start] = 0;
             }
             store.reload(undefined, true);
         }
@@ -685,7 +683,13 @@ Ext.ux.grid.filter.Filter = Ext.extend(Ext.util.Observable, {
         this.purgeListeners();
     },
 
-    init : Ext.emptyFn,
+    init : function (config) {
+        Ext.apply(this, config || {});
+        delete config.getValue;
+        delete config.setValue;
+        delete config.getSerialArgs;
+        delete config.validateRecord;
+    },
     
     getValue : Ext.emptyFn,
     
@@ -730,6 +734,8 @@ Ext.ux.grid.filter.BooleanFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 	noText : 'No',
 
     init : function (config) {
+        Ext.ux.grid.filter.BooleanFilter.superclass.init.call(this, config);
+        
         var gId = Ext.id();
 		this.options = [
 			new Ext.menu.CheckItem({text: this.yesText, group: gId, checked: this.defaultValue === true}),
@@ -781,6 +787,8 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     pickerOpts : {},
 
     init : function (config) {
+        Ext.ux.grid.filter.DateFilter.superclass.init.call(this, config);
+        
         var menuCfg, i, len, item, cfg, Cls;
 
         menuCfg = Ext.apply(this.pickerOpts, {
@@ -937,6 +945,8 @@ Ext.ux.grid.filter.DateFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
 Ext.ux.grid.filter.ListFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     phpMode : false,
     init : function (config) {
+        Ext.ux.grid.filter.ListFilter.superclass.init.call(this, config);
+        
         this.dt = new Ext.util.DelayedTask(this.fireUpdate, this);
 
         if (this.menu) {
@@ -1000,6 +1010,8 @@ Ext.ux.grid.filter.NumericFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     menuItems : ['lt', 'gt', '-', 'eq'],
 
     init : function (config) {
+        Ext.ux.grid.filter.NumericFilter.superclass.init.call(this, config);
+        
         if (this.menu) {
             this.menu.destroy();
         }    
@@ -1072,6 +1084,8 @@ Ext.ux.grid.filter.StringFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
     width: 125,
     
     init : function (config) {
+        Ext.ux.grid.filter.StringFilter.superclass.init.call(this, config);
+        
         Ext.applyIf(config, {
             enableKeyEvents: true,
             iconCls: this.iconCls,
@@ -1123,3 +1137,5 @@ Ext.ux.grid.filter.StringFilter = Ext.extend(Ext.ux.grid.filter.Filter, {
         this.updateTask.delay(this.updateBuffer);
     }
 });
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

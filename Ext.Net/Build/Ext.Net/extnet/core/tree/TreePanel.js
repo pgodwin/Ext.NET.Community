@@ -11,7 +11,7 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
     initNoLeafIcon : function () {
         if (this.noLeafIcon) {
             var css = "#" + this.id + " .x-tree-node-leaf .x-tree-node-icon{background-image: none;width:0px;}";
-            Ext.util.CSS.createStyleSheet(css, "treepanel_css_" + this.id);
+			Ext.net.ResourceMgr.registerCssClass("treepanel_css_" + this.id, css);        
         }
     },
     
@@ -23,7 +23,9 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
         
         if (Ext.isEmpty(this.selectionSubmitConfig) || this.selectionSubmitConfig.disableAutomaticSubmit !== true) {
             this.getSelectionModel().on("selectionchange", this.updateSelection, this);
-            this.on("checkchange", this.updateCheckSelection, this);
+            this.on("checkchange", this.updateCheckSelection, this, {buffer : 10});
+            this.on("append", this.updateCheckSelection, this, {buffer : 10});
+            this.on("insert", this.updateCheckSelection, this, {buffer : 10});
         }
         
         if (!this.loader.hasListener("loadexception")) {
@@ -144,15 +146,15 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
         var rParams;
 		
 		try {
-			rParams = result.extraParamsResponse || (result.d ? result.d.response : {}) || {};
+			rParams = result.extraParamsResponse || result.response || (result.d ? result.d.response : {}) || {};
 			var responseObj = result.serviceResponse || result.d || result;
             result = { success: responseObj.success, msg: responseObj.message };            
 		} catch (ex) {
 			this.fireEvent("remoteactionexception", this, response, ex, o);
 			
 			if (o.cancelWarningFailure !== true && 
-		        (this.directEventConfig || {}).showWarningFailure !== false &&
-		        !this.hasListener("remoteactionexception")) {
+                    (this.directEventConfig || {}).showWarningFailure !== false &&
+		            !this.hasListener("remoteactionexception")) {
 		        Ext.net.DirectEvent.showFailure(response, result.msg);
 		    }
 			
@@ -189,11 +191,9 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
 		    break;
 		case "raAppend":
 		case "raInsert":
-		    if (rParams.ra_id) {
-			    this.unregisterNode(o.node);
-			    o.node.id = rParams.ra_id || rParams.id;
-			    o.node.getUI().onIdChange(rParams.ra_id || rParams.id);
-			    this.registerNode(o.node);
+		    var id = rParams.ra_id || rParams.id;
+		    if (id) {
+			    o.node.setId(id);
 			}
 		
 			if (rParams.ra_text || rParams.text) {
@@ -215,8 +215,8 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
 		this.fireEvent("remoteactionexception", this, response, {message: response.statusText}, o);
 		
 		if (o.cancelWarningFailure !== true && 
-            (this.directEventConfig || {}).showWarningFailure !== false &&
-	        !this.hasListener("remoteactionexception")) {
+                (this.directEventConfig || {}).showWarningFailure !== false &&
+	            !this.hasListener("remoteactionexception")) {
 	        Ext.net.DirectEvent.showFailure(response, response.responseText);
 		}
     },
@@ -288,7 +288,7 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
 	},
 	
 	convertText : function (text) {
-	    if (text == "&#160;") {
+	    if (text === "&#160;") {
 	        return "";
 	    }
 	    
@@ -474,7 +474,9 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
     },
 
     setChildren : function (parent, node) {
-        for (var i = 0; i < parent.children.length; i++) {
+        var i = 0;
+
+        for (i; i < parent.children.length; i++) {
 
             var child = parent.children[i],
                 childNode = this.createNode(child);
@@ -501,7 +503,7 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
         if (config.nodeType) {
             return new Ext.tree.TreePanel.nodeTypes[config.nodeType](config);
         } else {
-            if (type == "node" || config.leaf) {
+            if (type === "node" || config.leaf) {
                 return new Ext.tree.TreeNode(config);
             }
         }
@@ -512,6 +514,12 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
     getSelectionModelField : function () {
         if (!this.selectionModelField) {
             this.selectionModelField = new Ext.form.Hidden({ id : this.id + "_SM", name : this.id + "_SM" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.selectionModelField);
         }
         
         return this.selectionModelField;
@@ -520,6 +528,12 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
     getCheckNodesField : function () {
         if (!this.checkNodesField) {
             this.checkNodesField = new Ext.form.Hidden({ id : this.id + "_CheckNodes", name : this.id + "_CheckNodes" });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.checkNodesField);
         }
         
         return this.checkNodesField;
@@ -543,7 +557,7 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
     ],
     
     defaultAttributeFilter : function (attrName, attrValue) {
-        return typeof attrValue != "function" && this.excludeAttributes.indexOf(attrName) == -1;
+        return typeof attrValue !== "function" && this.excludeAttributes.indexOf(attrName) === -1;
     },
     
     defaultNodeFilter : function (node) {
@@ -590,8 +604,10 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
         
         sNode.attributes = {};
         
-        for (var attr in node.attributes) {
-            if (attr == "id" || attr == "text") {
+        var attr;
+
+        for (attr in node.attributes) {
+            if (attr === "id" || attr === "text") {
                 continue;
             }
         
@@ -608,12 +624,13 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
         }
         
         if (config.withChildren) {
-            var children = node.childNodes;
+            var children = node.childNodes,
+                i = 0;
             
 	        if (children.length !== 0) {
 	            sNode.children = [];
 	            
-	            for (var i = 0; i < children.length; i++) {
+	            for (i; i < children.length; i++) {
 	                var cNode = this.convertToSubmitNode(children[i], config);
 	               
 	                if (!Ext.isEmpty(cNode)) {
@@ -840,8 +857,10 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
 		}
 		
         if (config.remove) {
-            for (var id in af) {
-                if (typeof id != "function") {
+            var id;
+
+            for (id in af) {
+                if (typeof id !== "function") {
                     var n = af[id];
 
                     if (n && n.parentNode) {
@@ -853,10 +872,11 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
 	},
 	
     clearFilter : function () {
-        var af = this.filtered || {};
+        var af = this.filtered || {},
+            id;
         
-        for (var id in af) {
-            if (typeof id != "function") {
+        for (id in af) {
+            if (typeof id !== "function") {
                 var n = af[id];
                 
                 if (n) {
@@ -903,7 +923,10 @@ Ext.extend(Ext.net.TreePanel, Ext.tree.TreePanel, {
         
         cfg.value = Ext.isDefined(cfg.value) ? cfg.value : true;
         
-        for (var i = 0, l = cfg.ids.length; i < l; i++) {
+        var i = 0,
+            l;
+
+        for (i, l = cfg.ids.length; i < l; i++) {
             var node = this.getNodeById(cfg.ids[i]);
             
             if (node.getUI().rendered) {

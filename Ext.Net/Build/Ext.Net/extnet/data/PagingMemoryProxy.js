@@ -100,8 +100,11 @@ Ext.extend(Ext.data.PagingMemoryProxy, Ext.data.MemoryProxy, {
         }
 
         if (params.gridfilters !== undefined) {
-            var r = [];
-            for (var i = 0, len = result.records.length; i < len; i++) {
+            var r = [],
+                i,
+                len;
+
+            for (i = 0, len = result.records.length; i < len; i++) {
                 if (params.gridfilters.call(this, result.records[i])) {
                     r.push(result.records[i]);
                 }
@@ -112,7 +115,7 @@ Ext.extend(Ext.data.PagingMemoryProxy, Ext.data.MemoryProxy, {
 
 
         if (params.sort !== undefined) {
-            var dir = String(params.dir).toUpperCase() == "DESC" ? -1 : 1,
+            var dir = String(params.dir).toUpperCase() === "DESC" ? -1 : 1,
                 st = scope.fields.get(params.sort).sortType,
                 fn = function (r1, r2) {
                     var v1 = st(r1), v2 = st(r2);
@@ -122,7 +125,7 @@ Ext.extend(Ext.data.PagingMemoryProxy, Ext.data.MemoryProxy, {
             result.records.sort(function (a, b) {
                 var v = 0;
                 
-                v = (typeof (a) == "object") ? fn(a.data[params.sort], b.data[params.sort]) * dir : fn(a, b) * dir;
+                v = (typeof (a) === "object") ? fn(a.data[params.sort], b.data[params.sort]) * dir : fn(a, b) * dir;
                 
                 if (v === 0) {
                     v = (a.index < b.index ? -1 : 1);

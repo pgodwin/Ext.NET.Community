@@ -3,7 +3,7 @@
 
 Ext.override(Ext.SplitButton, {
     isClickOnArrow : function (e) {
-	    if (this.arrowAlign != "bottom") {
+	    if (this.arrowAlign !== "bottom") {
 	        var visBtn = this.el.child("em.x-btn-split");
 
 	        if (!visBtn) {

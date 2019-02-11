@@ -21,7 +21,7 @@ var makeTab = function (id, url, title) {
     win = new Ext.Window({
         id      : "w" + id,
         layout  : "fit",        
-        title   : "Source code",
+        title   : "Source Code",
         iconCls : "icon-pagewhitecode",
         width   : 925,
         height  : 650,
@@ -63,7 +63,7 @@ var makeTab = function (id, url, title) {
                 single : true
             }
         },
-        buttons :[
+        buttons : [
             {
                 id   : "b" + id,
                 text : "Download",
@@ -83,7 +83,7 @@ var makeTab = function (id, url, title) {
     exampleName = url;
     
     tab = ExampleTabs.add(new Ext.Panel({
-        id   : id,
+        id   : id,        
         tbar : [{
             text    : "Source Code",
             iconCls : "icon-pagewhitecode",
@@ -181,8 +181,9 @@ var makeTab = function (id, url, title) {
             },
             iconCls : "icon-arrowrefresh"
         }],
-        title  : title,
-        tabTip : tabTip,
+        title    : title,
+        tabTip   : tabTip,
+        hideMode : "offsets",
         autoLoad : {
             showMask : true,
             scripts  : true,

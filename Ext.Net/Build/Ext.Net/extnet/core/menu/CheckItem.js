@@ -12,6 +12,12 @@ Ext.menu.CheckItem.override({
                 id   : this.id + "_Checked", 
                 name : this.id + "_Checked" 
             });
+
+			this.on("beforedestroy", function () { 
+                if (this.rendered) {
+                    this.destroy();
+                }
+            }, this.checkedField);	
         }
         
         return this.checkedField;

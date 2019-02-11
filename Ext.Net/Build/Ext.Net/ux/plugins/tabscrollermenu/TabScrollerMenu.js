@@ -113,58 +113,51 @@ Ext.ux.TabScrollerMenu =  Ext.extend(Object, {
 		},
 		// private	
 		generateTabMenuItems : function () {
-			var curActive  = this.getActiveTab();
-			var totalItems = this.items.getCount();
-			var pageSize   = this.tabScrollerMenu.getPageSize();
+			var curActive  = this.getActiveTab(),
+			    totalItems = this.items.getCount(),
+			    pageSize   = this.tabScrollerMenu.getPageSize(),
+			    menuItems = [],
+				addedItems = 0,
+				isPaging,
+				startSub;
 			
-			
-			if (totalItems > pageSize)  {
-				var numSubMenus = Math.floor(totalItems / pageSize);
-				var remainder   = totalItems % pageSize;
+			for (var i = 0 ; i < totalItems; i++) {
+				var item = this.items.get(i);
 				
-				// Loop through all of the items and create submenus in chunks of 10
-				for (var i = 0 ; i < numSubMenus; i++) {
-					var curPage = (i + 1) * pageSize;
-					var menuItems = [];
-					
-					
-					for (var x = 0; x < pageSize; x++) {				
-						index = x + curPage - pageSize;
-						var item = this.items.get(index);
-						menuItems.push(this.autoGenMenuItem(item));
-					}
-					
-					this.tabsMenu.add({
-						text : this.tabScrollerMenu.getMenuPrefixText() + ' '  + (curPage - pageSize + 1) + ' - ' + curPage,
-						menu : menuItems
-					});
-					
+				if (!(Ext.fly(this.getTabEl(item)).isVisible())) {
+				    continue;
 				}
-				// remaining items
-				if (remainder > 0) {
-					var start = numSubMenus * pageSize;
-					menuItems = [];
-					for (var i = start ; i < totalItems; i ++ ) {					
-						var item = this.items.get(i);
-						menuItems.push(this.autoGenMenuItem(item));
-					}
-					
-					
-					this.tabsMenu.add({
-						text : this.tabScrollerMenu.menuPrefixText  + ' ' + (start + 1) + ' - ' + (start + menuItems.length),
-						menu : menuItems
-					});
-					
-
+				
+				if(menuItems.length == pageSize){
+				    startSub = Math.floor((addedItems - 1) / pageSize) * pageSize + 1;
+				    this.tabsMenu.add({
+					    text : this.tabScrollerMenu.getMenuPrefixText() + ' '  + startSub + ' - ' + (startSub + menuItems.length - 1),
+					    menu : menuItems
+				    });
+				    isPaging = true;
+				    menuItems = [];
+				}
+				
+				menuItems.push(this.autoGenMenuItem(item));
+				addedItems += 1;								
+			}
+			
+			if (menuItems.length > 0) {					
+				if(isPaging){
+				    startSub = Math.floor((addedItems - 1) / pageSize) * pageSize + 1;
+				    this.tabsMenu.add({
+					    text : this.tabScrollerMenu.menuPrefixText  + ' ' + startSub + ' - ' + (startSub + menuItems.length - 1),
+					    menu : menuItems
+				    });
+				}
+				else{
+				    Ext.each(menuItems, function (item) {
+				       if (item.tabToShow.id != curActive.id) {
+					        this.tabsMenu.add(item);
+				       }
+			        }, this);
 				}
 			}
-			else {
-				this.items.each(function (item) {
-					if (item.id != curActive.id && Ext.fly(this.getTabEl(item)).isVisible()) {
-						this.tabsMenu.add(this.autoGenMenuItem(item));
-					}
-				}, this);
-			}	
 		},
 		// private
 		autoGenMenuItem : function (item) {
@@ -205,3 +198,5 @@ Ext.ux.TabScrollerMenu =  Ext.extend(Object, {
 });
 
 Ext.reg('tabscrollermenu', Ext.ux.TabScrollerMenu);
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

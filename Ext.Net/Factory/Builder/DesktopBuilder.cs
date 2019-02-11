@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -137,6 +137,15 @@ namespace Ext.Net
             public virtual Desktop.Builder Wallpaper(string wallpaper)
             {
                 this.ToComponent().Wallpaper = wallpaper;
+                return this as Desktop.Builder;
+            }
+             
+ 			/// <summary>
+			/// The maximum length of Ext.ux.TaskBar.TaskButton's text to allow before truncating
+			/// </summary>
+            public virtual Desktop.Builder TextLengthToTruncate(int textLengthToTruncate)
+            {
+                this.ToComponent().TextLengthToTruncate = textLengthToTruncate;
                 return this as Desktop.Builder;
             }
              

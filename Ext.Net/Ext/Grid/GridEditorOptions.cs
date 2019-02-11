@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -200,6 +200,50 @@ namespace Ext.Net
         }
 
         /// <summary>
+        /// True to cancel the edit when the escape key is pressed (defaults to false)
+        /// </summary>
+        [Meta]
+        [ConfigOption]
+        [Category("2. GridEditorOptions")]
+        [DefaultValue(true)]
+        [NotifyParentProperty(true)]
+        [Description("True to cancel the edit when the escape key is pressed (defaults to false)")]
+        public virtual bool CancelOnEsc
+        {
+            get
+            {
+                object obj = this.ViewState["CancelOnEsc"];
+                return (obj == null) ? true : (bool)obj;
+            }
+            set
+            {
+                this.ViewState["CancelOnEsc"] = value;
+            }
+        }
+
+        /// <summary>
+        /// True to complete the edit when the enter key is pressed (defaults to false)
+        /// </summary>
+        [Meta]
+        [ConfigOption]
+        [Category("2. GridEditorOptions")]
+        [DefaultValue(true)]
+        [NotifyParentProperty(true)]
+        [Description("True to complete the edit when the enter key is pressed (defaults to false)")]
+        public virtual bool CompleteOnEnter
+        {
+            get
+            {
+                object obj = this.ViewState["CompleteOnEnter"];
+                return (obj == null) ? true : (bool)obj;
+            }
+            set
+            {
+                this.ViewState["CompleteOnEnter"] = value;
+            }
+        }
+
+        /// <summary>
         /// True to cancel the edit when the blur event is fired (defaults to false)
         /// </summary>
         [Meta]
@@ -240,6 +284,72 @@ namespace Ext.Net
             set
             {
                 this.ViewState["IgnoreNoChange"] = value;
+            }
+        }
+
+        /// <summary>
+        /// True to automatically revert the field value and cancel the edit when the user completes an edit and the field validation fails (defaults to true)
+        /// </summary>
+        [Meta]
+        [ConfigOption]
+        [Category("4. Editor")]
+        [DefaultValue(true)]
+        [NotifyParentProperty(true)]
+        [Description("True to automatically revert the field value and cancel the edit when the user completes an edit and the field validation fails (defaults to true)")]
+        public virtual bool RevertInvalid
+        {
+            get
+            {
+                object obj = this.ViewState["RevertInvalid"];
+                return (obj == null) ? true : (bool)obj;
+            }
+            set
+            {
+                this.ViewState["RevertInvalid"] = value;
+            }
+        }
+
+        /// <summary>
+        /// "sides" for sides/bottom only, "frame" for 4-way shadow, and "drop" for bottom-right shadow (defaults to "frame")
+        /// </summary>
+        [Meta]
+        [ConfigOption(typeof(ShadowJsonConverter))]
+        [Category("4. Editor")]
+        [DefaultValue(ShadowMode.None)]
+        [NotifyParentProperty(true)]
+        [Description("\"sides\" for sides/bottom only, \"frame\" for 4-way shadow, and \"drop\" for bottom-right shadow (defaults to \"frame\")")]
+        public virtual ShadowMode Shadow
+        {
+            get
+            {
+                object obj = this.ViewState["Shadow"];
+                return (obj == null) ? ShadowMode.None : (ShadowMode)obj;
+            }
+            set
+            {
+                this.ViewState["Shadow"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Handle the keydown/keypress events so they don't propagate (defaults to true)
+        /// </summary>
+        [Meta]
+        [ConfigOption]
+        [Category("4. Editor")]
+        [DefaultValue(true)]
+        [NotifyParentProperty(true)]
+        [Description("Handle the keydown/keypress events so they don't propagate (defaults to true)")]
+        public virtual bool SwallowKeys
+        {
+            get
+            {
+                object obj = this.ViewState["SwallowKeys"];
+                return (obj == null) ? true : (bool)obj;
+            }
+            set
+            {
+                this.ViewState["SwallowKeys"] = value;
             }
         }
 

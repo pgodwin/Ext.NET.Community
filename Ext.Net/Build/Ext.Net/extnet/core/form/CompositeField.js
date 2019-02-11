@@ -21,9 +21,11 @@ Ext.form.CompositeField.override({
         
         var labels = [],
             items  = this.items,
-            item;
+            item,
+            i = 0,
+            j;
 
-        for (var i = 0, j = items.length; i < j; i++) {
+        for (i, j = items.length; i < j; i++) {
             item = items[i];
 
             labels.push(item.fieldLabel);
@@ -32,7 +34,7 @@ Ext.form.CompositeField.override({
             Ext.applyIf(item, this.defaults);
 
             //apply default margins to each item except the last
-            if (!(i == j - 1 && this.skipLastItemMargin)) {
+            if (!(i === j - 1 && this.skipLastItemMargin)) {
                 Ext.applyIf(item, {margins: this.defaultMargins});
             }
         }
@@ -75,7 +77,7 @@ Ext.form.CompositeField.override({
         this.items = new Ext.util.MixedCollection();
         this.items.addAll(Ext.isArray(items) ? items : [items]);
         
-        Ext.each(this.items, function (item) {
+        Ext.each(items, function (item) {
             if (item && item.on) {
                 if (!item.getName) {
                     item.getName = Ext.emptyFn;
@@ -132,7 +134,10 @@ Ext.form.CompositeField.override({
     
     eachItem : function (fn, scope) {
         if (this.items && this.items.each) {
-            for (var i = 0, len = this.items.length; i < len; i++) {
+            var i = 0,
+                len;
+
+            for (i, len = this.items.length; i < len; i++) {
                 var item = this.items.get(i);
               
                 if (this.isField(item) && fn.call(scope || this, item, i, len) === false) {
@@ -226,7 +231,7 @@ Ext.form.CompositeField.override({
         this.fieldErrors.sort("ASC", function (a, b) {
             var findByName = function (key) {
                 return function (field) {
-                    return (field.fieldLabel || field.dataIndex || (field.getName ? field.getName() : "")) == key;
+                    return (field.fieldLabel || field.dataIndex || (field.getName ? field.getName() : "")) === key;
                 };
             };
             

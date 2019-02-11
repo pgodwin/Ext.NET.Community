@@ -1,11 +1,6 @@
 ﻿Ext.ns('Ext.ux.grid');
 Ext.ux.grid.EditableGrid = Ext.extend(Object, {
-    init : function (grid) {
-        if (Ext.isEmpty(Ext.fly("ux.editablegrid_css"))) {
-            var css = ".ux-editable-grid {padding: 0;}";
-            Ext.util.CSS.createStyleSheet(css, "ux.editablegrid_css");
-        }        
-        
+    init : function (grid) {        
         grid.onCellDblClick = Ext.emptyFn;
         grid.onAutoEditClick = Ext.emptyFn;
         
@@ -18,6 +13,7 @@ Ext.ux.grid.EditableGrid = Ext.extend(Object, {
             editors: [],
             editorPadding: 2,
             afterRenderUI : function () {
+                this.editorFocus = {};
                 this.constructor.prototype.afterRenderUI.call(this);
                 this.el.addClass('x-grid-editing');
             },
@@ -130,7 +126,7 @@ Ext.ux.grid.EditableGrid = Ext.extend(Object, {
             renderEditors: function (startRow, endRow) {
                 var args = [startRow, 0],
                     cols = this.cm.getColumnCount(),
-                    col, row, ed, w = [], rec, r, di, cell;
+                    col, row, ed, w = [], rec, r, di, cell;                
 
                 for (col = 0; col < cols; col++) {
                     w[col] = this.cm.getColumnWidth(col) - this.editorPadding;
@@ -151,26 +147,44 @@ Ext.ux.grid.EditableGrid = Ext.extend(Object, {
                                 id: Ext.id(),
                                 value: rec.get(di),
                                 grid:{
-                                    grid: grid,
-                                    record: rec,
-                                    cell: cell,
-                                    dataIndex: di,
-                                    col: col,
-                                    row: row
+                                    grid   : grid,
+                                    record : rec,
+                                    cell   : cell,
+                                    dataIndex : di,
+                                    col : col,
+                                    row : row
                                 },
-                                width: w[col],
-                                renderTo: cell,
-                                ctCls: 'x-small-editor x-grid-editor ux-editable-grid'
+                                width    : w[col],
+                                renderTo : cell,
+                                ctCls    : 'x-small-editor x-grid-editor ux-editable-grid'
                             });
                             ed.on('blur', this.onEditorBlur, {
                                 store: this.ds,
                                 row: row,
                                 dataIndex: di
+                            }, {                            
+                                delay : 100 
                             });
                             ed.on('specialkey', this.onEditorSpecialKey, {
-                                view: this,                                
-                                row: row,
-                                col: col
+                                view : this,                                
+                                row  : row,
+                                col  : col
+                            });
+                            ed.mon(ed.el, 'mousedown', function(e) {
+                                this.view.editorFocus.row = this.row;
+                                this.view.editorFocus.col = this.col;
+                            }, {
+                                row : row,
+                                col : col,
+                                view  : this
+                            });
+                            ed.on('focus', function(e) {
+                                this.view.editorFocus.row = this.row;
+                                this.view.editorFocus.col = this.col;
+                            }, {
+                                row  : row,
+                                col  : col,
+                                view : this
                             });
                         }
                         r.push(ed);
@@ -178,6 +192,11 @@ Ext.ux.grid.EditableGrid = Ext.extend(Object, {
                     args.push(r);
                 }
                 this.editors.splice.apply(this.editors, args);
+                
+                if (this.editorFocus && Ext.isDefined(this.editorFocus.row) && Ext.isDefined(this.editorFocus.col)
+                    && this.editors[this.editorFocus.row] && this.editors[this.editorFocus.row][this.editorFocus.col]) {
+                    this.editors[this.editorFocus.row][this.editorFocus.col].focus(false, 10);
+                }
             },
 
             getCellEditor : function (colIndex, rowIndex) {
@@ -264,3 +283,5 @@ Ext.ux.grid.EditableGrid = Ext.extend(Object, {
 });
 
 Ext.preg('editable-grid', Ext.ux.grid.EditableGrid);
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

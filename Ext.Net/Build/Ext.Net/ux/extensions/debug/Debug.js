@@ -8,7 +8,7 @@ Ext.net.Debug = function () {
         },
         
         isFirebug : function () {
-            return !Ext.isEmpty(window.firebug);
+            return !Ext.isEmpty(window.Firebug);
         },
         
         log : function (text) {
@@ -18,7 +18,7 @@ Ext.net.Debug = function () {
             }
             
             if (this.isFirebug()) {
-                window.firebug.d.console.cmd.log(text);
+                window.Firebug.Console.log(text);
             }
         },
         
@@ -29,7 +29,7 @@ Ext.net.Debug = function () {
             }
             
             if (this.isFirebug()) {
-                window.firebug.win.show();
+                window.Firebug.chrome.toggle(true, false);
             }
         },
         
@@ -40,7 +40,7 @@ Ext.net.Debug = function () {
             }
             
             if (this.isFirebug()) {
-                window.firebug.win.hide();
+                window.Firebug.chrome.toggle(false, false);
             }
         },
         
@@ -50,7 +50,7 @@ Ext.net.Debug = function () {
             }
             
             if (this.isFirebug()) {
-                return window.firebug;
+                return window.Firebug;
             }
         },
         
@@ -70,7 +70,7 @@ Ext.net.Debug = function () {
                 
                 break;
             case "firebug":
-                if (window.firebug) {
+                if (window.Firebug) {
                     return;
                 }
                 
@@ -98,9 +98,7 @@ Ext.net.Debug = function () {
                     
                     break;
                 case "firebug":
-                    if (window.firebug && window.firebug.version) {
-                        firebug.init();
-                        
+                    if (window.Firebug && window.Firebug.chrome) {                        
                         if (callback) {
                             callback();                                        
                         }

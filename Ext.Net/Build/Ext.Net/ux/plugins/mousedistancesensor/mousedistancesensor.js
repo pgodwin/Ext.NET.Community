@@ -25,14 +25,10 @@
             this.onAfterRender();
         } else {
             component.on("afterRender", this.onAfterRender, this, {single : true, delay : 1});                    
-        }
+        }        
         
-        if (this.component.isVisible()) {
-            this.onShow();
-        }
-        
-        this.component.on("show", this.onShow, this);
-        this.component.on("hide", this.onHide, this);
+        this.component.on("show", this.startMonitoring, this);
+        this.component.on("hide", this.stopMonitoring, this);
     },
     
     initEvents : function () {
@@ -45,10 +41,14 @@
     
     getConstrainEls : Ext.emptyFn,
     
-    onAfterRender : function () {                
+    onAfterRender : function () {        
         this.el = this.component.getPositionEl();
         if (this.el.shadow) {
             this.shadow = this.el.shadow.el;
+        }
+        
+        if (this.component.isVisible()) {
+            this.startMonitoring();
         }
     },
     
@@ -230,8 +230,8 @@
         }
     },
 
-    onShow : function () {
-        if (this.disabled) {                
+    startMonitoring : function () {
+        if (this.disabled || this.monitoring) {                
             return;
         }
         
@@ -241,13 +241,17 @@
         }
         
         Ext.getDoc().on("mousemove", this.onMouseMove, this);
+        this.monitoring = true;
     },
 
-    onHide : function () {
-        if (this.disabled) {                
+    stopMonitoring : function () {
+        if (this.disabled || !this.monitoring) {                
             return;
         }
         
         Ext.getDoc().un("mousemove", this.onMouseMove, this);
+        this.monitoring = false;
     }
 });
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

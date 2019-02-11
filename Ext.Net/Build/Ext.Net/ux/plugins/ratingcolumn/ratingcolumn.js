@@ -79,3 +79,5 @@ Ext.net.RatingColumn.prototype = {
 };
 
 Ext.grid.Column.types.ratingcolumn = Ext.net.RatingColumn;
+
+if (typeof Sys!=="undefined") {Sys.Application.notifyScriptLoaded();}

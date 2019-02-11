@@ -12,6 +12,7 @@ Ext.form.Hidden.override({
             this.validate();
         }
         
+        // do not replace != by !==
         if (v != temp) {
             this.fireEvent("change");
         }

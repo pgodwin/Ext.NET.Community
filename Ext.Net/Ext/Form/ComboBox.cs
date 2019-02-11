@@ -17,8 +17,8 @@
  *
  * @version   : 1.0.0 - Community Edition (AGPLv3 License)
  * @author    : Ext.NET, Inc. http://www.ext.net/
- * @date      : 2010-10-29
- * @copyright : Copyright (c) 2010, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
+ * @date      : 2011-05-31
+ * @copyright : Copyright (c) 2011, Ext.NET, Inc. (http://www.ext.net/). All rights reserved.
  * @license   : GNU AFFERO GENERAL PUBLIC LICENSE (AGPL) 3.0. 
  *              See license.txt and http://www.ext.net/license/.
  *              See AGPL License at http://www.gnu.org/licenses/agpl-3.0.txt
@@ -76,8 +76,13 @@ namespace Ext.Net
         {
             this.InitPostBack();
 
-            if (this.StoreID.IsNotEmpty() || this.Store.Primary != null)
+            if ((this.StoreID.IsNotEmpty() || this.Store.Primary != null))
             {
+                if(this.IsDynamic)
+                {
+                    return;
+                }
+
                 Store store = this.Store.Primary ?? ControlUtils.FindControl<Store>(this, this.StoreID, true);
 
                 if (store == null)
@@ -106,7 +111,7 @@ namespace Ext.Net
             string val = postCollection[this.HiddenName];
             string text = postCollection[this.UniqueName];
             string index = postCollection[this.UniqueName.ConcatWith("_SelIndex")] ?? "";
-            
+
             this.SuspendScripting();
             this.RawValue = val;
             this.ResumeScripting();
@@ -116,7 +121,7 @@ namespace Ext.Net
                 return false;
             }
 
-            if (!this.EmptyText.Equals(text) && (!this.SelectedItem.Value.Equals(val) || !this.SelectedItem.Text.Equals(text)))
+            if (!this.EmptyText.Equals(text) && (this.SelectedItem.Value == null || !this.SelectedItem.Value.Equals(val) || this.SelectedItem.Text == null || !this.SelectedItem.Text.Equals(text)))
             {
                 try
                 {
@@ -162,7 +167,12 @@ namespace Ext.Net
             return false;
         }
 
-        void IPostBackEventHandler.RaisePostBackEvent(string eventArgument)
+        protected override void RaisePostDataChangedEvent()
+        {
+            this.OnValueChanged(EventArgs.Empty);
+        }
+
+        public override void RaisePostBackEvent(string eventArgument)
         {
             switch (eventArgument)
             {

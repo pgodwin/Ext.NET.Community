@@ -72,7 +72,6 @@
     <ext:ResourceManager 
         ID="ResourceManager1" 
         runat="server" 
-        InitScriptMode="Linked" 
         DirectMethodNamespace="X"
         IDMode="Explicit"
         />
@@ -90,7 +89,7 @@
                 Header="false"
                 Region="North"
                 Border="false"
-                Html="<div id='header' style='height:32px;'><a style='float:right;margin-right:10px;' href='http://www.ext.net/' target='_blank'><img style='margin-top: 4px;' src='resources/images/ext_net_badge.gif'/></a><div class='api-title'>Ext.NET Examples Explorer (1.0 RC)</div></div>"
+                Html="<div id='header' style='height:32px;'><a style='float:right;margin-right:10px;' href='http://www.ext.net/' target='_blank'><img style='margin-top: 4px;' src='resources/images/ext_net_badge.gif'/></a><div class='api-title'>Ext.NET Examples Explorer (Version 1.0 RC2)</div></div>"
                 />
             <ext:Panel 
                 runat="server"
@@ -296,17 +295,20 @@
     
     <exm:CommentWindow runat="server" />
     
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-19135912-3']);
-      _gaq.push(['_setDomainName', '.ext.net']);
-      _gaq.push(['_trackPageview']);
+	<script type="text/javascript">
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-19135912-3']);
+	  _gaq.push(['_setDomainName', '.ext.net']);
+	  _gaq.push(['_trackPageview']);
+	  _gaq.push(['_setAllowHash', false]);
+
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>	
 </body>
 </html>

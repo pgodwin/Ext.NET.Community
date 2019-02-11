@@ -10,8 +10,7 @@ Ext.NetServiceTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
         if (this.json) {        
             root = Ext.decode(response.responseText);
             json = root.d || root;
-        }
-        else {
+        } else {
             var xmlData = response.responseXML;
             
             root = xmlData.documentElement || xmlData;                
@@ -20,11 +19,13 @@ Ext.NetServiceTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
         
 
         try {
-            var o = Ext.isString(json) ? eval("(" + json + ")") : json;
+            var o = Ext.isString(json) ? eval("(" + json + ")") : json,
+                i = 0,
+                len;
             
             node.beginUpdate();
             
-            for (var i = 0, len = o.length; i < len; i++) {
+            for (i, len = o.length; i < len; i++) {
                 var n = this.createNode(o[i]);
 
                 if (n) {
@@ -34,7 +35,7 @@ Ext.NetServiceTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
             
             node.endUpdate();
             
-            if (typeof callback == "function") {
+            if (typeof callback === "function") {
                 callback(this, node);
             }
         } catch (e) {
